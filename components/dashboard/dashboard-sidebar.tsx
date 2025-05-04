@@ -5,6 +5,8 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  ChartBar,
+  ChartLine,
   Command,
   Crosshair,
   DollarSign,
@@ -23,7 +25,6 @@ import {
 import { AppSwitcher } from './app-switcher';
 import { NavAppOptions } from '@/components/dashboard/nav-app-options';
 import { NavAccountOptions } from '@/components/dashboard/nav-account-options';
-import { NavUser } from '@/components/dashboard/nav-user';
 import {
   Sidebar,
   SidebarContent,
@@ -44,81 +45,84 @@ const data = {
   navMain: [
     {
       title: 'Users',
-      url: '#',
+      urlSegment: 'users',
       icon: Users,
       isActive: true,
       items: [
         {
           title: 'Quick View',
-          url: '#',
+          url: '/dashboard/users',
         },
         {
           title: 'Permissions',
-          url: '#',
+          url: '/dashboard/users/permissions',
         },
         {
           title: 'Settings',
-          url: '#',
+          url: '/dashboard/users/settings',
         },
       ],
     },
     {
       title: 'Content',
-      url: '#',
+      urlSegment: 'content',
       icon: Image,
       items: [
         {
           title: 'Quick View',
-          url: '#',
+          url: '/dashboard/content',
         },
         {
           title: 'Create',
-          url: '#',
+          url: '/dashboard/content/create',
         },
       ],
     },
     {
       title: 'Map',
-      url: '#',
+      urlSegment: 'map',
       icon: Map,
       items: [
         {
           title: 'Quick View',
-          url: '#',
+          url: '/dashboard/map',
         },
       ],
     },
     {
       title: 'Ads',
-      url: '#',
+      urlSegment: 'ads',
       icon: Megaphone,
       items: [
         {
           title: 'Quick View',
-          url: '#',
+          url: '/dashboard/ads',
+        },
+      ],
+    },
+    {
+      title: 'Trends',
+      urlSegment: 'trends',
+      icon: ChartLine,
+      items: [
+        {
+          title: 'Quick View',
+          url: '/dashboard/trends',
         },
       ],
     },
     {
       title: 'Settings',
-      url: '#',
+      urlSegment: 'settings',
       icon: Settings2,
       items: [
         {
           title: 'General',
-          url: '#',
+          url: '/dashboard/settings',
         },
         {
           title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
+          url: '/dashboard/settings/team',
         },
       ],
     },
@@ -126,7 +130,7 @@ const data = {
   options: [
     {
       name: 'Billing',
-      url: '#',
+      url: '/billing',
       icon: DollarSign,
     },
   ],
@@ -149,7 +153,6 @@ export function DashboardSidebar({
         <NavAccountOptions options={data.options} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
