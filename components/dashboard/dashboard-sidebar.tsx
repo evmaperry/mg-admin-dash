@@ -12,6 +12,8 @@ import {
   DollarSign,
   Frame,
   GalleryVerticalEnd,
+  Handshake,
+  HeartHandshake,
   Image,
   Map,
   Megaphone,
@@ -21,6 +23,7 @@ import {
   SquareTerminal,
   StickyNote,
   Users,
+  Users2,
 } from 'lucide-react';
 import { AppSwitcher } from './app-switcher';
 import { NavAppOptions } from '@/components/dashboard/nav-app-options';
@@ -121,8 +124,8 @@ const data = {
           url: '/dashboard/settings',
         },
         {
-          title: 'Team',
-          url: '/dashboard/settings/team',
+          title: 'Theme',
+          url: '/dashboard/settings/theme',
         },
       ],
     },
@@ -130,8 +133,13 @@ const data = {
   options: [
     {
       name: 'Billing',
-      url: '/billing',
+      url: '/dashboard/billing',
       icon: DollarSign,
+    },
+    {
+      name: 'Team',
+      url: '/dashboard/team',
+      icon: Handshake,
     },
   ],
 };
