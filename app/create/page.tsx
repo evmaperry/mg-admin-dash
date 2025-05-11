@@ -203,9 +203,9 @@ const CreatePage: React.FC<{}> = ({}) => {
       longitude: number;
       zoom: number;
     }>({
-      latitude: 44.15,
-      longitude: -85.73,
-      zoom: 3,
+      latitude: eventCenterPosition ? eventCenterPosition.latitude : 44.15,
+      longitude: eventCenterPosition ? eventCenterPosition.longitude :-85.73,
+      zoom: eventCenterPosition ? eventCenterPosition.zoom : 3,
     });
 
     const handleMove = (e: ViewStateChangeEvent) => {
