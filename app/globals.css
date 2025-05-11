@@ -84,4 +84,13 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .create-event-form-label {
+    @apply text-sm mb-1 font-bold
+  }
+
+  .create-event-form-title {
+    @apply text-base font-mono text-sky-400
+  }
+
 }
