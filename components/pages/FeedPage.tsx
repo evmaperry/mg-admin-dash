@@ -18,6 +18,7 @@ import {
 import Image from 'next/image';
 import React from 'react';
 import balloonsHeader from '../../lib/header-balloons.jpg';
+import fireworksImage from '../../lib/header-fireworks-2.jpg';
 import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
 
@@ -31,7 +32,6 @@ const FeedPage: React.FC<{
 }> = ({ colors }) => {
   const { primary, primaryContainer, secondary, inversePrimary } = colors;
 
-  console.log('prmiaryContainer', primaryContainer);
   return (
     <div className='flex flex-col items-center justify-start overflow-hidden border-4 border-neutral-800 shadow rounded-[38px] w-[276px] h-[572px]'>
       {/* FAKE TOP BAR */}
@@ -57,7 +57,9 @@ const FeedPage: React.FC<{
           style={{ objectFit: 'cover' }}
           width={1200}
           height={900}
-          alt={'Stock image contained in sample app for color configuration.'}
+          alt={
+            'Stock header image contained in app mock-up used for color configuration.'
+          }
           src={balloonsHeader}
         />
       </div>
@@ -77,12 +79,12 @@ const FeedPage: React.FC<{
             placeholder='Search the map...'
             className={'w-full h-7 text-[10px]'}
           />
-          <Search
-            className={'border rounded-full w-8 h-7'}
-            size={26}
+          <div
             style={{ backgroundColor: primary }}
-            color={'white'}
-          />
+            className={'flex items-center justify-center border rounded-full w-8 h-7 p-1'}
+          >
+            <Search size={14} color={'white'} />
+          </div>
         </div>
         <div className={'flex flex-row w-full text-[10px]'}>
           <div
@@ -126,20 +128,19 @@ const FeedPage: React.FC<{
           Looking for something? Use the search bar ☝️
         </div>
         {/* CARD */}
-        <div className={'h-[240px] px-3 py-1 mt-2 border w-full rounded-lg'}>
+        <div className={'h-[304px] px-3 py-1 mt-2 border w-full rounded-lg'}>
           {/* AVATAR */}
           <div
             className={'flex flex-row justify-between h-11 w-full items-center'}
           >
-            <div className={'flex gap-2 items-center'}>
-              <Apple
-                size={28}
-                style={{
-                  backgroundColor: 'coral',
-                  padding: 2,
-                  borderRadius: 20,
-                }}
-              />
+            <div className={'flex gap-2 items-center w-full'}>
+              <div
+                className={
+                  'bg-orange-300 flex p-1 rounded-full items-center justify-center w-9 h-9 border'
+                }
+              >
+                <Apple color={'white'} size={28} />
+              </div>
               <div className={'flex flex-col leading-[1.2] text-[9px]'}>
                 <div>Event organizer's post</div>
                 <div>created 2 hours ago</div>
@@ -166,7 +167,17 @@ const FeedPage: React.FC<{
             </div>
           </div>
           {/* IMAGE */}
-          
+          <div className={'flex mt-1.5 mb-2 h-30 rounded overflow-hidden'}>
+            <Image
+              style={{ objectFit: 'cover' }}
+              height={900}
+              width={600}
+              src={fireworksImage}
+              alt={
+                'Stock content image contained in app mock-up used for color configuration.'
+              }
+            />
+          </div>
           {/* ACTIONS */}
           <div className={'flex flex-row items-center justify-between'}>
             {/* VOTES */}
@@ -208,49 +219,48 @@ const FeedPage: React.FC<{
             </div>
           </div>
         </div>
-
-        {/* BOTTOM NAV */}
+      </div>
+      {/* BOTTOM NAV */}
+      <div
+        className={
+          'flex justify-around items-center w-full bottom-0 h-16 bg-neutral-50 text-black text-xs font-bold rounded-b-lg z-50'
+        }
+        style={{ backgroundColor: primaryContainer }}
+      >
         <div
-          className={
-            'flex justify-around items-center w-full bottom-0 h-16 bg-neutral-50 text-black text-xs font-bold rounded-b-lg z-50'
-          }
-          style={{ backgroundColor: primaryContainer }}
+          style={{ color: '#767A81' }}
+          className={'flex flex-col items-center ml-2 p-1.5'}
         >
-          <div
-            style={{ color: '#767A81' }}
-            className={'flex flex-col items-center ml-2 p-1.5'}
-          >
-            <Copy color={primary} size={24} />
-            <p style={{ color: primary }}>HOME</p>
-          </div>
-          <div
-            style={{ color: '#767A81' }}
-            className={'flex flex-col items-center p-1.5'}
-          >
-            <MapPin size={24} />
-            <p>MAP</p>
-          </div>
-          <div
-            style={{ color: '#767A81' }}
-            className={'flex flex-col items-center p-1.5'}
-          >
-            <Info size={24} />
-            <p>HELP</p>
-          </div>
-          <div
-            style={{ color: '#767A81' }}
-            className={'flex flex-col items-center p-1.5'}
-          >
-            <Cog size={24} />
-            <p>INFO</p>
-          </div>
-          <div
-            style={{ color: '#767A81' }}
-            className={'flex flex-col items-center mr-2 p-1.5'}
-          >
-            <CirclePlus size={24} />
-            <p>POST</p>
-          </div>
+          <Copy color={primary} size={24} />
+          <p style={{ color: primary }}>HOME</p>
+        </div>
+        <div
+          style={{ color: '#767A81' }}
+          className={'flex flex-col items-center p-1.5'}
+        >
+          <MapPin size={24} />
+          <p>MAP</p>
+        </div>
+        <div
+          style={{ color: '#767A81' }}
+          className={'flex flex-col items-center p-1.5'}
+        >
+          <Info size={24} />
+          <p>HELP</p>
+        </div>
+        <div
+          style={{ color: '#767A81' }}
+          className={'flex flex-col items-center p-1.5'}
+        >
+          <Cog size={24} />
+          <p>INFO</p>
+        </div>
+        <div
+          style={{ color: '#767A81' }}
+          className={'flex flex-col items-center mr-2 p-1.5'}
+        >
+          <CirclePlus size={24} />
+          <p>POST</p>
         </div>
       </div>
     </div>

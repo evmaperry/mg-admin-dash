@@ -116,12 +116,14 @@ const MapPage: React.FC<{
             placeholder='Search the map...'
             className={'w-full h-7 text-[10px]'}
           />
-          <Search
-            className={'border rounded-full w-8 h-7'}
-            size={26}
+          <div
             style={{ backgroundColor: primary }}
-            color={'white'}
-          />
+            className={
+              'flex items-center justify-center border rounded-full w-8 h-7 p-1'
+            }
+          >
+            <Search size={14} color={'white'} />
+          </div>
         </div>
         <div
           className={
