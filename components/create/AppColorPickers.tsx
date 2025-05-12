@@ -79,7 +79,7 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
   );
 
   return (
-    <div className={'flex flex-row  items-center gap-2'}>
+    <div className={'flex flex-row w-full justify-around items-center gap-2'}>
       <div
         className={
           'flex flex-col items-center gap-4 p-4 bg-neutral-100 rounded border'
@@ -88,22 +88,28 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
         <div className={'font-mono font-bold text-lg'}>Select Colors</div>
         <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
       </div>
-      <MapPage
-        colors={{
-          primary: configurableColors.primary.hex,
-          primaryContainer: configurableColors.primaryContainer.hex,
-          inversePrimary: configurableColors.inversePrimary.hex,
-          secondary: configurableColors.secondary.hex,
-        }}
-      />
-      <FeedPage
-        colors={{
-          primary: configurableColors.primary.hex,
-          primaryContainer: configurableColors.primaryContainer.hex,
-          inversePrimary: configurableColors.inversePrimary.hex,
-          secondary: configurableColors.secondary.hex,
-        }}
-      />
+      <div className={''}>
+        <div className={'text-center font-mono font-bold mb-2'}>Map Page</div>
+        <MapPage
+          colors={{
+            primary: configurableColors.primary.hex,
+            primaryContainer: configurableColors.primaryContainer.hex,
+            inversePrimary: configurableColors.inversePrimary.hex,
+            secondary: configurableColors.secondary.hex,
+          }}
+        />
+      </div>
+      <div>
+      <div className={'text-center font-mono font-bold mb-2'}>Feed Page</div>
+        <FeedPage
+          colors={{
+            primary: configurableColors.primary.hex,
+            primaryContainer: configurableColors.primaryContainer.hex,
+            inversePrimary: configurableColors.inversePrimary.hex,
+            secondary: configurableColors.secondary.hex,
+          }}
+        />
+      </div>
     </div>
   );
 };
