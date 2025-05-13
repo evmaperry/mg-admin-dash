@@ -59,6 +59,7 @@ import {
   AccordionContent,
   AccordionItem,
 } from '@/components/ui/accordion';
+import AddMarkersMap from '@/components/create/AddMarkersMap';
 
 const CreatePage: React.FC<{}> = ({}) => {
   const [eventDates, setEventDates] = useState<{
@@ -180,7 +181,7 @@ const CreatePage: React.FC<{}> = ({}) => {
     <div className={'flex flex-col gap-8 max-w-6xl w-full'}>
       <div className={'text-3xl font-mono'}>Create an app</div>
 
-      <div className={'flex flex-col gap-3 w-[500px]'}>
+      <div className={'flex flex-col gap-3 w-full'}>
         <div className={'create-event-form-title'}>The basics</div>
         <AppDetailInputs />
       </div>
@@ -193,6 +194,11 @@ const CreatePage: React.FC<{}> = ({}) => {
       <div className={'flex flex-col gap-3'}>
         <div className={'create-event-form-title'}>Colors</div>
         <AppColorPickers />
+      </div>
+
+      <div className={'flex flex-col gap-3'}>
+        <div className={'create-event-form-title'}>Add Markers to Your Map</div>
+        <AddMarkersMap />
       </div>
 
       {/* Save & Create */}

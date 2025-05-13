@@ -244,8 +244,8 @@ const CenterMapDialog: React.FC<{}> = ({}) => {
               the bulls-eye.
             </span>
             <span>
-              2. Zoom to best fit your event's footprint in the phone's window —
-              this is how the map will be framed it loads in the app.
+              2. Zoom to best fit your event's footprint in the window —
+              this is how the map will be framed when it loads in the app.
             </span>
           </DialogDescription>
         </DialogHeader>

@@ -21,20 +21,26 @@ export type CreateAppState = {
   centerMapViewState: MapViewState | null;
   appDetails: AppDetails;
   appColors: IAppColors;
-  mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
+  mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12';
+  mapAreas: any[];
+  mapStructures: any[];
+  mapPins: any[];
+  mapPlans: any[];
 };
 
 export type CreateAppActions = {
   setCenterMapViewState: (centerMapViewState: MapViewState) => void;
   setAppDetails: (AppDetailsPartialObj: Partial<AppDetails>) => void;
   setAppColors: (AppColorsPartialObj: Partial<IAppColors>) => void;
-  setMapTheme: (mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12') => void;
+  setMapTheme: (
+    mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
+  ) => void;
 };
 
 export type CreateAppStore = CreateAppState & CreateAppActions;
 
 export const defaultInitState: CreateAppState = {
-  centerMapViewState: null,
+  centerMapViewState: { latitude: 44.77, longitude: -85.613, zoom: 12 },
   appDetails: {
     'App name': null,
     'Event name': null,
@@ -54,6 +60,10 @@ export const defaultInitState: CreateAppState = {
     surfaceVariant: '#f1f5f9',
   },
   mapTheme: 'light-v11',
+  mapAreas: [],
+  mapStructures: [],
+  mapPins: [],
+  mapPlans: [],
 };
 
 export const createCreateAppStore = (
@@ -85,13 +95,15 @@ export const createCreateAppStore = (
         };
       });
     },
-    setMapTheme: (mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12') => {
-      set((state)=> {
+    setMapTheme: (
+      mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
+    ) => {
+      set((state) => {
         return {
           ...state,
-          mapTheme
-        }
-      })
-    }
+          mapTheme,
+        };
+      });
+    },
   }));
 };
