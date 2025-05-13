@@ -21,29 +21,38 @@ import balloonsHeader from '../../lib/header-balloons.jpg';
 import fireworksImage from '../../lib/header-fireworks-2.jpg';
 import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
+import Icon from '@mdi/react';
+import {
+  mdiAccount,
+  mdiDotsHorizontal,
+  mdiSignal,
+  mdiBattery40,
+  mdiMagnify,
+  mdiCalendar,
+  mdiThumbUp,
+  mdiThumbDown,
+} from '@mdi/js';
+import MockupBottomNav from './BottomNav';
+import { IAppColors } from '../create/AppColorPickers';
+import MockupTopBar from './TopBar';
+
 
 const FeedPage: React.FC<{
-  colors: {
-    primary: string;
-    primaryContainer: string;
-    secondary: string;
-    inversePrimary: string;
-  };
+  colors: IAppColors;
 }> = ({ colors }) => {
-  const { primary, primaryContainer, secondary, inversePrimary } = colors;
+  const {
+    primary,
+    primaryContainer,
+    secondary,
+    inversePrimary,
+    onPrimaryContainerUnselected,
+    outline,
+  } = colors;
 
   return (
-    <div className='flex flex-col items-center justify-start overflow-hidden border-4 border-neutral-800 shadow rounded-[38px] w-[276px] h-[572px]'>
+    <div className='flex flex-col items-center justify-start overflow-hidden border-4 border-neutral-800 shadow-lg rounded-[38px] w-[276px] h-[572px]'>
       {/* FAKE TOP BAR */}
-      <div
-        className={'flex items-center justify-around top-1 h-10 w-full mx-4'}
-      >
-        <div className={'w-1/6 text-xs'}>2:59</div>
-        <div className={'w-20 h-6 rounded-xl bg-neutral-800'} />
-        <div className={'flex flex-row gap-2 w-1/6'}>
-          <Ellipsis /> <Signal /> <Battery />
-        </div>
-      </div>
+      <MockupTopBar />
       {/* HEADER */}
       <div className={'flex h-1/4 relative'}>
         <div
@@ -69,7 +78,7 @@ const FeedPage: React.FC<{
         style={{ backgroundColor: primaryContainer }}
         className={'flex flex-col  justify-center w-full pt-2 gap-2 '}
       >
-        {/* Search */}
+        {/* SEARCH */}
         <div
           className={
             'flex flex-row items-center w-full justify-center gap-2 px-3'
@@ -80,36 +89,52 @@ const FeedPage: React.FC<{
             className={'w-full h-7 text-[10px]'}
           />
           <div
-            style={{ backgroundColor: primary }}
-            className={'flex items-center justify-center border rounded-full w-8 h-7 p-1'}
+            style={{ backgroundColor: primary, borderColor: outline }}
+            className={
+              'flex items-center justify-center border rounded-full w-8 h-8 p-1'
+            }
           >
-            <Search size={14} color={'white'} />
+            <Icon path={mdiMagnify} size={1} color={'white'} />
           </div>
         </div>
+        {/* TABS */}
         <div className={'flex flex-row w-full text-[10px]'}>
           <div
             className={
               'flex w-1/4 font-bold justify-center border-t border-r py-1.5 bg-background'
             }
-            style={{ borderColor: '#767A81' }}
+            style={{ borderColor: outline }}
           >
             MAIN
           </div>
           <div
-            className={'flex w-1/4 font-bold justify-center border-r py-1.5'}
-            style={{ color: '#767A81', borderColor: '#767A81' }}
+            className={
+              'flex w-1/4 font-bold justify-center border-r border-b py-1.5'
+            }
+            style={{
+              color: onPrimaryContainerUnselected,
+              borderColor: outline,
+            }}
           >
             ARCHIVE
           </div>
           <div
-            className={'flex w-1/4 font-bold justify-center border-r py-1.5'}
-            style={{ color: '#767A81', borderColor: '#767A81' }}
+            className={
+              'flex w-1/4 font-bold justify-center border-r border-b py-1.5'
+            }
+            style={{
+              color: onPrimaryContainerUnselected,
+              borderColor: outline,
+            }}
           >
             MINE
           </div>
           <div
-            className={'flex w-1/4  font-bold justify-center py-1.5'}
-            style={{ color: '#767A81', borderColor: '#767A81' }}
+            className={'flex w-1/4  font-bold justify-center border-b py-1.5'}
+            style={{
+              color: onPrimaryContainerUnselected,
+              borderColor: outline,
+            }}
           >
             FRIENDS
           </div>
@@ -142,11 +167,11 @@ const FeedPage: React.FC<{
                 <Apple color={'white'} size={28} />
               </div>
               <div className={'flex flex-col leading-[1.2] text-[9px]'}>
-                <div>Event organizer's post</div>
-                <div>created 2 hours ago</div>
+                <div>Event organizer's plans</div>
+                <div>made 2 hours ago</div>
               </div>
             </div>
-            <Signpost size={24} />
+            <Icon path={mdiCalendar} size={1} />
           </div>
 
           {/* TEXT */}
@@ -184,10 +209,10 @@ const FeedPage: React.FC<{
             <div className={'flex flex-row gap-2 items-center'}>
               <div
                 className={
-                  'flex items-center justify-center border rounded-full h-7 w-7 shadow'
+                  'flex items-center justify-center border rounded-full h-7 w-7 shadow p-1.5'
                 }
               >
-                <ThumbsDown color={'rgb(198, 62, 62)'} size={16} />
+                <Icon path={mdiThumbDown} size={1} color={'rgb(198, 62, 62)'} />
               </div>
 
               <div>2</div>
@@ -196,7 +221,7 @@ const FeedPage: React.FC<{
                   'flex items-center justify-center border rounded-full h-7 w-7 shadow'
                 }
               >
-                <ThumbsUp color={'rgb(48, 162, 138)'} size={16} />
+                <ThumbsUp color={'rgb(48, 162, 138)'} size={1} />
               </div>
             </div>
             {/* BUTTONS */}
@@ -221,48 +246,7 @@ const FeedPage: React.FC<{
         </div>
       </div>
       {/* BOTTOM NAV */}
-      <div
-        className={
-          'flex justify-around items-center w-full bottom-0 h-16 bg-neutral-50 text-black text-xs font-bold rounded-b-lg z-50'
-        }
-        style={{ backgroundColor: primaryContainer }}
-      >
-        <div
-          style={{ color: '#767A81' }}
-          className={'flex flex-col items-center ml-2 p-1.5'}
-        >
-          <Copy color={primary} size={24} />
-          <p style={{ color: primary }}>HOME</p>
-        </div>
-        <div
-          style={{ color: '#767A81' }}
-          className={'flex flex-col items-center p-1.5'}
-        >
-          <MapPin size={24} />
-          <p>MAP</p>
-        </div>
-        <div
-          style={{ color: '#767A81' }}
-          className={'flex flex-col items-center p-1.5'}
-        >
-          <Info size={24} />
-          <p>HELP</p>
-        </div>
-        <div
-          style={{ color: '#767A81' }}
-          className={'flex flex-col items-center p-1.5'}
-        >
-          <Cog size={24} />
-          <p>INFO</p>
-        </div>
-        <div
-          style={{ color: '#767A81' }}
-          className={'flex flex-col items-center mr-2 p-1.5'}
-        >
-          <CirclePlus size={24} />
-          <p>POST</p>
-        </div>
-      </div>
+      <MockupBottomNav colors={colors} />
     </div>
   );
 };

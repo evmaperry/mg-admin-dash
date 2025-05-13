@@ -52,11 +52,15 @@ import {
 import CenterMapDialog from '@/components/create/CenterMapDialog';
 import AppDetailInputs from '@/components/create/AppDetailInputs';
 import ColorPicker from '@/components/create/ColorPicker';
-import {AppColorPickers} from '@/components/create/AppColorPickers';
-import { Accordion, AccordionTrigger, AccordionContent, AccordionItem } from '@/components/ui/accordion';
+import { AppColorPickers } from '@/components/create/AppColorPickers';
+import {
+  Accordion,
+  AccordionTrigger,
+  AccordionContent,
+  AccordionItem,
+} from '@/components/ui/accordion';
 
 const CreatePage: React.FC<{}> = ({}) => {
-
   const [eventDates, setEventDates] = useState<{
     start: Date | undefined;
     end: Date | undefined;
@@ -173,8 +177,8 @@ const CreatePage: React.FC<{}> = ({}) => {
   });
 
   return (
-    <div className={'flex flex-col gap-8 max-w-4xl w-full'}>
-      <div className={'text-3xl font-mono'}>Create an Event</div>
+    <div className={'flex flex-col gap-8 max-w-6xl w-full'}>
+      <div className={'text-3xl font-mono'}>Create an app</div>
 
       <div className={'flex flex-col gap-3 w-[500px]'}>
         <div className={'create-event-form-title'}>The basics</div>
@@ -189,13 +193,15 @@ const CreatePage: React.FC<{}> = ({}) => {
       <div className={'flex flex-col gap-3'}>
         <Accordion collapsible type='single'>
           <AccordionItem value={'colors'}>
-          <AccordionTrigger className={'create-event-form-title'}>
-            Colors
-          </AccordionTrigger><AccordionContent><AppColorPickers /></AccordionContent></AccordionItem>
+            <AccordionTrigger className={'create-event-form-title'}>
+              Colors
+            </AccordionTrigger>
+            <AccordionContent>
+              <AppColorPickers />
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
-
       </div>
-
 
       {/* Save & Create */}
       <div className={'flex flex-row justify-center gap-3'}>

@@ -16,29 +16,56 @@ export interface ConfigurableColor {
   hex: string;
 }
 
+// the hex values for each colors that get passed to mockup map and
+// feed pages
+export interface IAppColors {
+  primary: string;
+  primaryContainer: string;
+  onPrimaryContainer: string;
+  onPrimaryContainerUnselected: string;
+  inversePrimary: string;
+  secondary: string;
+  outline: string;
+}
+
 export const AppColorPickers: React.FC<{}> = ({}) => {
   const [configurableColors, setConfigurableColors] = useState<{
     [configName: string]: ConfigurableColor;
   }>({
     primary: {
-      name: 'Primary color',
-      note: 'The main accent color of your app. Pick a dark, solid color.',
-      hex: '#0017AB',
-    },
-    primaryContainer: {
-      name: 'Main panel background',
-      note: "Serves as a background color for some of the app's main panels. Pro tip: use a neutral or a light tone based on your primary color",
-      hex: '#C9CCE0',
+      name: 'Primary',
+      note: 'The main accent color of your app, which will be displayed as backgrounds and title text. Pick a dark, solid color.',
+      hex: '#1a237e',
     },
     inversePrimary: {
       name: 'Primary accent',
-      note: "An extra accent that's in the same tonal family as your primary",
-      hex: '#4752AD',
+      note: "Select an extra accent that's in the same tonal family as your primary color.",
+      hex: '#3f51b5',
+    },
+    primaryContainer: {
+      name: 'Panel background',
+      note: "Serves as a background color for some of the app's main panels. Pro tip: use a neutral or a light tone based on your primary color",
+      hex: '#c5cae9',
+    },
+    onPrimaryContainer: {
+      name: 'Nav selected',
+      note: 'Indicates that a navigation option is selected, and also serves as a body text color on colored panels.',
+      hex: '#1a237e',
+    },
+    onPrimaryContainerUnselected: {
+      name: 'Nav unselected',
+      note: 'Indicates that a navigation option is not selected.',
+      hex: '#7986cb',
     },
     secondary: {
-      name: 'Secondary color',
+      name: 'Secondary',
       note: 'The secondary accent color of your app. Pick a dark, solid color.',
       hex: '#D64239',
+    },
+    outline: {
+      name: 'Outline',
+      note: 'The border color of buttons and other elements.',
+      hex: '#607d8b',
     },
   });
 
@@ -56,24 +83,42 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
   const ColorPopovers = Object.entries(configurableColors).map(
     (entry: [string, ConfigurableColor], index: number) => {
       return (
-        <Popover key={`color-popover-${index}`}>
-          <PopoverTrigger asChild>
-            <Button style={{ backgroundColor: entry[1].hex }}>
-              {entry[1].name}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <ColorPicker
-              initialColor={entry[1].hex}
-              onChangeComplete={(
-                color: ColorResult,
-                event: React.ChangeEvent
-              ) => {
-                handleChange(color.hex, event, entry[0]);
-              }}
-            />
-          </PopoverContent>
-        </Popover>
+        <div
+          key={`color-popover-${index}`}
+          className={'flex flex-row items-center justify-between gap-8'}
+        >
+          <div className={'flex flex-col'}>
+            <div className={'font-mono font-bold'}>{entry[1].name}</div>
+            <div className={'font-light'}>( {entry[0]} )</div>
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                style={{ backgroundColor: entry[1].hex }}
+                className={'text-sm'}
+              >
+                {entry[1].hex}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className={'flex flex-col items-center gap-5 w-96 '}
+            >
+              <div className={'font-mono font-bold'}>{entry[1].name}</div>
+              <div className={'leading-[1.1]'}>{entry[1].note}</div>
+              <div>
+                <ColorPicker
+                  initialColor={entry[1].hex}
+                  onChangeComplete={(
+                    color: ColorResult,
+                    event: React.ChangeEvent
+                  ) => {
+                    handleChange(color.hex, event, entry[0]);
+                  }}
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       );
     }
   );
@@ -94,19 +139,28 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
           colors={{
             primary: configurableColors.primary.hex,
             primaryContainer: configurableColors.primaryContainer.hex,
+            onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+            onPrimaryContainerUnselected:
+              configurableColors.onPrimaryContainerUnselected.hex,
+
             inversePrimary: configurableColors.inversePrimary.hex,
             secondary: configurableColors.secondary.hex,
+            outline: configurableColors.outline.hex
           }}
         />
       </div>
       <div>
-      <div className={'text-center font-mono font-bold mb-2'}>Feed Page</div>
+        <div className={'text-center font-mono font-bold mb-2'}>Feed Page</div>
         <FeedPage
           colors={{
             primary: configurableColors.primary.hex,
             primaryContainer: configurableColors.primaryContainer.hex,
+            onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+            onPrimaryContainerUnselected:
+              configurableColors.onPrimaryContainerUnselected.hex,
             inversePrimary: configurableColors.inversePrimary.hex,
             secondary: configurableColors.secondary.hex,
+            outline: configurableColors.outline.hex
           }}
         />
       </div>
