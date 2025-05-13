@@ -191,16 +191,8 @@ const CreatePage: React.FC<{}> = ({}) => {
       </div>
 
       <div className={'flex flex-col gap-3'}>
-        <Accordion collapsible type='single'>
-          <AccordionItem value={'colors'}>
-            <AccordionTrigger className={'create-event-form-title'}>
-              Colors
-            </AccordionTrigger>
-            <AccordionContent>
-              <AppColorPickers />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <div className={'create-event-form-title'}>Colors</div>
+        <AppColorPickers />
       </div>
 
       {/* Save & Create */}

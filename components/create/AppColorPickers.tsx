@@ -9,7 +9,16 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '../ui/button';
 import { ColorResult } from 'react-color';
-
+import { useCreateAppStore } from '@/providers/create-app-provider';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 export interface ConfigurableColor {
   name: string;
   note: string;
@@ -26,58 +35,72 @@ export interface IAppColors {
   inversePrimary: string;
   secondary: string;
   outline: string;
+  surfaceVariant: string;
 }
 
 export const AppColorPickers: React.FC<{}> = ({}) => {
+  const { appColors, setAppColors, mapTheme, setMapTheme } = useCreateAppStore(
+    (state) => state
+  );
+
   const [configurableColors, setConfigurableColors] = useState<{
     [configName: string]: ConfigurableColor;
   }>({
     primary: {
       name: 'Primary',
       note: 'The main accent color of your app, which will be displayed as backgrounds and title text. Pick a dark, solid color.',
-      hex: '#1a237e',
+      hex: appColors.primary,
     },
     inversePrimary: {
       name: 'Primary accent',
       note: "Select an extra accent that's in the same tonal family as your primary color.",
-      hex: '#3f51b5',
+      hex: appColors.inversePrimary,
     },
     primaryContainer: {
       name: 'Panel background',
       note: "Serves as a background color for some of the app's main panels. Pro tip: use a neutral or a light tone based on your primary color",
-      hex: '#c5cae9',
+      hex: appColors.primaryContainer,
     },
     onPrimaryContainer: {
       name: 'Nav selected',
       note: 'Indicates that a navigation option is selected, and also serves as a body text color on colored panels.',
-      hex: '#1a237e',
+      hex: appColors.onPrimaryContainer,
     },
     onPrimaryContainerUnselected: {
       name: 'Nav unselected',
       note: 'Indicates that a navigation option is not selected.',
-      hex: '#7986cb',
+      hex: appColors.onPrimaryContainerUnselected,
     },
     secondary: {
       name: 'Secondary',
       note: 'The secondary accent color of your app. Pick a dark, solid color.',
-      hex: '#D64239',
+      hex: appColors.secondary,
+    },
+    surfaceVariant: {
+      name: 'Neutral',
+      note: 'A neutral color used for button backgrounds; use in conjunction with the Outline color',
+      hex: appColors.surfaceVariant,
     },
     outline: {
       name: 'Outline',
       note: 'The border color of buttons and other elements.',
-      hex: '#607d8b',
+      hex: appColors.outline,
     },
   });
 
-  const handleChange = (
+  const handleColorChange = (
     hexColor: string,
     event: React.ChangeEvent,
     key: string
   ) => {
+    // Local state
     setConfigurableColors({
       ...configurableColors,
       [key]: { ...configurableColors[key], hex: hexColor },
     });
+    // App config store
+    // will send just hex to server to configure app
+    setAppColors({ [key]: hexColor });
   };
 
   const ColorPopovers = Object.entries(configurableColors).map(
@@ -94,14 +117,18 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                style={{ backgroundColor: entry[1].hex }}
-                className={'text-sm'}
+                variant={'outline'}
+                className={'text-sm font-mono flex gap-2'}
               >
+                <div
+                  className={'h-6 w-6 rounded'}
+                  style={{ backgroundColor: entry[1].hex }}
+                />
                 {entry[1].hex}
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={'flex flex-col items-center gap-5 w-96 '}
+              className={'flex flex-col items-center gap-5 w-[650px] '}
             >
               <div className={'font-mono font-bold'}>{entry[1].name}</div>
               <div className={'leading-[1.1]'}>{entry[1].note}</div>
@@ -112,7 +139,7 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
                     color: ColorResult,
                     event: React.ChangeEvent
                   ) => {
-                    handleChange(color.hex, event, entry[0]);
+                    handleColorChange(color.hex, event, entry[0]);
                   }}
                 />
               </div>
@@ -130,11 +157,39 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
           'flex flex-col items-center gap-4 p-4 bg-neutral-100 rounded border'
         }
       >
-        <div className={'font-mono font-bold text-lg'}>Select Colors</div>
+        <div className={'flex flex-col items-center gap-1'}>
+          <div className={'font-mono font-bold text-lg'}>Select Colors</div>
+          <div className={'font-mono text-md'}>
+            Click on these guys over here 👇
+          </div>
+        </div>
         <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
+        <div className={'flex flex-row items-center gap-6 w-full'}>
+          <div className={'font-mono font-bold text-md w-1/2'}>Select Map Theme</div>
+          <Select
+            onValueChange={(
+              value: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
+            ) => {
+              setMapTheme(value);
+            }}
+          >
+            <SelectTrigger className={'w-1/2'}>
+              <SelectValue placeholder={'Light'} />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value={'light-v11'}>Light</SelectItem>
+                <SelectItem value={'dark-v11'}>Dark</SelectItem>
+                <SelectItem value={'outdoors-v12'}>Outdoors</SelectItem>
+                <SelectItem value={'streets-v12'}>Streets</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className={''}>
-        <div className={'text-center font-mono font-bold mb-2'}>Map Page</div>
+        <div className={'font-mono font-bold text-center mb-2'}>Map Page</div>
         <MapPage
           colors={{
             primary: configurableColors.primary.hex,
@@ -145,7 +200,8 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
 
             inversePrimary: configurableColors.inversePrimary.hex,
             secondary: configurableColors.secondary.hex,
-            outline: configurableColors.outline.hex
+            outline: configurableColors.outline.hex,
+            surfaceVariant: configurableColors.surfaceVariant.hex,
           }}
         />
       </div>
@@ -160,7 +216,8 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
               configurableColors.onPrimaryContainerUnselected.hex,
             inversePrimary: configurableColors.inversePrimary.hex,
             secondary: configurableColors.secondary.hex,
-            outline: configurableColors.outline.hex
+            outline: configurableColors.outline.hex,
+            surfaceVariant: configurableColors.surfaceVariant.hex,
           }}
         />
       </div>

@@ -31,11 +31,12 @@ const MapPage: React.FC<{
     inversePrimary,
     onPrimaryContainerUnselected,
     outline,
+    surfaceVariant
   } = colors;
 
   const showMapFiltersButtonClassName = `text-[8px] font-bold bg-[${inversePrimary}] text-background`;
 
-  const { centerMapViewState } = useCreateAppStore((state) => state);
+  const { centerMapViewState, mapTheme } = useCreateAppStore((state) => state);
 
   const viewState = centerMapViewState ?? {
     longitude: -74.006,
@@ -55,7 +56,7 @@ const MapPage: React.FC<{
           mapboxAccessToken={
             'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
           }
-          mapStyle='mapbox://styles/mapbox/light-v11'
+          mapStyle={`mapbox://styles/mapbox/${mapTheme}`}
           style={{ width: 268, height: 460 }}
           {...viewState}
         />
@@ -100,7 +101,7 @@ const MapPage: React.FC<{
       </div>
 
       {/* BOTTOM NAV */}
-      <MockupBottomNav colors={colors} />
+      <MockupBottomNav colors={colors} page={'map'}/>
     </div>
   );
 };

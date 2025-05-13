@@ -27,6 +27,8 @@ const ColorPicker: React.FC<{
 
   return (
     <SwatchesPicker
+      width={590}
+      height={600}
       colors={[
         // ROSE
         [
@@ -290,7 +292,7 @@ const ColorPicker: React.FC<{
           '#525252',
           '#737373',
           '#a3a3a3',
-          '#d4d4d4v',
+          '#d4d4d4',
           '#e5e5e5',
           '#f5f5f5',
           '#fafafa',

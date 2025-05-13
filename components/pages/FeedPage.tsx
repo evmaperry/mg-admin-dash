@@ -36,7 +36,6 @@ import MockupBottomNav from './BottomNav';
 import { IAppColors } from '../create/AppColorPickers';
 import MockupTopBar from './TopBar';
 
-
 const FeedPage: React.FC<{
   colors: IAppColors;
 }> = ({ colors }) => {
@@ -45,8 +44,10 @@ const FeedPage: React.FC<{
     primaryContainer,
     secondary,
     inversePrimary,
+    onPrimaryContainer,
     onPrimaryContainerUnselected,
     outline,
+    surfaceVariant,
   } = colors;
 
   return (
@@ -103,7 +104,7 @@ const FeedPage: React.FC<{
             className={
               'flex w-1/4 font-bold justify-center border-t border-r py-1.5 bg-background'
             }
-            style={{ borderColor: outline }}
+            style={{ borderColor: outline, color: onPrimaryContainer }}
           >
             MAIN
           </div>
@@ -206,11 +207,12 @@ const FeedPage: React.FC<{
           {/* ACTIONS */}
           <div className={'flex flex-row items-center justify-between'}>
             {/* VOTES */}
-            <div className={'flex flex-row gap-2 items-center'}>
+            <div className={'flex flex-row gap-1 items-center'}>
               <div
                 className={
                   'flex items-center justify-center border rounded-full h-7 w-7 shadow p-1.5'
                 }
+                style={{ backgroundColor: surfaceVariant }}
               >
                 <Icon path={mdiThumbDown} size={1} color={'rgb(198, 62, 62)'} />
               </div>
@@ -218,10 +220,11 @@ const FeedPage: React.FC<{
               <div>2</div>
               <div
                 className={
-                  'flex items-center justify-center border rounded-full h-7 w-7 shadow'
+                  'flex items-center justify-center border rounded-full h-7 w-7 shadow p-1.5'
                 }
+                style={{ backgroundColor: primary }}
               >
-                <ThumbsUp color={'rgb(48, 162, 138)'} size={1} />
+                <Icon path={mdiThumbUp} size={1} color={'rgb(48, 162, 138)'} />
               </div>
             </div>
             {/* BUTTONS */}
@@ -231,22 +234,24 @@ const FeedPage: React.FC<{
                 className={
                   'flex items-center justify-center border rounded-full h-7 w-7 shadow'
                 }
+                style={{ backgroundColor: surfaceVariant }}
               >
-                <InfoIcon size={16} />
+                <InfoIcon size={16} color={primary} />
               </div>
               <div
                 className={
                   'flex items-center justify-center border rounded-full h-7 w-7 shadow'
                 }
+                style={{ backgroundColor: surfaceVariant }}
               >
-                <Ellipsis size={16} />
+                <Ellipsis size={16} color={primary} />
               </div>
             </div>
           </div>
         </div>
       </div>
       {/* BOTTOM NAV */}
-      <MockupBottomNav colors={colors} />
+      <MockupBottomNav colors={colors} page={'feed'} />
     </div>
   );
 };

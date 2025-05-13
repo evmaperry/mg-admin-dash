@@ -11,7 +11,8 @@ import { IAppColors } from '../create/AppColorPickers';
 
 const MockupBottomNav: React.FC<{
   colors: IAppColors;
-}> = ({ colors }) => {
+  page: 'map' | 'feed';
+}> = ({ colors, page }) => {
   const {
     primary,
     primaryContainer,
@@ -21,6 +22,7 @@ const MockupBottomNav: React.FC<{
     onPrimaryContainerUnselected,
   } = colors;
 
+  console.log('page', page)
   return (
     <div
       className={
@@ -29,14 +31,14 @@ const MockupBottomNav: React.FC<{
       style={{ backgroundColor: primaryContainer }}
     >
       <div
-        style={{ color: '#767A81' }}
+        style={{ color: page === 'feed' ? onPrimaryContainer : onPrimaryContainerUnselected }}
         className={'flex flex-col items-center ml-2 p-1.5'}
       >
-        <Icon path={mdiContentCopy} rotate={270} size={1} color={primary} />
-        <p style={{ color: primary }}>HOME</p>
+        <Icon path={mdiContentCopy} rotate={270} size={1}  />
+        <p>FEED</p>
       </div>
       <div
-        style={{ color: onPrimaryContainerUnselected }}
+        style={{ color: page === 'map' ? onPrimaryContainer : onPrimaryContainerUnselected }}
         className={'flex flex-col items-center p-1.5'}
       >
         <Icon path={mdiMapMarker} size={1} />
