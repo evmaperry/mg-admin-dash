@@ -65,61 +65,37 @@ const AddMarkersMap: React.FC<{}> = ({}) => {
         <div className={'flex flex-col items-center w-full gap-6'}>
           <div
             className={
-              'flex flex-row items-center w-full p-4 border rounded justify-between bg-neutral-50 gap-2'
+              'flex flex-row items-center w-full p-4 border rounded justify-around bg-neutral-50 gap-2'
             }
           >
-            {/* <div
-              className={
-                'w-1/3 flex flex-col font-mono items-center justify-center gap-2 p-3 h-full bg-neutral-100 border rounded'
-              }
-            >
-              <div className={'font-bold'}>Map Mode</div>
-              <div className={'flex flex-row items-center gap-2 text-sm '}>
-                <span>Zoom & pan</span>
-                <Switch
-                  onCheckedChange={(bool: boolean) => {
-                    setIsInAddMode(bool);
-                  }}
-                />
-                <span>Add marker</span>
-              </div>
-            </div> */}
-            <div
-              className={
-                'flex flex-row items-center justify-around w-full bg-neutral-100 py-3 h-full rounded border w-full'
-              }
-            >
-              <div
-                className={'w-1/3 flex flex-col gap-2 text-center font-mono'}
+            <div className={'w-1/3 flex flex-col gap-2 text-center font-mono'}>
+              <div className={'font-bold'}>Select a marker type</div>
+              <Select
+                onValueChange={(value: string) => {
+                  setSelectedMarkerType(value as MarkerType);
+                }}
               >
-                <div className={'font-bold'}>Select a marker type</div>
-                <Select
-                  onValueChange={(value: string) => {
-                    setSelectedMarkerType(value as MarkerType);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={'...'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value={'pin'}>Pin</SelectItem>
-                      <SelectItem value={'plan'}>Plan</SelectItem>
-                      <SelectItem value={'route'}>Route</SelectItem>
-                      <SelectItem value={'area'}>Area</SelectItem>
-                      <SelectItem value={'structure'}>Structure</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className={'leading-[1.1] w-1/2 text-pretty font-light'}>
-                {selectedMarkerType
-                  ? MarkerTypeInstructions[selectedMarkerType]
-                  : 'Select a marker type to add to the map.'}
-              </div>
+                <SelectTrigger className={''}>
+                  <SelectValue placeholder={'...'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={'pin'}>Pin</SelectItem>
+                    <SelectItem value={'plan'}>Plan</SelectItem>
+                    <SelectItem value={'route'}>Route</SelectItem>
+                    <SelectItem value={'area'}>Area</SelectItem>
+                    <SelectItem value={'structure'}>Structure</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className={'leading-[1.1] w-1/2 text-center font-light'}>
+              {selectedMarkerType
+                ? MarkerTypeInstructions[selectedMarkerType]
+                : 'Select a marker type to add to the map.'}
             </div>
           </div>
-          <div className={'flex flex-row border'}>
+          <div className={'flex flex-row w-full justify-between gap-6'}>
             <Map
               mapboxAccessToken={
                 'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
@@ -151,15 +127,22 @@ const AddMarkersMap: React.FC<{}> = ({}) => {
               )}
             </Map>
             {/* POPUPS */}
-            <div>
-              {selectedMarkerType === 'pin' && (
-                <PinPopup lastClickEvent={addMarker.event} />
-              )}
-              {selectedMarkerType === 'plan' && <PlanPopup />}
-              {selectedMarkerType === 'route' && <RoutePopup />}
-              {selectedMarkerType === 'area' && <AreaPopup />}
-              {selectedMarkerType === 'structure' && <StructurePopup />}
-            </div>
+            {!selectedMarkerType && (
+              <div
+                className={
+                  'flex flex-col items-center justify-center font-light w-1/2 p-2 border bg-neutral-50'
+                }
+              >
+                Select a marker type to add to the map.
+              </div>
+            )}
+            {selectedMarkerType === 'pin' && (
+              <PinPopup lastClickEvent={addMarker.event} />
+            )}
+            {selectedMarkerType === 'plan' && <PlanPopup />}
+            {selectedMarkerType === 'route' && <RoutePopup />}
+            {selectedMarkerType === 'area' && <AreaPopup />}
+            {selectedMarkerType === 'structure' && <StructurePopup />}
           </div>
         </div>
       )}
