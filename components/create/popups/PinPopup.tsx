@@ -14,19 +14,35 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {nanoid} from 'nanoid';
-
+import { nanoid } from 'nanoid';
+import { CreateAppMarkers } from 'mgmarkers/markerConfig';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import capitalize from 'lodash/capitalize';
+import Image from 'next/image';
 
 const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
   const [pin, setPin] = useState<{
-    longitude: number| null;
-    latitude: number| null;
-    address: number| null;
+    longitude: number | null;
+    latitude: number | null;
+    address: number | null;
     phoneNumber: number | null;
-    primaryText:string;
+    primaryText: string;
     pinCategory: string;
     pinType: string;
-
   }>();
 
   const { mapPins } = useCreateAppStore((state) => state);
@@ -78,6 +94,63 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
     getPhotoUrl();
   }, []);
 
+  const PinSelector: React.FC<{}> = ({}) => {
+    const dropdownMenuGroup = Object.entries(CreateAppMarkers.pin).reduce(
+      (acc: any[], cur: [string, string[]], index: number, array: any) => {
+        acc.push(
+          <DropdownMenuSub key={`dropdown-pin-category-${index}`}>
+            <DropdownMenuSubTrigger>
+              {capitalize(cur[0])}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                {cur[1].map((pinType: string, index2: number) => {
+
+                  const imgSRC = `../../../node_modules/mgmarkers/markerImages/pin-${cur[0]}-${pinType}.png`
+
+                  //const imgSRC = '/pin-default-pin.png'
+
+                  return (
+                    <DropdownMenuItem
+                      key={`dropdown-pin-type-${index}-${index2}`}
+                    >
+                      <Image
+                        src={`/assets/images/pin-${cur[0]}-${pinType}.png`}
+                        height={24}
+                        width={24}
+                        alt={'alt'}
+                      />
+                      {capitalize(pinType.replaceAll('_', ' '))}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+        );
+        acc = acc.concat();
+        return acc;
+      },
+      []
+    );
+
+    return (
+      <div className={'border'}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button>Select a Pin</Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent>
+            <DropdownMenuGroup className={'flex flex-col'}>
+              {dropdownMenuGroup}
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  };
+
   return (
     <div
       className={
@@ -86,6 +159,7 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
     >
       <div>Add Pins</div>
 
+      <PinSelector />
       <div></div>
 
       <Input
