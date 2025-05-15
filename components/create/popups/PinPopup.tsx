@@ -105,14 +105,9 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
                 {cur[1].map((pinType: string, index2: number) => {
-
-                  const imgSRC = `../../../node_modules/mgmarkers/markerImages/pin-${cur[0]}-${pinType}.png`
-
-                  //const imgSRC = '/pin-default-pin.png'
-
                   return (
                     <DropdownMenuItem
-                      key={`dropdown-pin-type-${index}-${index2}`}
+                      key={`dropdown-pin-type-${index}-${index2}`} className={'flex flex-row items-center gap-2'}
                     >
                       <Image
                         src={`/assets/images/pin-${cur[0]}-${pinType}.png`}
@@ -120,7 +115,7 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
                         width={24}
                         alt={'alt'}
                       />
-                      {capitalize(pinType.replaceAll('_', ' '))}
+                     <div>{capitalize(pinType.replaceAll('_', ' '))}</div>
                     </DropdownMenuItem>
                   );
                 })}
