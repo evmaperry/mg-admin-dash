@@ -14,6 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {nanoid} from 'nanoid';
+
 
 const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
   const [pin, setPin] = useState<{
@@ -24,7 +26,7 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
     primaryText:string;
     pinCategory: string;
     pinType: string;
-    
+
   }>();
 
   const { mapPins } = useCreateAppStore((state) => state);
@@ -44,11 +46,10 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
       if (event.target.files) {
         const file = event.target.files[0];
         const data = new FormData();
-        data.append('file', file, 'resultados.pdf');
+        data.append('file', file);
 
         const response = await uploadFileS3({
-          route: `photo-${'photo-1'}/result`,
-          fileName: 'newPhoto', // estimate.qrId,
+          key: nanoid(),
           content: data,
         });
 
@@ -68,7 +69,6 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
       bucket: 'mg-photos-and-videos',
       key: 'photo-photo-1/result/newPhoto',
     });
-    console.log('urlInside', url);
     setPhotoUrl(url);
   };
 
