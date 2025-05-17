@@ -14,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { nanoid } from 'nanoid';
 import { CreateAppMarkers } from 'mgmarkers/markerConfig';
 import {
   DropdownMenu,
@@ -33,8 +32,13 @@ import {
 import { Button } from '@/components/ui/button';
 import capitalize from 'lodash/capitalize';
 import Image from 'next/image';
+import { User } from '@supabase/supabase-js';
+import { handleS3FileUpload } from './popupActions';
 
-const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
+const PinPopup: React.FC<{ lastClickEvent: any; user: User }> = ({
+  lastClickEvent,
+  user,
+}) => {
   const [pin, setPin] = useState<{
     longitude: number | null;
     latitude: number | null;
@@ -52,46 +56,50 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
 
   console.log('lce', lastClickEvent);
 
-  const handleResultsUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-    //estimate: any
-  ) => {
-    console.log('event', event);
-    try {
-      setIsLoading(true);
-      if (event.target.files) {
-        const file = event.target.files[0];
-        const data = new FormData();
-        data.append('file', file);
+  // const handleResultsUpload = async (
+  //   event: React.ChangeEvent<HTMLInputElement>
+  //   //estimate: any
+  // ) => {
+  //   console.log('event', event);
+  //   try {
+  //     setIsLoading(true);
+  //     if (event.target.files) {
+  //       const file = event.target.files[0];
+  //       const data = new FormData();
+  //       data.append('file', file);
 
-        const response = await uploadFileS3({
-          key: nanoid(),
-          content: data,
-        });
+  //       const fileId = nanoid();
 
-        response.ok
-          ? console.log('Results achieved')
-          : console.log('There be an error');
-      }
-    } catch (error) {
-      console.error('An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //       const response = await uploadFileS3({
+  //         key: `${user.id}/1/${fileId}`,
+  //         content: data,
+  //       });
 
-  const getPhotoUrl = async () => {
-    const url = await createPresignedUrlWithClient({
-      bucket: 'mg-photos-and-videos',
-      key: 'photo-photo-1/result/newPhoto',
-    });
-    setPhotoUrl(url);
-  };
+  //       if (response.ok) {
+  //         return fileId;
+  //       } else {
+  //         console.log('There be an error');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('An error occurred');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  const [photoUrl, setPhotoUrl] = useState<string>();
+  // const getPhotoUrl = async () => {
+  //   const url = await createPresignedUrlWithClient({
+  //     bucket: 'mg-photos-and-videos',
+  //     key: 'photo-photo-1/result/newPhoto',
+  //   });
+  //   setPhotoUrl(url);
+  // };
+
+  // const [photoUrl, setPhotoUrl] = useState<string>();
 
   useEffect(() => {
-    getPhotoUrl();
+    // getPhotoUrl();
   }, []);
 
   const PinSelector: React.FC<{}> = ({}) => {
@@ -107,7 +115,8 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
                 {cur[1].map((pinType: string, index2: number) => {
                   return (
                     <DropdownMenuItem
-                      key={`dropdown-pin-type-${index}-${index2}`} className={'flex flex-row items-center gap-2'}
+                      key={`dropdown-pin-type-${index}-${index2}`}
+                      className={'flex flex-row items-center gap-2'}
                     >
                       <Image
                         src={`/assets/images/pin-${cur[0]}-${pinType}.png`}
@@ -115,7 +124,7 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
                         width={24}
                         alt={'alt'}
                       />
-                     <div>{capitalize(pinType.replaceAll('_', ' '))}</div>
+                      <div>{capitalize(pinType.replaceAll('_', ' '))}</div>
                     </DropdownMenuItem>
                   );
                 })}
@@ -165,7 +174,9 @@ const PinPopup: React.FC<{ lastClickEvent: any }> = ({ lastClickEvent }) => {
         placeholder='Resultados'
         id='upload-results'
         onChange={async (event) => {
-          await handleResultsUpload(event);
+          setIsLoading(true);
+          await handleS3FileUpload(event, user);
+          setIsLoading(false)
         }}
       />
 

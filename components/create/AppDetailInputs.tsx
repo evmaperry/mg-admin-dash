@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { Label } from '../ui/label';

@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react';
 import {
   Map,
@@ -26,10 +27,12 @@ import AreaPopup from './popups/AreaPopup';
 import StructurePopup from './popups/StructurePopup';
 import { Crosshair } from 'lucide-react';
 import { Position } from 'geojson';
+import { User } from '@supabase/supabase-js';
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
-const AddMarkersMap: React.FC<{}> = ({}) => {
+const AddMarkersMap: React.FC<{user:User}> = ({user}) => {
+
   const { mapTheme, centerMapViewState } = useCreateAppStore((state) => state);
 
   const [selectedMarkerType, setSelectedMarkerType] =
@@ -137,7 +140,7 @@ const AddMarkersMap: React.FC<{}> = ({}) => {
               </div>
             )}
             {selectedMarkerType === 'pin' && (
-              <PinPopup lastClickEvent={addMarker.event} />
+              <PinPopup lastClickEvent={addMarker.event} user={user}/>
             )}
             {selectedMarkerType === 'plan' && <PlanPopup />}
             {selectedMarkerType === 'route' && <RoutePopup />}

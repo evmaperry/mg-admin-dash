@@ -10,14 +10,17 @@ import {
   getSignedUrl,
   S3RequestPresigner,
 } from '@aws-sdk/s3-request-presigner';
+import { createClient } from '@/utils/supabase/server';
 
 const s3Client = new S3Client({
-      region: process.env.AWS_REGION || '',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-      },
-    });
+  region: process.env.AWS_REGION || '',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+  },
+});
+
+const supabaseClient = createClient();
 
 export const uploadFileS3 = async ({
   key,
@@ -31,8 +34,6 @@ export const uploadFileS3 = async ({
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     if (!file) throw 'No se encontro el archivo para subir.';
-
-
 
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME || '',
@@ -65,4 +66,16 @@ export const createPresignedUrlWithClient = async ({
 }) => {
   const command = new GetObjectCommand({ Bucket: bucket, Key: key });
   return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+};
+
+export const createPost = async (
+  postType: 'pin' | 'plan' | 'route',
+  post: { [key: string]: any }
+) => {
+  const { data, error } = await supabaseClient
+    .from(postType)
+    .insert(post)
+    .select();
+
+  return data;
 };

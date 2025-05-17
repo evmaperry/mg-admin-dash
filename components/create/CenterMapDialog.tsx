@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { Button } from '../ui/button';
