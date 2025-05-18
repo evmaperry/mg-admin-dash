@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 import {
   Map,
@@ -31,8 +31,7 @@ import { User } from '@supabase/supabase-js';
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
-const AddMarkersMap: React.FC<{user:User}> = ({user}) => {
-
+const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
   const { mapTheme, centerMapViewState } = useCreateAppStore((state) => state);
 
   const [selectedMarkerType, setSelectedMarkerType] =
@@ -52,12 +51,23 @@ const AddMarkersMap: React.FC<{user:User}> = ({user}) => {
     isVisible: boolean;
     coordinates: Position | null;
     event: null | MapMouseEvent;
+    icon: React.ReactElement;
   }>({
     isVisible: false,
     coordinates: null,
     event: null,
+    icon: <Crosshair />,
   });
 
+  const setMarkerIcon = (icon: React.ReactElement) => {
+    console.log('set marker');
+    setAddMarker({
+      ...addMarker,
+      icon,
+    });
+  };
+
+  console.log('addMarker', addMarker);
   return (
     <div className={'flex w-full'}>
       {centerMapViewState === null ? (
@@ -113,6 +123,7 @@ const AddMarkersMap: React.FC<{user:User}> = ({user}) => {
               onClick={(event) => {
                 console.log('event', event);
                 setAddMarker({
+                  ...addMarker,
                   coordinates: [event.lngLat.lat, event.lngLat.lng],
                   isVisible: true,
                   event,
@@ -125,7 +136,7 @@ const AddMarkersMap: React.FC<{user:User}> = ({user}) => {
                   latitude={addMarker.coordinates[0]}
                   longitude={addMarker.coordinates[1]}
                 >
-                  <Crosshair />
+                  {addMarker.icon}
                 </Marker>
               )}
             </Map>
@@ -140,7 +151,11 @@ const AddMarkersMap: React.FC<{user:User}> = ({user}) => {
               </div>
             )}
             {selectedMarkerType === 'pin' && (
-              <PinPopup lastClickEvent={addMarker.event} user={user}/>
+              <PinPopup
+                lastClickEvent={addMarker.event}
+                user={user}
+                setMarkerIcon={setMarkerIcon}
+              />
             )}
             {selectedMarkerType === 'plan' && <PlanPopup />}
             {selectedMarkerType === 'route' && <RoutePopup />}

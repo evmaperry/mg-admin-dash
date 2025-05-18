@@ -11,6 +11,7 @@ import {
   S3RequestPresigner,
 } from '@aws-sdk/s3-request-presigner';
 import { createClient } from '@/utils/supabase/server';
+import { Post } from 'mgtypes/types/Content';
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || '',
@@ -20,7 +21,7 @@ const s3Client = new S3Client({
   },
 });
 
-const supabaseClient = createClient();
+
 
 export const uploadFileS3 = async ({
   key,
@@ -68,14 +69,19 @@ export const createPresignedUrlWithClient = async ({
   return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
 };
 
-export const createPost = async (
+export const addPostToDb = async (
   postType: 'pin' | 'plan' | 'route',
-  post: { [key: string]: any }
+  post: Post
 ) => {
+
+  const supabaseClient = await createClient();
+
+  const tableName = postType as string + 's'
+  console.log('table name', tableName)
   const { data, error } = await supabaseClient
-    .from(postType)
+    .from(tableName)
     .insert(post)
     .select();
 
-  return data;
+  return {data, error};
 };

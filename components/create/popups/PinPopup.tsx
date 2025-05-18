@@ -33,21 +33,29 @@ import { Button } from '@/components/ui/button';
 import capitalize from 'lodash/capitalize';
 import Image from 'next/image';
 import { User } from '@supabase/supabase-js';
-import { handleS3FileUpload } from './popupActions';
+import { createPost, getAddressFromCoordinates } from './popupActions';
+import { MapMouseEvent } from 'mapbox-gl';
+import { Pin, Post } from 'mgtypes/types/Content';
 
-const PinPopup: React.FC<{ lastClickEvent: any; user: User }> = ({
-  lastClickEvent,
-  user,
-}) => {
-  const [pin, setPin] = useState<{
-    longitude: number | null;
-    latitude: number | null;
-    address: number | null;
-    phoneNumber: number | null;
-    primaryText: string;
-    pinCategory: string;
-    pinType: string;
-  }>();
+const PinPopup: React.FC<{
+  lastClickEvent: MapMouseEvent | null;
+  user: User;
+  setMarkerIcon: (icon: React.ReactElement) => void;
+}> = ({ lastClickEvent, user, setMarkerIcon }) => {
+  const [pin, setPin] = useState<Partial<Pin>>({
+    longitude: null,
+    latitude: null,
+    address: '',
+    phoneNumber: '',
+    link: '',
+    primaryText: '',
+    secondaryText: '',
+    pinCategory: '',
+    pinType: '',
+  });
+
+  const [imageFile, setImageFile] = useState<File>();
+  const [image, setImage] = useState<string>();
 
   const { mapPins } = useCreateAppStore((state) => state);
 
@@ -56,51 +64,22 @@ const PinPopup: React.FC<{ lastClickEvent: any; user: User }> = ({
 
   console.log('lce', lastClickEvent);
 
-  // const handleResultsUpload = async (
-  //   event: React.ChangeEvent<HTMLInputElement>
-  //   //estimate: any
-  // ) => {
-  //   console.log('event', event);
-  //   try {
-  //     setIsLoading(true);
-  //     if (event.target.files) {
-  //       const file = event.target.files[0];
-  //       const data = new FormData();
-  //       data.append('file', file);
-
-  //       const fileId = nanoid();
-
-  //       const response = await uploadFileS3({
-  //         key: `${user.id}/1/${fileId}`,
-  //         content: data,
-  //       });
-
-  //       if (response.ok) {
-  //         return fileId;
-  //       } else {
-  //         console.log('There be an error');
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('An error occurred');
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // const getPhotoUrl = async () => {
-  //   const url = await createPresignedUrlWithClient({
-  //     bucket: 'mg-photos-and-videos',
-  //     key: 'photo-photo-1/result/newPhoto',
-  //   });
-  //   setPhotoUrl(url);
-  // };
-
-  // const [photoUrl, setPhotoUrl] = useState<string>();
+  const handleMapClick = async () => {
+    const address = await getAddressFromCoordinates(
+      lastClickEvent?.lngLat.lat as number,
+      lastClickEvent?.lngLat.lng as number
+    );
+    setPin({
+      ...pin,
+      longitude: lastClickEvent?.lngLat.lng ?? 0,
+      latitude: lastClickEvent?.lngLat.lat ?? 0,
+      address,
+    });
+  };
 
   useEffect(() => {
-    // getPhotoUrl();
-  }, []);
+    handleMapClick();
+  }, [lastClickEvent]);
 
   const PinSelector: React.FC<{}> = ({}) => {
     const dropdownMenuGroup = Object.entries(CreateAppMarkers.pin).reduce(
@@ -117,6 +96,20 @@ const PinPopup: React.FC<{ lastClickEvent: any; user: User }> = ({
                     <DropdownMenuItem
                       key={`dropdown-pin-type-${index}-${index2}`}
                       className={'flex flex-row items-center gap-2'}
+                      onClick={() => {
+                        setPin({ ...pin, pinCategory: cur[0], pinType });
+                        setMarkerIcon(
+                          <Image
+                            src={`/assets/images/pin-${cur[0]}-${pinType}.png`}
+                            height={36}
+                            width={36}
+                            alt={'Pin image'}
+                            className={
+                              'border border-neutral-500 rounded-full p-[2px] bg-background'
+                            }
+                          />
+                        );
+                      }}
                     >
                       <Image
                         src={`/assets/images/pin-${cur[0]}-${pinType}.png`}
@@ -139,10 +132,25 @@ const PinPopup: React.FC<{ lastClickEvent: any; user: User }> = ({
     );
 
     return (
-      <div className={'border'}>
+      <div className={'flex flex-row items-center'}>
+        <div className={'w-20'}>Pin type</div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button>Select a Pin</Button>
+            <Button>
+              {pin.pinType && pin.pinCategory ? (
+                <div className={'flex flex-row items-center gap-2'}>
+                  <Image
+                    src={`/assets/images/pin-${pin.pinCategory}-${pin.pinType}.png`}
+                    height={24}
+                    width={24}
+                    alt={'alt'}
+                  />
+                  <div>{capitalize(pin.pinType)}</div>
+                </div>
+              ) : (
+                'Select a Pin'
+              )}
+            </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent>
@@ -155,32 +163,136 @@ const PinPopup: React.FC<{ lastClickEvent: any; user: User }> = ({
     );
   };
 
+  const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    setImageFile(file);
+    setImage(file ? URL.createObjectURL(file) : undefined);
+  };
+
+  const handleTextInput = (e: any) => {
+    const { name, value } = e.target;
+    setPin({ ...pin, [name]: value });
+  };
+
   return (
     <div
       className={
-        'flex flex-col items-center w-1/2 p-3 gap-3 border bg-neutral-50 rounded'
+        'flex flex-col items-center w-1/2 p-4 gap-3 border bg-neutral-50 rounded'
       }
     >
-      <div>Add Pins</div>
+      <div className={' flex w-full flex-col gap-6'}>
+        {/* COORDINATES */}
+        <div className={'flex flex-row items-center gap-4'}>
+          <div className={'w-20'}>Location</div>
+          <div
+            className={
+              'flex flex-col justify-center w-full border bg-neutral-300 p-3 rounded gap-1'
+            }
+          >
+            <div className={'text-center font-mono text-sm'}>
+              Click the map to locate your new pin
+            </div>
+            <div className={'flex flex-row items-center justify-between'}>
+              <div className={'text-sm'}>
+                <span className={'font-bold'}>Latitude:</span>{' '}
+                {`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}
+              </div>
 
-      <PinSelector />
-      <div></div>
+              <div className={'text-sm'}>
+                <span className={'font-bold'}>Longitude: </span>
+                {`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}
+              </div>
+            </div>
 
-      <Input
-        ref={fileInputRef}
-        disabled={isLoading}
-        type='file'
-        accept='image/*'
-        placeholder='Resultados'
-        id='upload-results'
-        onChange={async (event) => {
-          setIsLoading(true);
-          await handleS3FileUpload(event, user);
-          setIsLoading(false)
-        }}
-      />
+            <div className={'text-sm'}>
+              <span className='font-bold'>Address:</span>{' '}
+              {`${pin.address && pin.address.length > 0 && pin.latitude !== 0 && pin.address}`}
+            </div>
+          </div>
+        </div>
 
-      {photoUrl && <img src={photoUrl} height={100} width={100} />}
+        {/* PIN TYPE */}
+        <PinSelector />
+
+        {/* IMAGE */}
+        <div className={'flex flex-row items-center flex-start'}>
+          <div className={'w-20'}>Image</div>
+          {image ? (
+            <Image
+              className={'rounded'}
+              alt={'The image associated with the pin being created'}
+              src={image}
+              height={100}
+              width={100}
+            />
+          ) : (
+            <div
+              className={
+                'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[100px] w-[100px] text-sm'
+              }
+            >
+              Select a photo 👉
+            </div>
+          )}
+          <div className={'flex ml-4 w-60'}>
+            <Input
+              className={
+                'file:text-white text-white bg-primary file:bg-primary'
+              }
+              ref={fileInputRef}
+              disabled={isLoading}
+              type='file'
+              accept='image/*'
+              placeholder=''
+              id='upload-results'
+              onChange={(event) => {
+                handleFileSelection(event);
+              }}
+            />
+          </div>
+        </div>
+
+        {/* TEXT */}
+        <div className={'flex flex-col gap-2'}>
+          <div className={'flex flex-row items-center gap-6'}>
+            <div>Details</div>{' '}
+            <Input
+              name={'primaryText'}
+              value={pin.primaryText}
+              onChange={handleTextInput}
+              placeholder='Pin title'
+            />
+          </div>
+
+          <Input
+            placeholder='Description'
+            value={pin.secondaryText}
+            name={'secondaryText'}
+            onChange={handleTextInput}
+          />
+          <Input
+            placeholder='Phone number (optional)'
+            value={pin.phoneNumber as string}
+            name={'phoneNumber'}
+            onChange={handleTextInput}
+          />
+          <Input
+            placeholder='Website link (optional)'
+            value={pin.link as string}
+            name={'link'}
+            onChange={handleTextInput}
+          />
+        </div>
+
+        <Button
+          className={'mx-auto'}
+          onClick={() =>
+            createPost(imageFile as File, pin as Post, 'pin', user, 1)
+          }
+        >
+          Add pin
+        </Button>
+      </div>
 
       <div>Current Pins</div>
       <Table>
