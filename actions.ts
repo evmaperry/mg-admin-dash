@@ -21,8 +21,6 @@ const s3Client = new S3Client({
   },
 });
 
-
-
 export const uploadFileS3 = async ({
   key,
   content,
@@ -71,17 +69,29 @@ export const createPresignedUrlWithClient = async ({
 
 export const addPostToDb = async (
   postType: 'pin' | 'plan' | 'route',
-  post: Post
+  post: Post,
+  appId: number
 ) => {
-
   const supabaseClient = await createClient();
 
-  const tableName = postType as string + 's'
-  console.log('table name', tableName)
+  const tableName = (postType as string) + 's';
+  console.log('table name', tableName);
   const { data, error } = await supabaseClient
     .from(tableName)
-    .insert(post)
+    .insert({...post, appId})
     .select();
 
-  return {data, error};
+  return { data, error };
 };
+
+
+// /**
+//  * Gets pins, plans, routes, areas and
+//  * structures for an app draft
+//  * @param userId
+//  * @param appId
+//  */
+// export const getMarkersFromDb = async (appId: number) => {
+//   const supabaseClient = await createClient();
+//   const pins = supabaseClient.from('pins').select().eq('appId', appId)
+// };

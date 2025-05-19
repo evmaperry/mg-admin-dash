@@ -4,34 +4,7 @@ import { nanoid } from 'nanoid';
 import axios from 'axios';
 import { Post } from 'mgtypes/types/Content';
 import { addPostToDb } from '@/actions';
-/**
- * Utility function to upload image, video, or
- * and other file to an app draft's s3 bucket and return
- * id of file as its stored in s3
- * @param event input submission event
- * @param user Supabase User
- * @returns nanoid string of image
- */
-const handleS3FileUpload = async (
-  event: React.ChangeEvent<HTMLInputElement>,
-  user: User
-) => {
-  console.log('event', event);
-  try {
-    if (event.target.files) {
-      const file = event.target.files[0];
-
-      if (response.ok) {
-        return fileId;
-      } else {
-        console.log('There be an error');
-      }
-    }
-  } catch (error) {
-    console.error('An error occurred');
-  } finally {
-  }
-};
+import { createClient } from '@/utils/supabase/client';
 
 export const createPost = async (
   file: File,
@@ -40,9 +13,8 @@ export const createPost = async (
   user: User,
   appId: number
 ) => {
-
   const fileId = nanoid();
-  const key = `${user.id}/${appId}/${fileId}`
+  const key = `${user.id}/${appId}/${fileId}`;
   // Add the image to s3
   try {
     const data = new FormData();
@@ -52,21 +24,21 @@ export const createPost = async (
       key,
       content: data,
     });
-    console.log('s3 res', res)
+    console.log('s3 res', res);
   } catch (e) {
-    console.error('POPUP ACTIONS ERROR: failed to add image to s3', e)
+    console.error('POPUP ACTIONS ERROR: failed to add image to s3', e);
   }
 
   // Add the pin to supabase with s3
   // key saved as imageURL
   try {
-    const res = await addPostToDb(postType, post)
-    console.log('supabase res', res)
+    const res = await addPostToDb(postType, post, appId);
+    console.log('supabase res', res);
   } catch (e) {
-    console.error('POPUP ACTIONS ERROR: failed to add post to db', e)
+    console.error('POPUP ACTIONS ERROR: failed to add post to db', e);
   }
 
-
+  return;
 };
 
 export const getAddressFromCoordinates = async (
@@ -107,5 +79,39 @@ export const getCoordinatesFromAddress = async (address: any) => {
       "SERVER ERROR: failed to 'POST' new coordinates from address",
       err
     );
+  }
+};
+
+export const getMapMarkersFromDb = async (appId: number) => {
+  try {
+    const supabaseClient = await createClient();
+    const pins = await supabaseClient
+      .from('pins')
+      .select()
+      .eq('appId', appId)
+      .then((res) => res.data as any[]);
+
+    console.log('pins', pins);
+
+    return { pins, routes: [], plans: [], structures: [], areas: [] };
+  } catch (e: any) {
+    console.error('CREATE ACTIONS ERROR: failed to get markers from DB');
+    return e;
+  }
+};
+
+export const getUserAppsFromDb = async (userId: string) => {
+  try {
+    const supabaseClient = await createClient();
+    const userApps = await supabaseClient
+      .from('apps')
+      .select()
+      .eq('userId', userId)
+      .then((res) => res.data);
+    console.log('userpps', userApps);
+    return userApps;
+  } catch (e) {
+    console.error('CREATE ACTIONS ERROR: failed to get user apps from db', e);
+    return e;
   }
 };

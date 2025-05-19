@@ -1,4 +1,3 @@
-import { App } from '@/types/types';
 import { Position } from 'geojson';
 import { createStore } from 'zustand';
 import { IAppColors } from '@/components/create/AppColorPickers';
@@ -17,29 +16,38 @@ interface AppDetails {
   'End time': string | null;
 }
 
+interface MapMarkers {
+  pins: any[]; // TODO: type these
+  plans: any[];
+  routes: any[];
+  structures: any[];
+  areas: any[];
+}
+
 export type CreateAppState = {
+  appId: number | null;
   centerMapViewState: MapViewState | null;
   appDetails: AppDetails;
   appColors: IAppColors;
   mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12';
-  mapAreas: any[];
-  mapStructures: any[];
-  mapPins: any[];
-  mapPlans: any[];
+  markers: MapMarkers;
 };
 
 export type CreateAppActions = {
+  setAppId: (appId: number) => void;
   setCenterMapViewState: (centerMapViewState: MapViewState) => void;
   setAppDetails: (AppDetailsPartialObj: Partial<AppDetails>) => void;
   setAppColors: (AppColorsPartialObj: Partial<IAppColors>) => void;
   setMapTheme: (
     mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
   ) => void;
+  setMarkers: (markers: MapMarkers) => void;
 };
 
 export type CreateAppStore = CreateAppState & CreateAppActions;
 
 export const defaultInitState: CreateAppState = {
+  appId: null,
   centerMapViewState: { latitude: 44.77, longitude: -85.613, zoom: 12 },
   appDetails: {
     'App name': null,
@@ -60,10 +68,13 @@ export const defaultInitState: CreateAppState = {
     surfaceVariant: '#f1f5f9',
   },
   mapTheme: 'light-v11',
-  mapAreas: [],
-  mapStructures: [],
-  mapPins: [],
-  mapPlans: [],
+  markers: {
+    pins: [],
+    plans: [],
+    routes: [],
+    structures: [],
+    areas: [],
+  },
 };
 
 export const createCreateAppStore = (
@@ -71,6 +82,11 @@ export const createCreateAppStore = (
 ) => {
   return createStore<CreateAppStore>()((set) => ({
     ...initState,
+    setAppId: (appId: number) => {
+      set((state) => {
+        return { ...state, appId };
+      });
+    },
     setCenterMapViewState: (centerMapViewState: MapViewState) => {
       set((state) => {
         return { ...state, centerMapViewState };
@@ -102,6 +118,14 @@ export const createCreateAppStore = (
         return {
           ...state,
           mapTheme,
+        };
+      });
+    },
+    setMarkers: (markers: MapMarkers) => {
+      set((state) => {
+        return {
+          ...state,
+          markers,
         };
       });
     },

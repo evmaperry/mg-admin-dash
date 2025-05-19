@@ -1,68 +1,13 @@
-
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { format } from 'date-fns';
-import {
-  Battery,
-  CalendarIcon,
-  ChevronDown,
-  Cigarette,
-  Cog,
-  Ellipsis,
-  Flag,
-  Home,
-  MapIcon,
-  Navigation,
-  Search,
-  Send,
-  Settings,
-  Signal,
-  Target,
-  User,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
-
-import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import React, { useState, useRef, useEffect } from 'react';
-import { Position } from 'geojson';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import {
-  Map,
-  MapProvider,
-  useMap,
-  ViewStateChangeEvent,
-  NavigationControl,
-} from 'react-map-gl/mapbox';
-import { useCreateAppStore } from '@/providers/create-app-provider';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
 import CenterMapDialog from '@/components/create/CenterMapDialog';
 import AppDetailInputs from '@/components/create/AppDetailInputs';
-import ColorPicker from '@/components/create/ColorPicker';
 import { AppColorPickers } from '@/components/create/AppColorPickers';
-import {
-  Accordion,
-  AccordionTrigger,
-  AccordionContent,
-  AccordionItem,
-} from '@/components/ui/accordion';
 import AddMarkersMap from '@/components/create/AddMarkersMap';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-
+import AppSelect from '@/components/create/AppSelect';
 
 const CreatePage: React.FC<{}> = async ({}) => {
   // const [eventDates, setEventDates] = useState<{
@@ -180,24 +125,22 @@ const CreatePage: React.FC<{}> = async ({}) => {
   //   },
   // });
 
-
   const supabase = await createClient();
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    if (!user) {
-      return redirect('/sign-in');
-    }
-
-    console.log('user', user);
-
+  if (!user) {
+    return redirect('/sign-in');
+  }
 
   return (
     <div className={'flex flex-col gap-8 max-w-6xl w-full'}>
-      <div className={'text-3xl font-mono'}>Create an app</div>
-
+      <div className={'flex flex-row'}>
+        <div className={'text-3xl font-mono'}>Build an app</div>
+        <AppSelect user={user} />
+      </div>
       <div className={'flex flex-col gap-3 w-full'}>
         <div className={'create-event-form-title'}>The basics</div>
         <AppDetailInputs />
@@ -215,7 +158,7 @@ const CreatePage: React.FC<{}> = async ({}) => {
 
       <div className={'flex flex-col gap-3'}>
         <div className={'create-event-form-title'}>Add Markers to Your Map</div>
-        <AddMarkersMap user={user}/>
+        <AddMarkersMap user={user} />
       </div>
 
       {/* Save & Create */}

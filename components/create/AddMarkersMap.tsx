@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Map,
   MapMouseEvent,
@@ -28,11 +28,14 @@ import StructurePopup from './popups/StructurePopup';
 import { Crosshair } from 'lucide-react';
 import { Position } from 'geojson';
 import { User } from '@supabase/supabase-js';
+import { getMapMarkersFromDb } from './createActions';
+import CustomMapMarker from './popups/CustomMapMarker';
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
 const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
-  const { mapTheme, centerMapViewState } = useCreateAppStore((state) => state);
+  const { mapTheme, centerMapViewState, markers, setMarkers } =
+    useCreateAppStore((state) => state);
 
   const [selectedMarkerType, setSelectedMarkerType] =
     useState<MarkerType>(null);
@@ -47,7 +50,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
       'Structures display as three-dimensional shapes on your map, but they are not interactive.',
   };
 
-  const [addMarker, setAddMarker] = useState<{
+  const [newMarker, setNewMarker] = useState<{
     isVisible: boolean;
     coordinates: Position | null;
     event: null | MapMouseEvent;
@@ -61,13 +64,26 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
 
   const setMarkerIcon = (icon: React.ReactElement) => {
     console.log('set marker');
-    setAddMarker({
-      ...addMarker,
+    setNewMarker({
+      ...newMarker,
       icon,
     });
   };
 
-  console.log('addMarker', addMarker);
+  const getAndSetMapMarkers = async () => {
+    try {
+      const markers = await getMapMarkersFromDb(1);
+      setMarkers(markers);
+    } catch (e) {
+      console.error('ADDMARKERMAP ERROR: failed to get and set markers', e);
+    }
+  };
+
+  useEffect(() => {
+    getAndSetMapMarkers();
+  }, []);
+
+  console.log('newMarker', newMarker);
   return (
     <div className={'flex w-full'}>
       {centerMapViewState === null ? (
@@ -122,8 +138,8 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
               }}
               onClick={(event) => {
                 console.log('event', event);
-                setAddMarker({
-                  ...addMarker,
+                setNewMarker({
+                  ...newMarker,
                   coordinates: [event.lngLat.lat, event.lngLat.lng],
                   isVisible: true,
                   event,
@@ -131,14 +147,20 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
               }}
             >
               <NavigationControl />
-              {addMarker.coordinates && (
+              {newMarker.coordinates && (
                 <Marker
-                  latitude={addMarker.coordinates[0]}
-                  longitude={addMarker.coordinates[1]}
+                  latitude={newMarker.coordinates[0]}
+                  longitude={newMarker.coordinates[1]}
                 >
-                  {addMarker.icon}
+                  {newMarker.icon}
                 </Marker>
               )}
+
+              {markers.pins.map((pin, index) => {
+                return (
+                  <CustomMapMarker key={`pin-marker-${index}`} post={pin} />
+                );
+              })}
             </Map>
             {/* POPUPS */}
             {!selectedMarkerType && (
@@ -152,9 +174,10 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
             )}
             {selectedMarkerType === 'pin' && (
               <PinPopup
-                lastClickEvent={addMarker.event}
+                lastClickEvent={newMarker.event}
                 user={user}
                 setMarkerIcon={setMarkerIcon}
+                getAndSetMapMarkers={getAndSetMapMarkers}
               />
             )}
             {selectedMarkerType === 'plan' && <PlanPopup />}

@@ -33,7 +33,7 @@ import { Button } from '@/components/ui/button';
 import capitalize from 'lodash/capitalize';
 import Image from 'next/image';
 import { User } from '@supabase/supabase-js';
-import { createPost, getAddressFromCoordinates } from './popupActions';
+import { createPost, getAddressFromCoordinates } from '../createActions';
 import { MapMouseEvent } from 'mapbox-gl';
 import { Pin, Post } from 'mgtypes/types/Content';
 
@@ -41,7 +41,8 @@ const PinPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
   user: User;
   setMarkerIcon: (icon: React.ReactElement) => void;
-}> = ({ lastClickEvent, user, setMarkerIcon }) => {
+  getAndSetMapMarkers: () => void;
+}> = ({ lastClickEvent, user, setMarkerIcon, getAndSetMapMarkers }) => {
   const [pin, setPin] = useState<Partial<Pin>>({
     longitude: null,
     latitude: null,
@@ -56,8 +57,6 @@ const PinPopup: React.FC<{
 
   const [imageFile, setImageFile] = useState<File>();
   const [image, setImage] = useState<string>();
-
-  const { mapPins } = useCreateAppStore((state) => state);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -174,6 +173,24 @@ const PinPopup: React.FC<{
     setPin({ ...pin, [name]: value });
   };
 
+  const handleCreatePost = async () => {
+    setIsLoading(true);
+    await createPost(imageFile as File, pin as Post, 'pin', user, 1);
+    setPin({
+      longitude: null,
+      latitude: null,
+      address: '',
+      phoneNumber: '',
+      link: '',
+      primaryText: '',
+      secondaryText: '',
+      pinCategory: '',
+      pinType: '',
+    });
+    getAndSetMapMarkers();
+    setIsLoading(false);
+  };
+
   return (
     <div
       className={
@@ -284,18 +301,13 @@ const PinPopup: React.FC<{
           />
         </div>
 
-        <Button
-          className={'mx-auto'}
-          onClick={() =>
-            createPost(imageFile as File, pin as Post, 'pin', user, 1)
-          }
-        >
+        <Button className={'mx-auto'} onClick={() => handleCreatePost()}>
           Add pin
         </Button>
       </div>
 
       <div>Current Pins</div>
-      <Table>
+      {/* <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Text</TableHead>
@@ -316,7 +328,7 @@ const PinPopup: React.FC<{
             );
           })}
         </TableBody>
-      </Table>
+      </Table> */}
     </div>
   );
 };
