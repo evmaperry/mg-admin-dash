@@ -8,7 +8,6 @@ import {
 } from '@aws-sdk/client-s3';
 import {
   getSignedUrl,
-  S3RequestPresigner,
 } from '@aws-sdk/s3-request-presigner';
 import { createClient } from '@/utils/supabase/server';
 import { Post } from 'mgtypes/types/Content';

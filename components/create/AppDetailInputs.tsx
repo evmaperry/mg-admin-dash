@@ -15,7 +15,7 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // APP NAME, EVENT NAME, START & END DATETIMES
-const AppDetailInputs: React.FC<{}> = ({}) => {
+const AppDetailInputs: React.FC<{}> = () => {
   const { setAppDetails, appDetails } = useCreateAppStore((state) => state);
 
   return (

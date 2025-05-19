@@ -33,7 +33,7 @@ import {
   mdiThumbDown,
 } from '@mdi/js';
 import MockupBottomNav from './BottomNav';
-import { IAppColors } from '../create/AppColorPickers';
+import { IAppColors } from 'mgtypes/types/App'
 import MockupTopBar from './TopBar';
 
 const FeedPage: React.FC<{

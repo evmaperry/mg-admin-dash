@@ -7,7 +7,7 @@ import {
   mdiMapMarker,
   mdiPlusCircle,
 } from '@mdi/js';
-import { IAppColors } from '../create/AppColorPickers';
+import {IAppColors} from 'mgtypes/types/App'
 
 const MockupBottomNav: React.FC<{
   colors: IAppColors;

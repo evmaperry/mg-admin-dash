@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ColorPicker from './ColorPicker';
 import MapPage from '../pages/MapPage';
 import FeedPage from '../pages/FeedPage';
@@ -20,24 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-export interface ConfigurableColor {
+export interface IConfigurableColor {
   name: string;
   note: string;
   hex: string;
 }
-
-// the hex values for each colors that get passed to mockup map and
-// feed pages
-export interface IAppColors {
-  primary: string;
-  primaryContainer: string;
-  onPrimaryContainer: string;
-  onPrimaryContainerUnselected: string;
-  inversePrimary: string;
-  secondary: string;
-  outline: string;
-  surfaceVariant: string;
-}
+import { IAppColors } from 'mgtypes/types/App'
 
 export const AppColorPickers: React.FC<{}> = ({}) => {
   const { appColors, setAppColors, mapTheme, setMapTheme } = useCreateAppStore(
@@ -45,7 +33,7 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
   );
 
   const [configurableColors, setConfigurableColors] = useState<{
-    [configName: string]: ConfigurableColor;
+    [configName: string]: IConfigurableColor;
   }>({
     primary: {
       name: 'Primary',
@@ -89,6 +77,48 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
     },
   });
 
+  // set app colors when app is selected
+  useEffect(()=> {
+    setConfigurableColors({
+      primary: {
+        ...configurableColors.primary,
+        hex: appColors.primary
+      },
+       inversePrimary: {
+        ...configurableColors.inversePrimary,
+        hex: appColors.inversePrimary
+      },
+       primaryContainer: {
+        ...configurableColors.primaryContainer,
+        hex: appColors.primaryContainer
+      },
+       onPrimaryContainer: {
+        ...configurableColors.onPrimaryContainer,
+        hex: appColors.onPrimaryContainer
+      },
+      onPrimaryContainerUnselected: {
+        ...configurableColors.onPrimaryContainerUnselected,
+        hex: appColors.onPrimaryContainerUnselected
+      },
+      secondary: {
+        ...configurableColors.secondary,
+        hex: appColors.secondary
+      },
+      surfaceVariant: {
+        ...configurableColors.surfaceVariant,
+        hex: appColors.surfaceVariant
+      },
+      outline: {
+        ...configurableColors.outline,
+        hex: appColors.outline
+      },
+
+    })
+
+
+
+  }, [appColors])
+
   const handleColorChange = (
     hexColor: string,
     event: React.ChangeEvent,
@@ -105,7 +135,7 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
   };
 
   const ColorPopovers = Object.entries(configurableColors).map(
-    (entry: [string, ConfigurableColor], index: number) => {
+    (entry: [string, IConfigurableColor], index: number) => {
       return (
         <div
           key={`color-popover-${index}`}
@@ -151,6 +181,7 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
     }
   );
 
+  console.log('appColors from pickers', appColors)
   return (
     <div className={'flex flex-row w-full justify-around items-center gap-2'}>
       <div

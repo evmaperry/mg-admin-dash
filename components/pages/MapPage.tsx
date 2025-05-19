@@ -14,9 +14,9 @@ import React, { useState } from 'react';
 import { Input } from '../ui/input';
 import { Map, ViewStateChangeEvent } from 'react-map-gl/mapbox';
 import { useCreateAppStore } from '@/providers/create-app-provider';
-import { ConfigurableColor } from '../create/AppColorPickers';
+import { IConfigurableColor } from '../create/AppColorPickers';
 import { cn } from '@/lib/utils';
-import { IAppColors } from '../create/AppColorPickers';
+import { IAppColors } from 'mgtypes/types/App';
 import MockupBottomNav from './BottomNav';
 import MockupTopBar from './TopBar';
 

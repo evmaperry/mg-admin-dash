@@ -1,17 +1,21 @@
 import { Position } from 'geojson';
 import { createStore } from 'zustand';
-import { IAppColors } from '@/components/create/AppColorPickers';
+import { IAppColors } from 'mgtypes/types/App';
+import { App } from 'mgtypes/types/App'
+
+
+
 interface MapViewState {
   latitude: number;
   longitude: number;
   zoom: number;
 }
 
-interface AppDetails {
+export interface AppDetails {
   'App name': string | null;
   'Event name': string | null;
-  'Start date': Date | undefined;
-  'End date': Date | undefined;
+  'Start date': string | undefined;
+  'End date': string | undefined;
   'Start time': string | null;
   'End time': string | null;
 }
@@ -22,6 +26,8 @@ interface MapMarkers {
   routes: any[];
   structures: any[];
   areas: any[];
+  comments: any[];
+  photos: any[];
 }
 
 export type CreateAppState = {
@@ -42,6 +48,7 @@ export type CreateAppActions = {
     mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
   ) => void;
   setMarkers: (markers: MapMarkers) => void;
+  setApp: (app: any) => void;
 };
 
 export type CreateAppStore = CreateAppState & CreateAppActions;
@@ -69,6 +76,8 @@ export const defaultInitState: CreateAppState = {
   },
   mapTheme: 'light-v11',
   markers: {
+    comments: [],
+    photos: [],
     pins: [],
     plans: [],
     routes: [],
@@ -82,11 +91,13 @@ export const createCreateAppStore = (
 ) => {
   return createStore<CreateAppStore>()((set) => ({
     ...initState,
+
     setAppId: (appId: number) => {
       set((state) => {
         return { ...state, appId };
       });
     },
+
     setCenterMapViewState: (centerMapViewState: MapViewState) => {
       set((state) => {
         return { ...state, centerMapViewState };
@@ -126,6 +137,39 @@ export const createCreateAppStore = (
         return {
           ...state,
           markers,
+        };
+      });
+    },
+    setApp: (app: App) => {
+      set((state) => {
+        const [startDate, startTime] = app.startDateTime.split('T');
+
+        const [endDate, endTime] = app.endDateTime.split('T');
+
+        console.log('app inside setApp', app)
+
+        // appId does not need to be set
+        // it's set from AppSelectOrCreate
+        return {
+          ...state,
+          appDetails: {
+            'App name': app.appName,
+            'Event name': app.eventName,
+            'End date': endDate,
+            'End time': endTime,
+            'Start date': startDate,
+            'Start time': startTime,
+          },
+          markers: {
+            pins: app.pins,
+            plans: [],
+            comments: [],
+            photos: [],
+            routes: [],
+            areas: [],
+            structures: [],
+          },
+          appColors: app.appColors
         };
       });
     },

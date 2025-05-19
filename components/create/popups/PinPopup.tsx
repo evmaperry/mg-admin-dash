@@ -192,11 +192,7 @@ const PinPopup: React.FC<{
   };
 
   return (
-    <div
-      className={
-        'flex flex-col items-center w-1/2 p-4 gap-3 border bg-neutral-50 rounded'
-      }
-    >
+    <div>
       <div className={' flex w-full flex-col gap-6'}>
         {/* COORDINATES */}
         <div className={'flex flex-row items-center gap-4'}>

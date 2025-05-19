@@ -61,18 +61,15 @@ export const getAddressFromCoordinates = async (
 };
 
 export const getCoordinatesFromAddress = async (address: any) => {
-  console.log('top og get Coords helper function');
   const apiUrlBeginning = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
   const apiUrlEnd = `.json?proximity=ip&access_token=${process.env.MAPBOX_API_TOKEN}`;
   try {
     address = address.replaceAll(' ', '%20');
-    console.log('address', address);
     const apiUrl = apiUrlBeginning + address + apiUrlEnd;
     const coordinateResponse: any = await axios
       .get(apiUrl)
       .catch((error: Error) => console.error('Axios API call error:', error));
     const coordinates = coordinateResponse.data.features[0].center;
-    console.log('coordinates', coordinates);
     return coordinates;
   } catch (err) {
     console.error(
@@ -100,6 +97,9 @@ export const getMapMarkersFromDb = async (appId: number) => {
   }
 };
 
+/**
+ * Gets all apps owned by the user
+ */
 export const getUserAppsFromDb = async (userId: string) => {
   try {
     const supabaseClient = await createClient();
@@ -108,10 +108,47 @@ export const getUserAppsFromDb = async (userId: string) => {
       .select()
       .eq('userId', userId)
       .then((res) => res.data);
-    console.log('userpps', userApps);
+    console.log('userApps', userApps);
     return userApps;
   } catch (e) {
     console.error('CREATE ACTIONS ERROR: failed to get user apps from db', e);
     return e;
+  }
+};
+
+/**
+ * Gets all data for an app that a user is working on
+ * */
+export const getAppInfoFromDb = async (appId: number) => {
+  try {
+    const supabaseClient = await createClient();
+    const app = await supabaseClient
+      .from('apps')
+      .select(
+        `
+        eventName,
+        appName,
+        startDateTime,
+        endDateTime,
+        eventLongitude,
+        eventLatitude,
+        eventMapLabels,
+        mapStyleUrl,
+        appColors,
+        pins (
+          id,
+          primaryText,
+          secondaryText,
+          latitude,
+          longitude,
+          pinCategory,
+          pinType
+        )
+        `)
+      .eq('id', appId)
+      .then((res) => res.data);
+    return app?.[0];
+  } catch (e) {
+    console.error('CREATE ACTIONS ERROR: failed to get app info from db', e);
   }
 };
