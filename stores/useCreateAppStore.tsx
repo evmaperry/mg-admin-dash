@@ -1,9 +1,7 @@
 import { Position } from 'geojson';
 import { createStore } from 'zustand';
 import { IAppColors } from 'mgtypes/types/App';
-import { App } from 'mgtypes/types/App'
-
-
+import { App } from 'mgtypes/types/App';
 
 interface MapViewState {
   latitude: number;
@@ -12,12 +10,12 @@ interface MapViewState {
 }
 
 export interface AppDetails {
-  'App name': string | null;
-  'Event name': string | null;
+  'App name': string | undefined;
+  'Event name': string | undefined;
   'Start date': string | undefined;
   'End date': string | undefined;
-  'Start time': string | null;
-  'End time': string | null;
+  'Start time': string | undefined;
+  'End time': string | undefined;
 }
 
 interface MapMarkers {
@@ -31,7 +29,8 @@ interface MapMarkers {
 }
 
 export type CreateAppState = {
-  appId: number | null;
+  canSave: boolean; // indicates a saveable change has been made
+  appId: number | undefined;
   centerMapViewState: MapViewState | null;
   appDetails: AppDetails;
   appColors: IAppColors;
@@ -49,20 +48,22 @@ export type CreateAppActions = {
   ) => void;
   setMarkers: (markers: MapMarkers) => void;
   setApp: (app: any) => void;
+  setCanSave: (canSave: boolean) => void;
 };
 
 export type CreateAppStore = CreateAppState & CreateAppActions;
 
 export const defaultInitState: CreateAppState = {
-  appId: null,
+  appId: undefined,
+  canSave: false,
   centerMapViewState: { latitude: 44.77, longitude: -85.613, zoom: 12 },
   appDetails: {
-    'App name': null,
-    'Event name': null,
+    'App name': undefined,
+    'Event name': undefined,
     'Start date': undefined,
     'End date': undefined,
-    'Start time': null,
-    'End time': null,
+    'Start time': undefined,
+    'End time': undefined,
   },
   appColors: {
     primary: '#312e81',
@@ -91,7 +92,13 @@ export const createCreateAppStore = (
 ) => {
   return createStore<CreateAppStore>()((set) => ({
     ...initState,
-
+    setCanSave: (canSave: boolean) => {
+      set((state) => {
+        return {
+          ...state, canSave
+        }
+      })
+    },
     setAppId: (appId: number) => {
       set((state) => {
         return { ...state, appId };
@@ -146,7 +153,7 @@ export const createCreateAppStore = (
 
         const [endDate, endTime] = app.endDateTime.split('T');
 
-        console.log('app inside setApp', app)
+        console.log('app inside setApp', app);
 
         // appId does not need to be set
         // it's set from AppSelectOrCreate
@@ -169,7 +176,7 @@ export const createCreateAppStore = (
             areas: [],
             structures: [],
           },
-          appColors: app.appColors
+          appColors: app.appColors,
         };
       });
     },

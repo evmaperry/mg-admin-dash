@@ -36,6 +36,9 @@ import { User } from '@supabase/supabase-js';
 import { createPost, getAddressFromCoordinates } from '../createActions';
 import { MapMouseEvent } from 'mapbox-gl';
 import { Pin, Post } from 'mgtypes/types/Content';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import dayjs from 'dayjs';
 
 const PinPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
@@ -43,6 +46,8 @@ const PinPopup: React.FC<{
   setMarkerIcon: (icon: React.ReactElement) => void;
   getAndSetMapMarkers: () => void;
 }> = ({ lastClickEvent, user, setMarkerIcon, getAndSetMapMarkers }) => {
+  const { appDetails } = useCreateAppStore((state) => state);
+
   const [pin, setPin] = useState<Partial<Pin>>({
     longitude: null,
     latitude: null,
@@ -131,8 +136,8 @@ const PinPopup: React.FC<{
     );
 
     return (
-      <div className={'flex flex-row items-center'}>
-        <div className={'w-20'}>Pin type</div>
+      <div className={'flex flex-col gap-2 justify-center items-center'}>
+        <div className={'create-event-form-title'}>Pin type</div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button>
@@ -191,98 +196,142 @@ const PinPopup: React.FC<{
     setIsLoading(false);
   };
 
-  return (
-    <div>
-      <div className={' flex w-full flex-col gap-6'}>
-        {/* COORDINATES */}
-        <div className={'flex flex-row items-center gap-4'}>
-          <div className={'w-20'}>Location</div>
-          <div
-            className={
-              'flex flex-col justify-center w-full border bg-neutral-300 p-3 rounded gap-1'
-            }
-          >
-            <div className={'text-center font-mono text-sm'}>
-              Click the map to locate your new pin
-            </div>
-            <div className={'flex flex-row items-center justify-between'}>
-              <div className={'text-sm'}>
-                <span className={'font-bold'}>Latitude:</span>{' '}
-                {`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}
-              </div>
+  const [arePinHoursVisible, setArePinHoursVisible] = useState<boolean>(false);
 
-              <div className={'text-sm'}>
-                <span className={'font-bold'}>Longitude: </span>
-                {`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}
-              </div>
+  // for each day a pin has opening and closing dateTimes
+  const [pinHours, setPinHours] = useState<any>();
+
+  useEffect(() => {
+    const start = dayjs(appDetails['Start date']);
+    const end = dayjs(appDetails['End date']);
+    const diff = end.diff(start, 'day');
+    const dateArray=[];
+
+    for (let i = 0; i < diff; i++) {
+      console.log('iterating', i, start)
+      const date = start.add(i, 'day').format('YYYY-MM-DD');
+      dateArray.push(date)
+
+     //pinHours[date] = { openTime:'9:00', closeTime: `17:00` };
+    }
+
+    const pinHours: {
+      [date: string]: { openTime: string; closeTime: string };
+    } = {};
+
+    console.log('dateArray', dateArray)
+
+    //setPinHours(pinHours);
+  }, [appDetails['Start date'], appDetails['End date']]);
+
+  const PinHours: React.FC<{}> = ({}) => {
+    return <div></div>;
+  };
+
+  console.log('pinHours', pinHours, appDetails)
+
+  return (
+    <div className={' flex w-full flex-col gap-4'}>
+      {/* COORDINATES */}
+      <div className={'flex flex-row items-center gap-4'}>
+        <div className={'w-20 create-event-form-title'}>Location</div>
+        <div
+          className={
+            'flex flex-col justify-center w-full border bg-neutral-300 p-3 rounded gap-1'
+          }
+        >
+          <div className={'text-center font-mono text-sm'}>
+            Click the map to locate your new pin
+          </div>
+          <div className={'flex flex-row items-center justify-between'}>
+            <div className={'text-sm'}>
+              <span className={'font-bold'}>Lat:</span>{' '}
+              {`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}
             </div>
 
             <div className={'text-sm'}>
+              <span className={'font-bold'}>Lng: </span>
+              {`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}
+            </div>
+            <div className={'text-sm'}>
               <span className='font-bold'>Address:</span>{' '}
-              {`${pin.address && pin.address.length > 0 && pin.latitude !== 0 && pin.address}`}
+              {`${pin.latitude === 0 && pin.longitude === 0 ? 'N/A' : pin.address}`}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* PIN TYPE */}
+      {/* PIN TYPE */}
+
+      <div
+        className={'flex flex-row items-center justify-between w-full gap-4'}
+      >
         <PinSelector />
-
         {/* IMAGE */}
-        <div className={'flex flex-row items-center flex-start'}>
-          <div className={'w-20'}>Image</div>
-          {image ? (
-            <Image
-              className={'rounded'}
-              alt={'The image associated with the pin being created'}
-              src={image}
-              height={100}
-              width={100}
-            />
-          ) : (
-            <div
-              className={
-                'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[100px] w-[100px] text-sm'
-              }
-            >
-              Select a photo 👉
+        <div className={'flex flex-row items-center gap-4'}>
+          <div className={'flex flex-col justify-center items-center gap-2'}>
+            <div className={'w-20 create-event-form-title'}>Image</div>
+            <div className={'flex w-60'}>
+              <Input
+                className={
+                  'file:text-white text-white bg-primary file:bg-primary'
+                }
+                ref={fileInputRef}
+                disabled={isLoading}
+                type='file'
+                accept='image/*'
+                placeholder=''
+                id='upload-results'
+                onChange={(event) => {
+                  handleFileSelection(event);
+                }}
+              />
             </div>
-          )}
-          <div className={'flex ml-4 w-60'}>
-            <Input
-              className={
-                'file:text-white text-white bg-primary file:bg-primary'
-              }
-              ref={fileInputRef}
-              disabled={isLoading}
-              type='file'
-              accept='image/*'
-              placeholder=''
-              id='upload-results'
-              onChange={(event) => {
-                handleFileSelection(event);
-              }}
-            />
+          </div>
+
+          <div className={'flex flex-row items-center'}>
+            {image ? (
+              <Image
+                className={'rounded'}
+                alt={'The image associated with the pin being created'}
+                src={image}
+                height={100}
+                width={100}
+              />
+            ) : (
+              <div
+                className={
+                  'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[100px] w-[100px] text-sm'
+                }
+              >
+                Select a photo 👉
+              </div>
+            )}
           </div>
         </div>
+      </div>
 
-        {/* TEXT */}
-        <div className={'flex flex-col gap-2'}>
-          <div className={'flex flex-row items-center gap-6'}>
-            <div>Details</div>{' '}
-            <Input
-              name={'primaryText'}
-              value={pin.primaryText}
-              onChange={handleTextInput}
-              placeholder='Pin title'
-            />
-          </div>
-
+      {/* TEXT */}
+      <div className={'flex flex-col gap-1 text-center'}>
+        <div className={'create-event-form-title'}>Details</div>
+        <div className={'flex flex-row items-center gap-1'}>
+          <Input
+            name={'primaryText'}
+            value={pin.primaryText}
+            onChange={handleTextInput}
+            placeholder='Pin title'
+            className={'w-1/3'}
+          />
           <Input
             placeholder='Description'
             value={pin.secondaryText}
             name={'secondaryText'}
             onChange={handleTextInput}
+            className={'w-2/3'}
           />
+        </div>
+
+        <div className={'flex flex-row items-center gap-1'}>
           <Input
             placeholder='Phone number (optional)'
             value={pin.phoneNumber as string}
@@ -296,35 +345,33 @@ const PinPopup: React.FC<{
             onChange={handleTextInput}
           />
         </div>
-
-        <Button className={'mx-auto'} onClick={() => handleCreatePost()}>
-          Add pin
-        </Button>
       </div>
 
-      <div>Current Pins</div>
-      {/* <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Text</TableHead>
-            <TableHead>Category / Type</TableHead>
-            <TableHead>Image</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {mapPins.map((pin, index) => {
-            return (
-              <TableRow key={`map-pin-table-row-${index}`}>
-                <TableCell>{pin.primaryText}</TableCell>
-                <TableCell>
-                  {pin.pinType} / {pin.pinCategory}
-                </TableCell>
-                <TableCell>ImAgE</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table> */}
+      {/* PIN HOURS */}
+      <div className={'flex flex-col items-center gap-2'}>
+        <div className={'create-event-form-title'}>Pin Hours</div>
+        <div className={'flex flex-row items-center gap-2 bg-neutral-200 p-3'}>
+          <div className={'text-sm leading-[1.1] w-1/2'}>
+            Adding a pin's hours is optional; they indicate whether a pin is
+            open or closed.
+          </div>
+          <div
+            className={'flex flex-row items-center gap-1 justify-center w-1/2'}
+          >
+            <Checkbox
+              onCheckedChange={(checkState: boolean) => {
+                setArePinHoursVisible(checkState);
+              }}
+            />
+            <Label>Add hours to this pin</Label>
+          </div>
+        </div>
+        {arePinHoursVisible && <PinHours />}
+      </div>
+
+      <Button className={'mx-auto'} onClick={() => handleCreatePost()}>
+        Add pin
+      </Button>
     </div>
   );
 };

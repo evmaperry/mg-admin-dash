@@ -22,7 +22,6 @@ const MockupBottomNav: React.FC<{
     onPrimaryContainerUnselected,
   } = colors;
 
-  console.log('page', page)
   return (
     <div
       className={

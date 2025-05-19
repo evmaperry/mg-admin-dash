@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Post } from 'mgtypes/types/Content';
 import { addPostToDb } from '@/actions';
 import { createClient } from '@/utils/supabase/client';
+import { App } from 'mgtypes/types/App';
 
 export const createPost = async (
   file: File,
@@ -144,11 +145,34 @@ export const getAppInfoFromDb = async (appId: number) => {
           pinCategory,
           pinType
         )
-        `)
+        `
+      )
       .eq('id', appId)
       .then((res) => res.data);
     return app?.[0];
   } catch (e) {
     console.error('CREATE ACTIONS ERROR: failed to get app info from db', e);
+  }
+};
+
+/**
+ * Saves updated app, for saving appDetails and colors
+ */
+export const updateAppInDb = async (
+  appId: number,
+  partialApp: Partial<App>,
+) => {
+  try {
+    const supabaseClient = await createClient();
+    const { data, error } = await supabaseClient
+      .from('apps')
+      .update(partialApp)
+      .eq('id', appId)
+      .select();
+    console.log('data', data)
+    return data;
+  } catch (e) {
+    console.error('CREATE ACTIONS ERROR: failed to update app in db', e);
+    return e;
   }
 };

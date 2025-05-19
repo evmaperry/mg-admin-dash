@@ -20,16 +20,16 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
 
 
   return (
-    <div>
+    <div className={'flex w-full pb-12'}>
       {appId ? (
-        <div className={'flex flex-col gap-6'}>
+        <div className={'flex flex-col gap-6 w-full'}>
           <div className={'flex flex-col gap-3 w-full'}>
             <div className={'create-event-form-title'}>The basics</div>
             <AppDetailInputs />
           </div>
 
           <div className={'flex flex-row gap-6 items-center w-[500px]'}>
-            <div className={'create-event-form-title'}>Map specs</div>
+            <div className={'create-event-form-title w-36'}>Map frame</div>
             <CenterMapDialog />
           </div>
 
@@ -43,12 +43,6 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
               Add Markers to Your Map
             </div>
             <AddMarkersMap user={user} />
-          </div>
-
-          {/* Save & Create */}
-          <div className={'flex flex-row justify-center gap-3'}>
-            <Button>Save</Button>
-            <Button className='bg-sky-500'>Create</Button>
           </div>
         </div>
       ) : (

@@ -31,6 +31,7 @@ import { User } from '@supabase/supabase-js';
 import { getMapMarkersFromDb } from './createActions';
 import CustomMapMarker from './popups/CustomMapMarker';
 import { Separator } from '../ui/separator';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
@@ -84,7 +85,6 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
     getAndSetMapMarkers();
   }, []);
 
-  console.log('newMarker', newMarker);
   return (
     <div className={'flex w-full'}>
       {centerMapViewState === null ? (
@@ -99,7 +99,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                 'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
               }
               mapStyle={`mapbox://styles/mapbox/${mapTheme}`}
-              style={{ width: 500, height: 500 }}
+              style={{ width: 500, height: 800 }}
               initialViewState={{
                 latitude: centerMapViewState.latitude,
                 longitude: centerMapViewState.longitude,
@@ -137,8 +137,8 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                 'flex flex-col gap-6 items-center justify-start font-light w-1/2 p-3 border bg-neutral-50'
               }
             >
-              <div className={'font-bold font-mono'}>Select Marker Type</div>
-              <div className={'flex flex-row items-center gap-3'}>
+              <div className={'create-event-form-title'}>Select Marker Type</div>
+              <div className={'flex flex-row items-center gap-3 w-full'}>
                 <Select
                   onValueChange={(value: string) => {
                     setSelectedMarkerType(value as MarkerType);
@@ -157,7 +157,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                <div className={'leading-[1.1] w-5/6 font-light text-sm'}>
+                <div className={'leading-[1.1] w-full w-2/3 font-light text-sm'}>
                   {selectedMarkerType
                     ? MarkerTypeInstructions[selectedMarkerType]
                     : 'Select a marker type to add to the map.'}
