@@ -54,7 +54,7 @@ export type CreateAppActions = {
 export type CreateAppStore = CreateAppState & CreateAppActions;
 
 export const defaultInitState: CreateAppState = {
-  appId: undefined,
+  appId: 1,
   canSave: false,
   centerMapViewState: { latitude: 44.77, longitude: -85.613, zoom: 12 },
   appDetails: {

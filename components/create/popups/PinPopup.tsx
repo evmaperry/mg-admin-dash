@@ -45,11 +45,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, ImageOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import TimePicker from '@/components/time-picker';
 import { addPinHoursToDb } from '@/actions';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { Separator } from '@/components/ui/separator';
 dayjs.extend(customParseFormat);
 export interface PinHourInputs {
   startDate: string | undefined;
@@ -155,7 +156,9 @@ const PinPopup: React.FC<{
 
     return (
       <div className={'flex flex-col gap-2 justify-center items-center'}>
-        <div className={'create-event-form-title'}>Pin type</div>
+        <div className={'text-center text-sm'}>
+          <span className={'font-bold text-sky-400'}>Step 2: </span>Select pin type
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button>
@@ -221,7 +224,9 @@ const PinPopup: React.FC<{
   const PinHours: React.FC<{}> = ({}) => {
     return (
       <div className={'flex flex-col items-center w-full gap-4'}>
-        <div className={'flex flex-row items-center gap-4'}>
+        <div
+          className={'flex flex-row items-center gap-4 w-full justify-around'}
+        >
           <div className={'flex flex-col gap-1'}>
             <div
               className={
@@ -330,50 +335,59 @@ const PinPopup: React.FC<{
               />
             </div>
           </div>
-          <Button className={'mx-auto'} onClick={handleAddPinHour}>
+          <Button className={''} onClick={handleAddPinHour}>
             Add hours
           </Button>
         </div>
-
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Opens at</TableHead>
-              <TableHead className={'text-center'}>Closes at</TableHead>
-              <TableHead className={'text-end'}>Remove</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pinHours.map((pinHour: PinHourInputs, index: number) => {
-              return (
-                <TableRow>
-                  <TableCell>
-                    {dayjs(pinHour.startDate).format('ddd, MMM D')}
-                    {` @ `}
-                    {dayjs(pinHour.startTime, 'HH:mm:ss').format('h:mm a')}
-                  </TableCell>
-                  <TableCell className={'text-center'}>
-                    {dayjs(pinHour.endDate).format('ddd, MMM D')}
-                    {` @ `}
-                    {dayjs(pinHour.endTime, 'HH:mm:ss').format('h:mm a')}
-                  </TableCell>
-                  <TableCell className={'text-end'}>
-                    <Button
-                      variant={'destructive'}
-                      onClick={() => {
-                        const pinHoursCopy = [...pinHours];
-                        pinHoursCopy.splice(index, 1);
-                        setPinHours(pinHoursCopy);
-                      }}
-                    >
-                      X
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        {pinHours.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Opens at</TableHead>
+                <TableHead className={'text-center'}>Closes at</TableHead>
+                <TableHead className={'text-end'}>Remove</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pinHours.map((pinHour: PinHourInputs, index: number) => {
+                return (
+                  <TableRow key={`pin-hour-table-row-${index}`}>
+                    <TableCell>
+                      {dayjs(pinHour.startDate).format('ddd, MMM D')}
+                      {` @ `}
+                      {dayjs(pinHour.startTime, 'HH:mm:ss').format('h:mm a')}
+                    </TableCell>
+                    <TableCell className={'text-center'}>
+                      {dayjs(pinHour.endDate).format('ddd, MMM D')}
+                      {` @ `}
+                      {dayjs(pinHour.endTime, 'HH:mm:ss').format('h:mm a')}
+                    </TableCell>
+                    <TableCell className={'text-end'}>
+                      <Button
+                        variant={'destructive'}
+                        onClick={() => {
+                          const pinHoursCopy = [...pinHours];
+                          pinHoursCopy.splice(index, 1);
+                          setPinHours(pinHoursCopy);
+                        }}
+                      >
+                        X
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        ) : (
+          <div
+            className={
+              'p-2 border w-full mx-6 text-center bg-red-100 text-sm font-mono'
+            }
+          >
+            This pin does not have any hours yet.
+          </div>
+        )}
       </div>
     );
   };
@@ -415,46 +429,50 @@ const PinPopup: React.FC<{
   );
 
   return (
-    <div className={' flex w-full flex-col gap-4'}>
+    <div className={'flex w-full flex-col gap-4'}>
       {/* COORDINATES */}
-      <div className={'flex flex-row items-center gap-4'}>
-        <div className={'w-20 create-event-form-title'}>Location</div>
+      <div className={'flex flex-row items-center gap-2'}>
+        {/* <div className={'w-20 create-event-form-title'}>Location</div> */}
         <div
           className={
-            'flex flex-col justify-center w-full border bg-neutral-300 p-3 rounded gap-1'
+            'flex flex-col justify-center w-full rounded gap-1 text-sm'
           }
         >
-          <div className={'text-center font-mono text-sm'}>
-            Click the map to locate your new pin
+          <div className={'text-center text-sm'}>
+            <span className={'font-bold text-sky-400'}>Step 1: </span>Click the map to locate
+            your new pin
           </div>
-          <div className={'flex flex-row items-center justify-between'}>
-            <div className={'text-sm'}>
-              <span className={'font-bold'}>Lat:</span>{' '}
-              {`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}
+
+          <div className={'flex flex-row items-center justify-start'}>
+            <div className={'flex text-sm w-28 gap-2'}>
+              <div className={'font-bold'}>Lat </div>
+              <div>{`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}</div>
             </div>
 
-            <div className={'text-sm'}>
-              <span className={'font-bold'}>Lng: </span>
-              {`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}
+            <div className={'flex text-sm w-32 gap-2'}>
+              <div className={'flex font-bold'}>Lng </div>
+              <div>{`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}</div>
             </div>
-            <div className={'text-sm'}>
-              <span className='font-bold'>Address:</span>{' '}
-              {`${pin.latitude === 0 && pin.longitude === 0 ? 'N/A' : pin.address}`}
+
+            <div className={'flex flex-row items-center text-sm gap-2'}>
+              <div className='font-bold'>Address: </div>
+              <div className={''}>
+                {`${pin.latitude === 0 && pin.longitude === 0 ? 'N/A' : pin.address}`}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* PIN TYPE */}
-
-      <div
-        className={'flex flex-row items-center justify-between w-full gap-4'}
-      >
+      <div className={'flex flex-row items-center justify-between w-full'}>
         <PinSelector />
         {/* IMAGE */}
         <div className={'flex flex-row items-center gap-4'}>
           <div className={'flex flex-col justify-center items-center gap-2'}>
-            <div className={'w-20 create-event-form-title'}>Image</div>
+            <div className={'text-center text-sm '}>
+              <span className={'font-bold text-sky-400'}>Step 3: </span>Select an image
+            </div>
             <div className={'flex w-60'}>
               <Input
                 className={
@@ -488,72 +506,87 @@ const PinPopup: React.FC<{
                   'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[100px] w-[100px] text-sm'
                 }
               >
-                Select a photo 👉
+                <ImageOff />
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* TEXT */}
-      <div className={'flex flex-col gap-1 text-center'}>
-        <div className={'create-event-form-title'}>Details</div>
-        <div className={'flex flex-row items-center gap-1'}>
+      {/* TEXT DETAILS */}
+      <div className={'flex flex-col gap-1 text-center w-full'}>
+        <div
+          className={'flex flex-row justify-between items-center gap-1 w-full'}
+        >
+          <div className={'text-sm min-w-32'}>
+            <span className={'text-sky-400 font-bold'}>Step 4: </span>Add details
+          </div>
           <Input
             name={'primaryText'}
             value={pin.primaryText}
             onChange={handleTextInput}
             placeholder='Pin title'
-            className={'w-1/3'}
+            className={'w-48 text-center'}
           />
           <Input
-            placeholder='Description'
-            value={pin.secondaryText}
-            name={'secondaryText'}
-            onChange={handleTextInput}
-            className={'w-2/3'}
-          />
-        </div>
-
-        <div className={'flex flex-row items-center gap-1'}>
-          <Input
-            placeholder='Phone number (optional)'
+            placeholder='Phone # (optional)'
             value={pin.phoneNumber as string}
             name={'phoneNumber'}
             onChange={handleTextInput}
+            className={'w-40 text-center'}
           />
           <Input
             placeholder='Website link (optional)'
             value={pin.link as string}
             name={'link'}
             onChange={handleTextInput}
+            className={'text-center'}
+          />
+        </div>
+
+        <div className={'flex flex-row items-center gap-1'}>
+          <Input
+            placeholder='Description'
+            value={pin.secondaryText}
+            name={'secondaryText'}
+            onChange={handleTextInput}
+            className={'w-full text-center'}
           />
         </div>
       </div>
 
       {/* PIN HOURS */}
       <div className={'flex flex-col items-center gap-2'}>
-        <div className={'create-event-form-title'}>Pin Hours</div>
-        <div className={'flex flex-row items-center gap-2 bg-neutral-200 p-3'}>
-          <div className={'text-sm leading-[1.1] w-1/2'}>
-            Adding a pin's hours is optional. They indicate when a pin is open
-            or closed.
+        <div className={'text-sm'}>
+          <span className={'text-sky-400 font-bold'}>Step 5: </span>Add pin Hours
+        </div>
+        <div
+          className={
+            'flex flex-row justify-between items-center gap-2 bg-neutral-200 p-3'
+          }
+        >
+          <div className={'text-sm leading-[1.1]'}>
+            Add hours to a pin if you'd like to indicate whether a pin is open or closed.
           </div>
           <div
             className={'flex flex-row items-center gap-1 justify-center w-1/2'}
           >
-            <Checkbox
-              onCheckedChange={(checkState: boolean) => {
-                setArePinHoursVisible(checkState);
-              }}
-            />
-            <Label>Add hours to this pin</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button>Add hours to this pin</Button>
+              </PopoverTrigger>
+              <PopoverContent className={'flex w-[600px] grow'}>
+                <PinHours />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
-        {arePinHoursVisible && <PinHours />}
       </div>
-
-      <Button className={'mx-auto'} onClick={() => handleCreatePin()}>
+      <Separator className={'my-2'}/>
+      <Button
+        className={'bg-sky-500 w-48 mx-auto'}
+        onClick={() => handleCreatePin()}
+      >
         Add pin
       </Button>
     </div>

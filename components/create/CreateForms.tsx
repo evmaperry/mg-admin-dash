@@ -4,6 +4,7 @@ import AppDetailInputs from './AppDetailInputs';
 import CenterMapDialog from './CenterMapDialog';
 import { AppColorPickers } from './AppColorPickers';
 import AddMarkersMap from './AddMarkersMap';
+import MapMarkerTable from './MapMarkerTable';
 import { Button } from '../ui/button';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { User } from '@supabase/supabase-js';
@@ -17,7 +18,6 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
     appColors,
     mapTheme,
   } = useCreateAppStore((state) => state);
-
 
   return (
     <div className={'flex w-full pb-12'}>
@@ -43,6 +43,11 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
               Add Markers to Your Map
             </div>
             <AddMarkersMap user={user} />
+          </div>
+
+          <div className={'flex flex-col gap-3'}>
+            <div className={'create-event-form-title'}>Your app's markers</div>
+            <MapMarkerTable />
           </div>
         </div>
       ) : (

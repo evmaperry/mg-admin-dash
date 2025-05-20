@@ -67,17 +67,19 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
     setCanSave(false);
   };
 
+  console.log('uA',userApps?.find(app=>app.id === appId))
   return (
     <div className={'flex flex-row items-center gap-4'}>
       <Select
+        value={String(appId)}
         onValueChange={(value) => {
           handleAppSelection(Number(value));
         }}
       >
         <SelectTrigger className={'w-48 ml-8'}>
-          {!appDetails['App name']
+          {!appId
             ? 'Select an existing app'
-            : appDetails['App name']}
+            : userApps?.find(app=>app.id === appId).appName}
         </SelectTrigger>
         <SelectContent>
           {userApps &&
