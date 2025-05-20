@@ -36,20 +36,20 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
 const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
-  const { mapTheme, centerMapViewState, markers, setMarkers } =
+  const { mapTheme, centerMapViewState, markers, setMarkers, appDetails } =
     useCreateAppStore((state) => state);
 
   const [selectedMarkerType, setSelectedMarkerType] =
     useState<MarkerType>(null);
 
   const MarkerTypeInstructions = {
-    pin: 'Pins indicate the location of a service or point of interest, like a vendor, bathroom, emergency service, etc. A pin can have hours of operations.',
-    plan: 'Plans pinpoint the location of an event that happens at a fixed time. Your guests can RSVP to plans and share them with their friends.',
+    pin: 'Pins indicate the location of services and points of interest: bathrooms, vendors, emergency services, and so on. A pin can have hours of operations.',
+    plan: 'Plans indicate the location of an event that start and end at fixed times. Your guests can RSVP to plans and share them with their friends.',
     route:
-      'Routes draw out the path of an event or procession, like a parade or footrace. Routes have start and end times.',
-    area: 'Areas divide your event footprint into memorable zones, like the Food Court, Fun Fair, Music Stage, and so on. Areas are color-coordinated. Areas are not interactive and only display on the map.',
+      'Routes illustrate a path that will be traveled by event guests, like a parade or footrace. Routes have start and end times.',
+    area: 'Areas divide your event footprint into colored zones on the map.',
     structure:
-      'Structures display as three-dimensional shapes on your map, but they are not interactive.',
+      'Structures display as three-dimensional shapes on your map. They can represent tents, stages, vendor booths, and so on.',
   };
 
   const [newMarker, setNewMarker] = useState<{
@@ -84,6 +84,8 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
   useEffect(() => {
     getAndSetMapMarkers();
   }, []);
+
+  console.log('appDeetails', appDetails)
 
   return (
     <div className={'flex w-full'}>
@@ -134,11 +136,11 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
             {/* POPUPS */}
             <div
               className={
-                'flex flex-col gap-6 items-center justify-start font-light w-1/2 p-3 border bg-neutral-50'
+                'flex flex-col gap-6 items-center justify-start font-light w-1/2 px-6 py-3 border bg-neutral-50'
               }
             >
               <div className={'create-event-form-title'}>Select Marker Type</div>
-              <div className={'flex flex-row items-center gap-3 w-full'}>
+              <div className={'flex flex-row items-center gap-6 w-full'}>
                 <Select
                   onValueChange={(value: string) => {
                     setSelectedMarkerType(value as MarkerType);

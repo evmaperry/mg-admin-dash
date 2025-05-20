@@ -6,11 +6,11 @@ import {
   ListObjectsCommand,
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
-import {
-  getSignedUrl,
-} from '@aws-sdk/s3-request-presigner';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { createClient } from '@/utils/supabase/server';
-import { Post } from 'mgtypes/types/Content';
+import { Contentable, Post } from 'mgtypes/types/Content';
+import { PinHourInputs } from './components/create/popups/PinPopup';
+import dayjs from 'dayjs';
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || '',
@@ -68,7 +68,7 @@ export const createPresignedUrlWithClient = async ({
 
 export const addPostToDb = async (
   postType: 'pin' | 'plan' | 'route',
-  post: Post,
+  post: Partial<Contentable>,
   appId: number
 ) => {
   const supabaseClient = await createClient();
@@ -77,12 +77,40 @@ export const addPostToDb = async (
   console.log('table name', tableName);
   const { data, error } = await supabaseClient
     .from(tableName)
-    .insert({...post, appId})
-    .select();
+    .insert({ ...post, appId })
+    .select('id');
 
   return { data, error };
 };
 
+/**
+ * @param pinHours dates and times are distinct and are combined
+ * when added to the db as a dateTime
+ * @param pinId pin we're associating the hours with
+ */
+export const addPinHoursToDb = async (
+  pinHourInputs: PinHourInputs[],
+  pinId: number
+) => {
+  const supabaseClient = await createClient();
+
+  const parsedPinHours = pinHourInputs.map(
+    (pinHourInput: PinHourInputs, index: number) => {
+      return {
+        startDateTime: `${dayjs(pinHourInput.startDate).format('YYYY-MM-DD')}T${pinHourInput.startTime}`,
+        endDateTime: `${dayjs(pinHourInput.startDate).format('YYYY-MM-DD')}T${pinHourInput.startTime}`,
+        pinId,
+      };
+    }
+  );
+
+  const { data, error } = await supabaseClient
+    .from('pinHours')
+    .insert(parsedPinHours)
+    .select('id');
+  console.log('pinHours sbRes', data, error);
+  return { data, error };
+};
 
 // /**
 //  * Gets pins, plans, routes, areas and

@@ -13,33 +13,39 @@ export const createPost = async (
   postType: 'pin' | 'plan' | 'route',
   user: User,
   appId: number
-) => {
+) : Promise<number> => {
   const fileId = nanoid();
   const key = `${user.id}/${appId}/${fileId}`;
   // Add the image to s3
+
+  let s3Res;
   try {
     const data = new FormData();
     data.append('file', file);
 
-    const res = await uploadFileS3({
+    s3Res = await uploadFileS3({
       key,
       content: data,
     });
-    console.log('s3 res', res);
+    console.log('s3 res', s3Res);
   } catch (e) {
     console.error('POPUP ACTIONS ERROR: failed to add image to s3', e);
   }
 
   // Add the pin to supabase with s3
   // key saved as imageURL
+  let supabaseRes = null;
   try {
-    const res = await addPostToDb(postType, post, appId);
-    console.log('supabase res', res);
+    supabaseRes = await addPostToDb(postType, {...post, photoURL: 's3Res.something'}, appId);
+    console.log('supabase res', supabaseRes);
   } catch (e) {
     console.error('POPUP ACTIONS ERROR: failed to add post to db', e);
   }
 
-  return;
+  // supabase Res returns as array from .select('id')
+  // there will only ever be one item in the data property
+  const contentId:number = supabaseRes?.data?.[0].id
+  return contentId;
 };
 
 export const getAddressFromCoordinates = async (

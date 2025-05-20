@@ -13,6 +13,7 @@ import { Calendar } from '../ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
+import TimePicker from '../time-picker';
 
 // APP NAME, EVENT NAME, START & END DATETIMES
 const AppDetailInputs: React.FC<{}> = () => {
@@ -52,7 +53,7 @@ const AppDetailInputs: React.FC<{}> = () => {
 
       <div className={'flex flex-col grow gap-3'}>
         <div className={'flex flex-col gap-2'}>
-          <Label>Select a start date</Label>
+          <Label>Start date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -66,7 +67,7 @@ const AppDetailInputs: React.FC<{}> = () => {
                 {appDetails['Start date'] ? (
                   dayjs(appDetails['Start date']).format('ddd, MMM D')
                 ) : (
-                  <span>Click here</span>
+                  <span>Select a date</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -88,23 +89,20 @@ const AppDetailInputs: React.FC<{}> = () => {
           </Popover>
         </div>
         <div className={'flex flex-col gap-2'}>
-          <Label>
-            Start time <span className={'font-light'}>24-hour clock</span>
-          </Label>
-          <Input
-            value={appDetails['Start time']}
-            placeholder='eg, 07:00 or 15:50'
-            onChange={(e) => {
-              setAppDetails({ 'Start time': e.target.value });
+          <Label>Start time</Label>
+          <TimePicker
+            onSelectTime={(time: string) => {
+              setAppDetails({ 'Start time': time });
               setCanSave(true);
             }}
+            timeToDisplay={appDetails['Start time'] ?? undefined}
           />
         </div>
       </div>
 
       <div className={'flex flex-col grow gap-3'}>
         <div className={'flex flex-col gap-2'}>
-          <Label>Select an end date</Label>
+          <Label>End date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -118,7 +116,7 @@ const AppDetailInputs: React.FC<{}> = () => {
                 {appDetails['End date'] ? (
                   dayjs(appDetails['End date']).format('ddd, MMM D')
                 ) : (
-                  <span>Click here</span>
+                  <span>Select a date</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -140,16 +138,13 @@ const AppDetailInputs: React.FC<{}> = () => {
           </Popover>
         </div>
         <div className={'flex flex-col gap-2'}>
-          <Label>
-            End time <span className={'font-light'}>24-hour clock</span>
-          </Label>
-          <Input
-            value={appDetails['End time']}
-            placeholder='Ending time (24-hour)'
-            onChange={(e) => {
-              setAppDetails({ 'End time': e.target.value });
+          <Label>End time</Label>
+          <TimePicker
+            onSelectTime={(time: string) => {
+              setAppDetails({ 'End time': time });
               setCanSave(true);
             }}
+            timeToDisplay={appDetails['End time'] ?? undefined}
           />
         </div>
       </div>

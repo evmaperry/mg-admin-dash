@@ -39,6 +39,24 @@ import { Pin, Post } from 'mgtypes/types/Content';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import dayjs from 'dayjs';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import TimePicker from '@/components/time-picker';
+import { addPinHoursToDb } from '@/actions';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
+export interface PinHourInputs {
+  startDate: string | undefined;
+  startTime: string | undefined;
+  endDate: string | undefined;
+  endTime: string | undefined;
+}
 
 const PinPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
@@ -46,7 +64,7 @@ const PinPopup: React.FC<{
   setMarkerIcon: (icon: React.ReactElement) => void;
   getAndSetMapMarkers: () => void;
 }> = ({ lastClickEvent, user, setMarkerIcon, getAndSetMapMarkers }) => {
-  const { appDetails } = useCreateAppStore((state) => state);
+  const { appDetails, setCanSave } = useCreateAppStore((state) => state);
 
   const [pin, setPin] = useState<Partial<Pin>>({
     longitude: null,
@@ -178,9 +196,200 @@ const PinPopup: React.FC<{
     setPin({ ...pin, [name]: value });
   };
 
-  const handleCreatePost = async () => {
+  const [arePinHoursVisible, setArePinHoursVisible] = useState<boolean>(false);
+
+  const [pinHours, setPinHours] = useState<PinHourInputs[]>([]);
+
+  const [pinHour, setPinHour] = useState<PinHourInputs>({
+    startDate: undefined,
+    startTime: undefined,
+    endDate: undefined,
+    endTime: undefined,
+  });
+
+  const handleAddPinHour = () => {
+    // TODO: add form validation
+    setPinHours([...pinHours, pinHour]);
+    setPinHour({
+      startDate: undefined,
+      startTime: undefined,
+      endDate: undefined,
+      endTime: undefined,
+    });
+  };
+
+  const PinHours: React.FC<{}> = ({}) => {
+    return (
+      <div className={'flex flex-col items-center w-full gap-4'}>
+        <div className={'flex flex-row items-center gap-4'}>
+          <div className={'flex flex-col gap-1'}>
+            <div
+              className={
+                'flex flex-row items-center w-full justify-start gap-6'
+              }
+            >
+              <div className={'w-12 create-event-form-label'}>Opens</div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={'outline'}
+                    className={cn(
+                      'w-[160px] justify-start text-left font-normal',
+                      !pinHour['startDate'] && 'text-muted-foreground'
+                    )}
+                  >
+                    <CalendarIcon className={'mr-2'} />
+                    {pinHour['startDate'] ? (
+                      dayjs(pinHour['startDate']).format('ddd, MMM D')
+                    ) : (
+                      <span>Select a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className='w-auto p-0' align='start'>
+                  <Calendar
+                    mode='single'
+                    selected={
+                      pinHour['startDate']
+                        ? new Date(pinHour['startDate'])
+                        : undefined
+                    }
+                    onSelect={(value) => {
+                      setPinHour({ ...pinHour, startDate: String(value) });
+                    }}
+                    initialFocus
+                    disabled={
+                      appDetails['Start date'] && appDetails['End date']
+                        ? {
+                            before: new Date(appDetails['Start date']),
+                            after: new Date(appDetails['End date']),
+                          }
+                        : undefined
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+              <TimePicker
+                onSelectTime={(time: string) => {
+                  setPinHour({ ...pinHour, startTime: time });
+                }}
+                timeToDisplay={pinHour.startTime}
+              />
+            </div>
+            <div
+              className={
+                'flex flex-row w-full items-center justify-start gap-6'
+              }
+            >
+              <div className={'w-12 create-event-form-label'}>Closes</div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={'outline'}
+                    className={cn(
+                      'w-[160px] justify-start text-left font-normal',
+                      !pinHour['endDate'] && 'text-muted-foreground'
+                    )}
+                  >
+                    <CalendarIcon className={'mr-2'} />
+                    {pinHour['endDate'] ? (
+                      dayjs(pinHour['endDate']).format('ddd, MMM D')
+                    ) : (
+                      <span>Select a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className='w-auto p-0' align='start'>
+                  <Calendar
+                    mode='single'
+                    selected={
+                      pinHour['endDate']
+                        ? new Date(pinHour['endDate'])
+                        : undefined
+                    }
+                    onSelect={(value) => {
+                      setPinHour({ ...pinHour, endDate: String(value) });
+                    }}
+                    initialFocus
+                    disabled={
+                      appDetails['Start date'] && appDetails['End date']
+                        ? {
+                            before: new Date(appDetails['Start date']),
+                            after: new Date(appDetails['End date']),
+                          }
+                        : undefined
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+              <TimePicker
+                onSelectTime={(time: string) => {
+                  setPinHour({ ...pinHour, endTime: time });
+                }}
+                timeToDisplay={pinHour.endTime}
+              />
+            </div>
+          </div>
+          <Button className={'mx-auto'} onClick={handleAddPinHour}>
+            Add hours
+          </Button>
+        </div>
+
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Opens at</TableHead>
+              <TableHead className={'text-center'}>Closes at</TableHead>
+              <TableHead className={'text-end'}>Remove</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {pinHours.map((pinHour: PinHourInputs, index: number) => {
+              return (
+                <TableRow>
+                  <TableCell>
+                    {dayjs(pinHour.startDate).format('ddd, MMM D')}
+                    {` @ `}
+                    {dayjs(pinHour.startTime, 'HH:mm:ss').format('h:mm a')}
+                  </TableCell>
+                  <TableCell className={'text-center'}>
+                    {dayjs(pinHour.endDate).format('ddd, MMM D')}
+                    {` @ `}
+                    {dayjs(pinHour.endTime, 'HH:mm:ss').format('h:mm a')}
+                  </TableCell>
+                  <TableCell className={'text-end'}>
+                    <Button
+                      variant={'destructive'}
+                      onClick={() => {
+                        const pinHoursCopy = [...pinHours];
+                        pinHoursCopy.splice(index, 1);
+                        setPinHours(pinHoursCopy);
+                      }}
+                    >
+                      X
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
+
+  const handleCreatePin = async () => {
     setIsLoading(true);
-    await createPost(imageFile as File, pin as Post, 'pin', user, 1);
+
+    const pinId = await createPost(
+      imageFile as File,
+      pin as Post,
+      'pin',
+      user,
+      1
+    );
+
+    await addPinHoursToDb(pinHours, pinId);
     setPin({
       longitude: null,
       latitude: null,
@@ -196,39 +405,14 @@ const PinPopup: React.FC<{
     setIsLoading(false);
   };
 
-  const [arePinHoursVisible, setArePinHoursVisible] = useState<boolean>(false);
-
-  // for each day a pin has opening and closing dateTimes
-  const [pinHours, setPinHours] = useState<any>();
-
-  useEffect(() => {
-    const start = dayjs(appDetails['Start date']);
-    const end = dayjs(appDetails['End date']);
-    const diff = end.diff(start, 'day');
-    const dateArray=[];
-
-    for (let i = 0; i < diff; i++) {
-      console.log('iterating', i, start)
-      const date = start.add(i, 'day').format('YYYY-MM-DD');
-      dateArray.push(date)
-
-     //pinHours[date] = { openTime:'9:00', closeTime: `17:00` };
-    }
-
-    const pinHours: {
-      [date: string]: { openTime: string; closeTime: string };
-    } = {};
-
-    console.log('dateArray', dateArray)
-
-    //setPinHours(pinHours);
-  }, [appDetails['Start date'], appDetails['End date']]);
-
-  const PinHours: React.FC<{}> = ({}) => {
-    return <div></div>;
-  };
-
-  console.log('pinHours', pinHours, appDetails)
+  console.log(
+    'pinHours',
+    pinHours,
+    'appDetails',
+    appDetails,
+    'pinHour',
+    pinHour
+  );
 
   return (
     <div className={' flex w-full flex-col gap-4'}>
@@ -352,8 +536,8 @@ const PinPopup: React.FC<{
         <div className={'create-event-form-title'}>Pin Hours</div>
         <div className={'flex flex-row items-center gap-2 bg-neutral-200 p-3'}>
           <div className={'text-sm leading-[1.1] w-1/2'}>
-            Adding a pin's hours is optional; they indicate whether a pin is
-            open or closed.
+            Adding a pin's hours is optional. They indicate when a pin is open
+            or closed.
           </div>
           <div
             className={'flex flex-row items-center gap-1 justify-center w-1/2'}
@@ -369,7 +553,7 @@ const PinPopup: React.FC<{
         {arePinHoursVisible && <PinHours />}
       </div>
 
-      <Button className={'mx-auto'} onClick={() => handleCreatePost()}>
+      <Button className={'mx-auto'} onClick={() => handleCreatePin()}>
         Add pin
       </Button>
     </div>
