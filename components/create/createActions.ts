@@ -27,7 +27,7 @@ export const createPost = async (
       key,
       content: data,
     });
-    console.log('s3 res', s3Res);
+    console.log('***s3 res***', s3Res);
   } catch (e) {
     console.error('POPUP ACTIONS ERROR: failed to add image to s3', e);
   }
@@ -36,7 +36,7 @@ export const createPost = async (
   // key saved as imageURL
   let supabaseRes = null;
   try {
-    supabaseRes = await addPostToDb(postType, {...post, photoURL: 's3Res.something'}, appId);
+    supabaseRes = await addPostToDb(postType, {...post, photoURL: key}, appId);
     console.log('supabase res', supabaseRes);
   } catch (e) {
     console.error('POPUP ACTIONS ERROR: failed to add post to db', e);
@@ -95,8 +95,6 @@ export const getMapMarkersFromDb = async (appId: number) => {
       .eq('appId', appId)
       .then((res) => res.data as any[]);
 
-    console.log('pins', pins);
-
     return { pins, routes: [], plans: [], structures: [], areas: [] };
   } catch (e: any) {
     console.error('CREATE ACTIONS ERROR: failed to get markers from DB');
@@ -124,7 +122,7 @@ export const getUserAppsFromDb = async (userId: string) => {
 };
 
 /**
- * Gets all data for an app that a user is working on
+ * Gets ALL data for an app that a user is working on
  * */
 export const getAppInfoFromDb = async (appId: number) => {
   try {
@@ -149,7 +147,9 @@ export const getAppInfoFromDb = async (appId: number) => {
           latitude,
           longitude,
           pinCategory,
-          pinType
+          pinType,
+          address,
+          photoURL
         )
         `
       )

@@ -2893,9 +2893,9 @@ mgmarkers@^1.0.0:
   integrity sha512-KoUBifIv379lymemp6Q5idDfoFDW71RVg7CTkNBxB6NJCnICgSpPJc3Ze0quYO5hfR9wYsrUt8flSJI58COmuA==
 
 mgtypes@^1.0.0:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/mgtypes/-/mgtypes-1.0.4.tgz#e5367723b9bfe01460f2b72a43e4d83e9d95ff5e"
-  integrity sha512-YreaEfZ5oa+cgyYk2wIUj7KYyWbTzzD+3v8vTAOhC0AwOuDFS+1JlBQHmIN0pE9RnAwMiozodMjQZZ1Q8YelRQ==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/mgtypes/-/mgtypes-1.0.5.tgz#742dd17650b328ed94037016dc25df26fb668724"
+  integrity sha512-zZPLHvsQrjLKjUVNN2fy8ldVc7D1tv7uHph+xgkC6RKEAGojUMVMYp2ppZJ6xrLxYdkxQb/ShwfITkX4NecpQg==
   dependencies:
     "@types/geojson" "^7946.0.16"
 

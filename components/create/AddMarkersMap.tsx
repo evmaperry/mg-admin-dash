@@ -102,9 +102,9 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
     }
   };
 
-  useEffect(() => {
-    getAndSetMapMarkers();
-  }, []);
+  // useEffect(() => {
+  //   getAndSetMapMarkers();
+  // }, []);
 
   console.log('appDeetails', appDetails);
 

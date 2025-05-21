@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
-import { uploadFileS3, createPresignedUrlWithClient } from '@/actions';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -36,8 +35,6 @@ import { User } from '@supabase/supabase-js';
 import { createPost, getAddressFromCoordinates } from '../createActions';
 import { MapMouseEvent } from 'mapbox-gl';
 import { Pin, Post } from 'mgtypes/types/Content';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import dayjs from 'dayjs';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -65,7 +62,7 @@ const PinPopup: React.FC<{
   setMarkerIcon: (icon: React.ReactElement) => void;
   getAndSetMapMarkers: () => void;
 }> = ({ lastClickEvent, user, setMarkerIcon, getAndSetMapMarkers }) => {
-  const { appDetails, setCanSave } = useCreateAppStore((state) => state);
+  const { appDetails, setCanSave, appId } = useCreateAppStore((state) => state);
 
   const [pin, setPin] = useState<Partial<Pin>>({
     longitude: null,
@@ -198,8 +195,6 @@ const PinPopup: React.FC<{
     const { name, value } = e.target;
     setPin({ ...pin, [name]: value });
   };
-
-  const [arePinHoursVisible, setArePinHoursVisible] = useState<boolean>(false);
 
   const [pinHours, setPinHours] = useState<PinHourInputs[]>([]);
 
@@ -400,7 +395,7 @@ const PinPopup: React.FC<{
       pin as Post,
       'pin',
       user,
-      1
+      appId as number
     );
 
     await addPinHoursToDb(pinHours, pinId);

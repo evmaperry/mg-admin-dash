@@ -112,13 +112,3 @@ export const addPinHoursToDb = async (
   return { data, error };
 };
 
-// /**
-//  * Gets pins, plans, routes, areas and
-//  * structures for an app draft
-//  * @param userId
-//  * @param appId
-//  */
-// export const getMarkersFromDb = async (appId: number) => {
-//   const supabaseClient = await createClient();
-//   const pins = supabaseClient.from('pins').select().eq('appId', appId)
-// };

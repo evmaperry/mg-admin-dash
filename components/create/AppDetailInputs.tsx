@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
@@ -17,7 +17,7 @@ import TimePicker from '../time-picker';
 
 // APP NAME, EVENT NAME, START & END DATETIMES
 const AppDetailInputs: React.FC<{}> = () => {
-  const { setAppDetails, appDetails, setCanSave } = useCreateAppStore(
+  const { setAppDetails, appDetails, setCanSave, appId } = useCreateAppStore(
     (state) => state
   );
 

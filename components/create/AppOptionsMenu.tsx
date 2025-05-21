@@ -17,6 +17,7 @@ import {
 import { User } from '@supabase/supabase-js';
 import { Button } from '../ui/button';
 import { useCreateAppStore } from '@/providers/create-app-provider';
+import { App } from 'mgtypes/types/App';
 
 const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
   // THE ACTIVE APP WE'RE WORKING ON
@@ -29,7 +30,7 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
     canSave,
     setCanSave,
     centerMapViewState,
-    appColors
+    appColors,
   } = useCreateAppStore((state) => state);
 
   const [userApps, setUserApps] = useState<any[]>();
@@ -37,13 +38,28 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
   const getAndSetUserApps = async () => {
     try {
       const userApps: any = await getUserAppsFromDb(user.id);
+
+      userApps.sort((a: App, b: App) => {
+        if (a.id < b.id) {
+          return -1;
+        } else if (a.id > b.id) {
+          return 1;
+        }
+      });
       setUserApps(userApps);
+
+      // select first app
+      const firstAppId:number = userApps[0].id
+      setAppId(firstAppId);
+      const app = await getAppInfoFromDb(firstAppId);
+      setApp(app)
     } catch (e) {
       console.error('APP SELECT ERROR: failed to getAndSetUserApps', e);
     }
   };
 
   useEffect(() => {
+    // gets all of users apps
     getAndSetUserApps();
   }, [user]);
 
@@ -67,7 +83,6 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
     setCanSave(false);
   };
 
-  console.log('uA',userApps?.find(app=>app.id === appId))
   return (
     <div className={'flex flex-row items-center gap-4'}>
       <Select
@@ -79,7 +94,7 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
         <SelectTrigger className={'w-48 ml-8'}>
           {!appId
             ? 'Select an existing app'
-            : userApps?.find(app=>app.id === appId).appName}
+            : userApps?.find((app) => app.id === appId).appName}
         </SelectTrigger>
         <SelectContent>
           {userApps &&
@@ -96,10 +111,10 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
             })}
         </SelectContent>
       </Select>
-      <Button onClick={handleSave} disabled={!canSave}>Save</Button>
-      <Button className={'bg-sky-600'} >
-        Start a new app
+      <Button onClick={handleSave} disabled={!canSave}>
+        Save
       </Button>
+      <Button className={'bg-sky-600'}>Start a new app</Button>
     </div>
   );
 };

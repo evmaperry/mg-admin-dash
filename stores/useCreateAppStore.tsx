@@ -56,7 +56,7 @@ export type CreateAppStore = CreateAppState & CreateAppActions;
 export const defaultInitState: CreateAppState = {
   appId: 1,
   canSave: false,
-  centerMapViewState: { latitude: 44.77, longitude: -85.613, zoom: 12 },
+  centerMapViewState: { latitude: 38, longitude: -90, zoom: 12 },
   appDetails: {
     'App name': undefined,
     'Event name': undefined,
@@ -66,14 +66,14 @@ export const defaultInitState: CreateAppState = {
     'End time': undefined,
   },
   appColors: {
-    primary: '#312e81',
-    primaryContainer: '#e2e8f0',
-    onPrimaryContainer: '#312e81',
-    onPrimaryContainerUnselected: '#475569',
-    inversePrimary: '#4f46e5',
-    secondary: '#ef4444',
-    outline: '#94a3b8',
-    surfaceVariant: '#f1f5f9',
+    primary: '#e5e5e5',
+    primaryContainer: '#e5e5e5',
+    onPrimaryContainer: '#e5e5e5',
+    onPrimaryContainerUnselected: '#e5e5e5',
+    inversePrimary: '#e5e5e5',
+    secondary: '#e5e5e5',
+    outline: '#e5e5e5',
+    surfaceVariant: '#e5e5e5',
   },
   mapTheme: 'light-v11',
   markers: {
