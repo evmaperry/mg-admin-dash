@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import AppDetailInputs from './AppDetailInputs';
-import CenterMapDialog from './CenterMapDialog';
+import CenterMapDialog from './MapLabelMaker';
 import { AppColorPickers } from './AppColorPickers';
 import AddMarkersMap from './AddMarkersMap';
 import MapMarkerTable from './MapMarkerTable';
@@ -10,14 +10,7 @@ import { useCreateAppStore } from '@/providers/create-app-provider';
 import { User } from '@supabase/supabase-js';
 
 const CreateForms: React.FC<{ user: User }> = ({ user }) => {
-  const {
-    appId,
-    appDetails,
-    markers,
-    centerMapViewState,
-    appColors,
-    mapTheme,
-  } = useCreateAppStore((state) => state);
+  const { appId } = useCreateAppStore((state) => state);
 
   return (
     <div className={'flex w-full pb-12'}>
@@ -26,11 +19,6 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
           <div className={'flex flex-col gap-3 w-full'}>
             <div className={'create-event-form-title'}>The basics</div>
             <AppDetailInputs />
-          </div>
-
-          <div className={'flex flex-row gap-6 items-center w-[500px]'}>
-            <div className={'create-event-form-title w-36'}>Map frame</div>
-            <CenterMapDialog />
           </div>
 
           <div className={'flex flex-col gap-3'}>
@@ -48,6 +36,11 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
           <div className={'flex flex-col gap-3'}>
             <div className={'create-event-form-title'}>Your app's markers</div>
             <MapMarkerTable />
+          </div>
+
+          <div className={'flex flex-col gap-3'}>
+            <div className={'create-event-form-title w-36'}>Map Labels</div>
+            <CenterMapDialog />
           </div>
         </div>
       ) : (

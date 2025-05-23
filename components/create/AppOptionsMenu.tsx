@@ -29,7 +29,6 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
     appDetails,
     canSave,
     setCanSave,
-    centerMapViewState,
     appColors,
   } = useCreateAppStore((state) => state);
 
@@ -52,6 +51,7 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
       const firstAppId:number = userApps[0].id
       setAppId(firstAppId);
       const app = await getAppInfoFromDb(firstAppId);
+      console.log('ApP', app)
       setApp(app)
     } catch (e) {
       console.error('APP SELECT ERROR: failed to getAndSetUserApps', e);
@@ -73,8 +73,8 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
     const updatedApp = await updateAppInDb(appId as number, {
       eventName: appDetails['Event name'] as string,
       appName: appDetails['App name'] as string,
-      eventLatitude: centerMapViewState?.latitude as number,
-      eventLongitude: centerMapViewState?.longitude as number,
+      eventLatitude: appDetails['Event latitude'] as number,
+      eventLongitude: appDetails['Event longitude'] as number,
       startDateTime: appDetails['Start date'] + 'T' + appDetails['Start time'],
       endDateTime: appDetails['End date'] + 'T' + appDetails['End time'],
       appColors,
@@ -112,7 +112,7 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
         </SelectContent>
       </Select>
       <Button onClick={handleSave} disabled={!canSave}>
-        Save
+        Save draft
       </Button>
       <Button className={'bg-sky-600'}>Start a new app</Button>
     </div>

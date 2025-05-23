@@ -9,6 +9,21 @@ interface MapViewState {
   zoom: number;
 }
 
+interface MapLabel {
+  title: string;
+  icon: string | null;
+  latitude: number;
+  longitude: number;
+  iconColor: string | null;
+  image: string | null;
+  boundingBox: Position[];
+}
+
+interface MapLabels {
+  zoomThresholds: number[];
+  labels: MapLabel[][];
+}
+
 export interface AppDetails {
   'App name': string | undefined;
   'Event name': string | undefined;
@@ -16,6 +31,8 @@ export interface AppDetails {
   'End date': string | undefined;
   'Start time': string | undefined;
   'End time': string | undefined;
+  'Event longitude': number | undefined;
+  'Event latitude': number | undefined;
 }
 
 interface MapMarkers {
@@ -24,8 +41,6 @@ interface MapMarkers {
   routes: any[];
   structures: any[];
   areas: any[];
-  comments: any[];
-  photos: any[];
 }
 
 export type CreateAppState = {
@@ -36,6 +51,7 @@ export type CreateAppState = {
   appColors: IAppColors;
   mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12';
   markers: MapMarkers;
+  mapLabels: MapLabels;
 };
 
 export type CreateAppActions = {
@@ -48,6 +64,7 @@ export type CreateAppActions = {
   ) => void;
   setMarkers: (markers: MapMarkers) => void;
   setApp: (app: any) => void;
+  setMapLabels: (mapLabels: MapLabels) => void;
   setCanSave: (canSave: boolean) => void;
 };
 
@@ -56,7 +73,7 @@ export type CreateAppStore = CreateAppState & CreateAppActions;
 export const defaultInitState: CreateAppState = {
   appId: 1,
   canSave: false,
-  centerMapViewState: { latitude: 38, longitude: -90, zoom: 12 },
+  centerMapViewState: { latitude: 38, longitude: -90, zoom: 6 },
   appDetails: {
     'App name': undefined,
     'Event name': undefined,
@@ -64,6 +81,8 @@ export const defaultInitState: CreateAppState = {
     'End date': undefined,
     'Start time': undefined,
     'End time': undefined,
+    'Event latitude': undefined,
+    'Event longitude': undefined,
   },
   appColors: {
     primary: '#e5e5e5',
@@ -77,13 +96,80 @@ export const defaultInitState: CreateAppState = {
   },
   mapTheme: 'light-v11',
   markers: {
-    comments: [],
-    photos: [],
     pins: [],
     plans: [],
     routes: [],
     structures: [],
     areas: [],
+  },
+  mapLabels: {
+    zoomThresholds: [16.25, 15],
+    labels: [
+      [
+        {
+          title: 'Midway',
+          icon: 'ferris-wheel',
+          latitude: 44.765391,
+          longitude: -85.623055,
+          iconColor: 'darkcyan',
+          image: null,
+          boundingBox: [
+            [-85.623708, 44.765085],
+            [-85.622463, 44.765679],
+          ], //
+        },
+        {
+          title: 'Festival Stage',
+          icon: 'music',
+          latitude: 44.766354,
+          longitude: -85.625294,
+          image: null,
+          iconColor: 'indigo',
+          boundingBox: [
+            [-85.625902, 44.765997],
+            [-85.624572, 44.766954],
+          ], // -85.625855,44.766031
+        },
+        {
+          title: 'Food Court',
+          icon: 'food',
+          latitude: 44.766292,
+          longitude: -85.623728,
+          iconColor: 'lightcoral',
+          image: null,
+          boundingBox: [
+            [-85.624957, 44.765931],
+            [-85.622636, 44.766931],
+          ], //
+        },
+        {
+          title: 'Beer Tent',
+          icon: 'beer',
+          latitude: 44.767252,
+          longitude: -85.623873,
+          iconColor: 'sandybrown',
+          image: null,
+          boundingBox: [
+            [-85.624638, 44.766967],
+            [-85.623147, 44.767746],
+          ], //
+        },
+      ],
+      [
+        {
+          title: 'National Fruit Festival',
+          icon: null,
+          latitude: 44.766686,
+          longitude: -85.623914,
+          iconColor: null,
+          image: 'logo-small',
+          boundingBox: [
+            [-85.626142, 44.765011],
+            [-85.622337, 44.767645],
+          ], //
+        },
+      ],
+    ],
   },
 };
 
@@ -95,16 +181,16 @@ export const createCreateAppStore = (
     setCanSave: (canSave: boolean) => {
       set((state) => {
         return {
-          ...state, canSave
-        }
-      })
+          ...state,
+          canSave,
+        };
+      });
     },
     setAppId: (appId: number) => {
       set((state) => {
         return { ...state, appId };
       });
     },
-
     setCenterMapViewState: (centerMapViewState: MapViewState) => {
       set((state) => {
         return { ...state, centerMapViewState };
@@ -155,7 +241,7 @@ export const createCreateAppStore = (
 
         console.log('app inside setApp', app);
 
-        // appId does not need to be set
+        // appId and eventLocation do not need to be set
         // it's set from AppSelectOrCreate
         return {
           ...state,
@@ -166,17 +252,25 @@ export const createCreateAppStore = (
             'End time': endTime,
             'Start date': startDate,
             'Start time': startTime,
+            'Event latitude': app.eventLatitude,
+            'Event longitude': app.eventLongitude,
           },
           markers: {
             pins: app.pins,
             plans: [],
-            comments: [],
-            photos: [],
             routes: [],
             areas: [],
             structures: [],
           },
           appColors: app.appColors,
+        };
+      });
+    },
+    setMapLabels: (mapLabels: MapLabels) => {
+      set((state) => {
+        return {
+          ...state,
+          mapLabels,
         };
       });
     },

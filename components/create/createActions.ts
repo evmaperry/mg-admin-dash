@@ -13,7 +13,7 @@ export const createPost = async (
   postType: 'pin' | 'plan' | 'route',
   user: User,
   appId: number
-) : Promise<number> => {
+): Promise<number> => {
   const fileId = nanoid();
   const key = `${user.id}/${appId}/${fileId}`;
   // Add the image to s3
@@ -36,7 +36,11 @@ export const createPost = async (
   // key saved as imageURL
   let supabaseRes = null;
   try {
-    supabaseRes = await addPostToDb(postType, {...post, photoURL: key}, appId);
+    supabaseRes = await addPostToDb(
+      postType,
+      { ...post, photoURL: key },
+      appId
+    );
     console.log('supabase res', supabaseRes);
   } catch (e) {
     console.error('POPUP ACTIONS ERROR: failed to add post to db', e);
@@ -44,7 +48,7 @@ export const createPost = async (
 
   // supabase Res returns as array from .select('id')
   // there will only ever be one item in the data property
-  const contentId:number = supabaseRes?.data?.[0].id
+  const contentId: number = supabaseRes?.data?.[0].id;
   return contentId;
 };
 
@@ -69,7 +73,7 @@ export const getAddressFromCoordinates = async (
 
 export const getCoordinatesFromAddress = async (address: any) => {
   const apiUrlBeginning = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
-  const apiUrlEnd = `.json?proximity=ip&access_token=${process.env.MAPBOX_API_TOKEN}`;
+  const apiUrlEnd = `.json?proximity=ip&access_token=${process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN}`;
   try {
     address = address.replaceAll(' ', '%20');
     const apiUrl = apiUrlBeginning + address + apiUrlEnd;
@@ -137,7 +141,7 @@ export const getAppInfoFromDb = async (appId: number) => {
         endDateTime,
         eventLongitude,
         eventLatitude,
-        eventMapLabels,
+        mapLabels,
         mapStyleUrl,
         appColors,
         pins (
@@ -166,7 +170,7 @@ export const getAppInfoFromDb = async (appId: number) => {
  */
 export const updateAppInDb = async (
   appId: number,
-  partialApp: Partial<App>,
+  partialApp: Partial<App>
 ) => {
   try {
     const supabaseClient = await createClient();
@@ -175,7 +179,7 @@ export const updateAppInDb = async (
       .update(partialApp)
       .eq('id', appId)
       .select();
-    console.log('data', data)
+    console.log('data', data);
     return data;
   } catch (e) {
     console.error('CREATE ACTIONS ERROR: failed to update app in db', e);

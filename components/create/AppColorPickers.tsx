@@ -190,9 +190,8 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
         }
       >
         <div className={'flex flex-col items-center gap-1'}>
-          <div className={'font-mono font-bold text-lg'}>Select Colors</div>
-          <div className={'font-mono text-md'}>
-            Click on these guys over here 👇
+          <div className={'text-sm font-bold text-sky-500'}>
+            CLICK THE SWATCHES TO CHANGE COLORS <span className={'text-lg'}>👇</span>
           </div>
         </div>
         <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
