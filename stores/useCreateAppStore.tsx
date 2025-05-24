@@ -1,28 +1,7 @@
 import { Position } from 'geojson';
 import { createStore } from 'zustand';
-import { IAppColors } from 'mgtypes/types/App';
+import { AppColors, MapLabels, MapLabel } from 'mgtypes/types/App';
 import { App } from 'mgtypes/types/App';
-
-interface MapViewState {
-  latitude: number;
-  longitude: number;
-  zoom: number;
-}
-
-interface MapLabel {
-  title: string;
-  icon: string | null;
-  latitude: number;
-  longitude: number;
-  iconColor: string | null;
-  image: string | null;
-  boundingBox: Position[];
-}
-
-interface MapLabels {
-  zoomThresholds: number[];
-  labels: MapLabel[][];
-}
 
 export interface AppDetails {
   'App name': string | undefined;
@@ -46,9 +25,8 @@ interface MapMarkers {
 export type CreateAppState = {
   canSave: boolean; // indicates a saveable change has been made
   appId: number | undefined;
-  centerMapViewState: MapViewState | null;
   appDetails: AppDetails;
-  appColors: IAppColors;
+  appColors: AppColors;
   mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12';
   markers: MapMarkers;
   mapLabels: MapLabels;
@@ -56,15 +34,15 @@ export type CreateAppState = {
 
 export type CreateAppActions = {
   setAppId: (appId: number) => void;
-  setCenterMapViewState: (centerMapViewState: MapViewState) => void;
   setAppDetails: (AppDetailsPartialObj: Partial<AppDetails>) => void;
-  setAppColors: (AppColorsPartialObj: Partial<IAppColors>) => void;
+  setAppColors: (AppColorsPartialObj: Partial<AppColors>) => void;
   setMapTheme: (
     mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
   ) => void;
   setMarkers: (markers: MapMarkers) => void;
   setApp: (app: any) => void;
-  setMapLabels: (mapLabels: MapLabels) => void;
+  addMapLabel: (mapLabel: MapLabel, zoomElevation: number) => void;
+  setZoomThresholds: (zoomThresholds: number[]) => void;
   setCanSave: (canSave: boolean) => void;
 };
 
@@ -73,7 +51,7 @@ export type CreateAppStore = CreateAppState & CreateAppActions;
 export const defaultInitState: CreateAppState = {
   appId: 1,
   canSave: false,
-  centerMapViewState: { latitude: 38, longitude: -90, zoom: 6 },
+  // centerMapViewState: { latitude: 38, longitude: -90, zoom: 6 },
   appDetails: {
     'App name': undefined,
     'Event name': undefined,
@@ -191,11 +169,6 @@ export const createCreateAppStore = (
         return { ...state, appId };
       });
     },
-    setCenterMapViewState: (centerMapViewState: MapViewState) => {
-      set((state) => {
-        return { ...state, centerMapViewState };
-      });
-    },
     setAppDetails: (newAppDetail: Partial<AppDetails>) => {
       set((state) => {
         return {
@@ -204,7 +177,7 @@ export const createCreateAppStore = (
         };
       });
     },
-    setAppColors: (newColor: Partial<IAppColors>) => {
+    setAppColors: (newColor: Partial<AppColors>) => {
       set((state) => {
         return {
           ...state,
@@ -266,13 +239,28 @@ export const createCreateAppStore = (
         };
       });
     },
-    setMapLabels: (mapLabels: MapLabels) => {
+    setZoomThresholds: (zoomThresholds: number[]) => {
       set((state) => {
         return {
           ...state,
-          mapLabels,
+          mapLabels: { ...state.mapLabels, zoomThresholds },
         };
       });
     },
+    addMapLabel: (mapLabel:MapLabel, zoomElevation :number) => {
+      set((state) => {
+        const newLabelsArrays = [...state.mapLabels.labels];
+
+        newLabelsArrays[zoomElevation].push(mapLabel);
+
+        return {
+          ...state,
+          mapLabels: {
+            ...state.mapLabels,
+            labels: newLabelsArrays
+          }
+        }
+      })
+    }
   }));
 };

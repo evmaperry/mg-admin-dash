@@ -7,10 +7,10 @@ import {
   mdiMapMarker,
   mdiPlusCircle,
 } from '@mdi/js';
-import {IAppColors} from 'mgtypes/types/App'
+import {AppColors} from 'mgtypes/types/App'
 
 const MockupBottomNav: React.FC<{
-  colors: IAppColors;
+  colors: AppColors;
   page: 'map' | 'feed';
 }> = ({ colors, page }) => {
   const {

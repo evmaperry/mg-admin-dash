@@ -16,13 +16,13 @@ import { Map, ViewState, ViewStateChangeEvent } from 'react-map-gl/mapbox';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { IConfigurableColor } from '../create/AppColorPickers';
 import { cn } from '@/lib/utils';
-import { IAppColors } from 'mgtypes/types/App';
+import { AppColors } from 'mgtypes/types/App';
 import MockupBottomNav from './BottomNav';
 import MockupTopBar from './TopBar';
 
 // Map page used for coloring
 const MapPage: React.FC<{
-  colors: IAppColors;
+  colors: AppColors;
 }> = ({ colors }) => {
   const {
     primary,
@@ -39,12 +39,6 @@ const MapPage: React.FC<{
   const { mapTheme, setAppDetails, appDetails } = useCreateAppStore(
     (state) => state
   );
-
-  // const viewState = centerMapViewState ?? {
-  //   longitude: -74.006,
-  //   latitude: 40.712,
-  //   zoom: 14,
-  // };
 
   const [mapViewState, setMapViewState] = useState<ViewState>({
     zoom: 14,

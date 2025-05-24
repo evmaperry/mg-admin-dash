@@ -32,27 +32,7 @@ import { getMapMarkersFromDb } from './createActions';
 import CustomMapMarker from './popups/CustomMapMarker';
 import { Separator } from '../ui/separator';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../ui/table';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 

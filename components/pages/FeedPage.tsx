@@ -33,11 +33,11 @@ import {
   mdiThumbDown,
 } from '@mdi/js';
 import MockupBottomNav from './BottomNav';
-import { IAppColors } from 'mgtypes/types/App'
+import { AppColors } from 'mgtypes/types/App'
 import MockupTopBar from './TopBar';
 
 const FeedPage: React.FC<{
-  colors: IAppColors;
+  colors: AppColors;
 }> = ({ colors }) => {
   const {
     primary,

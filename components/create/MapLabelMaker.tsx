@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { Button } from '../ui/button';
 import {
@@ -32,67 +32,107 @@ import {
 } from '../ui/dialog';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '../ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Label } from '../ui/label';
+import { appendMutableCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 
 const MapLabelsMaker: React.FC<{}> = ({}) => {
   const {
-    centerMapViewState,
-    setCenterMapViewState,
     appDetails,
     setAppDetails,
     mapLabels,
-    setMapLabels,
+    addMapLabel,
+    setZoomThresholds,
   } = useCreateAppStore((state) => state);
 
   const [displayedMapViewState, setDisplayedMapViewState] = useState<{
     latitude: number;
     longitude: number;
     zoom: number;
-  }>({
-    latitude: appDetails['Event latitude']
-      ? appDetails['Event latitude']
-      : 44.15,
-    longitude: appDetails['Event longitude']
-      ? appDetails['Event longitude']
-      : -85.73,
-    zoom: mapLabels.zoomThresholds ? mapLabels.zoomThresholds[0] : 3,
-  });
+  }>();
 
   const handleMove = (e: ViewStateChangeEvent) => {
     setDisplayedMapViewState(e.viewState);
   };
 
-  const saveCenter = () => {
-    setCenterMapViewState({
-      latitude: displayedMapViewState.latitude,
-      longitude: displayedMapViewState.longitude,
-      zoom: displayedMapViewState.zoom,
+  useEffect(() => {
+    setDisplayedMapViewState({
+      zoom: 12,
+      latitude: appDetails['Event latitude'] as number,
+      longitude: appDetails['Event longitude'] as number,
     });
-  };
+  }, [appDetails['Event latitude'], appDetails['Event longitude']]);
 
   return (
     <div className={'flex flex-row items-center gap-8 justify-center border'}>
       <div className={'flex flex-col gap-2 w-[580px]'}>
-        {/* INSTRUCTIONS */}
         <div className={'flex flex-col gap-2 w-full'}>
-          <div>
-            On top of pins, plans and routes you can add labels to your map that are visible when the map is relatively zoomed out. There are two zoom thresholds at which the
-            visibility of these labels changes:
-          </div>
-          <div className={'flex flex-col h-24 border'}>
+          {/*  INSTRUCTIONS */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button className={'mx-auto'}>Instructions</Button>
+            </PopoverTrigger>
+            <PopoverContent className={'leading-[1.3]'}>
+              <div>
+                The map displays different content depending on how zoomed in
+                the view is. When the map is relatively zoomed in, the user sees
+                pins, routes and plans. When the map is relatively zoomed out,
+                the user sees labels, which locate the event within a wider
+                geographic context and help to section off the areas of your
+                event.
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <div className={'flex flex-col min-h-64 border'}>
             <div className={'flex flex-row items-center gap-2'}>
               <span className={'font-bold'}>Top level: </span>Event label
               <Flag />
             </div>
+            <div>Area threshold</div>
             <div className={'flex flex-row items-center gap-2'}>
               <span className={'font-bold'}>Middle level: </span> Area labels
               <Milestone />
             </div>
+            <div>Pin threshold</div>
             <div className={'flex flex-row items-center gap-2'}>
               <span className={'font-bold'}>Bottom level: </span>Pin, plan &
               route labels
               <MapPin />
             </div>
           </div>
+        </div>
+
+        {/* SLIDERS */}
+        <div className={'flex flex-col gap-2'}>
+          <Label>Area threshold: {mapLabels.zoomThresholds[1]}</Label>
+          <Slider
+            min={0}
+            max={22}
+            step={0.5}
+            onValueChange={(e) => {
+              const areaThresholdZoom = e[0];
+              setZoomThresholds([
+                mapLabels.zoomThresholds[0],
+                areaThresholdZoom,
+              ]);
+            }}
+            value={[mapLabels.zoomThresholds[1]]}
+          />
+          <Label>Pin threshold: {mapLabels.zoomThresholds[0]}</Label>
+          <Slider
+            value={[mapLabels.zoomThresholds[0]]}
+            min={0}
+            max={22}
+            step={0.5}
+            onValueChange={(e) => {
+              const pinThresholdZoom = e[0];
+              setZoomThresholds([
+                pinThresholdZoom,
+                mapLabels.zoomThresholds[1],
+              ]);
+            }}
+          />
         </div>
 
         {/* CONTROLS */}
@@ -109,14 +149,6 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
               <span className={'font-bold'}>Longitude:&nbsp;</span>
               {appDetails['Event longitude'] &&
                 appDetails['Event longitude'].toFixed(3)}
-            </div>
-            <div className={'flex flex-row'}>
-              <span className={'font-bold'}>Zoom threshold 1:&nbsp;</span>
-              {mapLabels.zoomThresholds[0]}
-            </div>
-            <div className={'flex flex-row'}>
-              <span className={'font-bold'}>Zoom threshold 2:&nbsp;</span>
-              {mapLabels.zoomThresholds[1]}
             </div>
           </div>
           {/* Zoom/Save/Close buttons */}
@@ -143,34 +175,29 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
             >
               <ZoomOut />
             </Button>
-            <Button
-              onClick={() => {
-                saveCenter();
-              }}
-            >
-              Save
-            </Button>
           </div>
         </div>
       </div>
       {/* MAP */}
       <div className='flex relative items-center justify-center overflow-hidden border-4 border-neutral-800 shadow rounded-[38px] pt-10 pb-16'>
-        <Target className={'z-40 flex absolute'} size={36} color={'orange'} />
-        <Map
-          id={'centerMap'}
-          mapboxAccessToken={
-            'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
-          }
-          mapStyle='mapbox://styles/mapbox/dark-v11'
-          initialViewState={{
-            longitude: -100,
-            latitude: 40,
-            zoom: 3,
-          }}
-          style={{ width: 268, height: 460 }}
-          onDrag={handleMove}
-          {...displayedMapViewState}
-        />
+        {/* <Target className={'z-40 flex absolute'} size={36} color={'orange'} /> */}
+        {displayedMapViewState?.latitude && displayedMapViewState.longitude && (
+          <Map
+            id={'centerMap'}
+            mapboxAccessToken={
+              'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
+            }
+            mapStyle='mapbox://styles/mapbox/light-v11'
+            initialViewState={{
+              longitude: -100,
+              latitude: 40,
+              zoom: 13,
+            }}
+            style={{ width: 268, height: 460 }}
+            onDrag={handleMove}
+            {...displayedMapViewState}
+          />
+        )}
         <div
           className={
             'absolute flex justify-around items-center w-full bottom-0 h-16 bg-neutral-50 text-black text-xs rounded-b-lg z-50'

@@ -30,6 +30,7 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
     canSave,
     setCanSave,
     appColors,
+    mapLabels,
   } = useCreateAppStore((state) => state);
 
   const [userApps, setUserApps] = useState<any[]>();
@@ -78,6 +79,7 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
       startDateTime: appDetails['Start date'] + 'T' + appDetails['Start time'],
       endDateTime: appDetails['End date'] + 'T' + appDetails['End time'],
       appColors,
+      mapLabels
     });
 
     setCanSave(false);

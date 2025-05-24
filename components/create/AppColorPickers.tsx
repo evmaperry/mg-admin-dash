@@ -25,8 +25,6 @@ export interface IConfigurableColor {
   note: string;
   hex: string;
 }
-import { IAppColors } from 'mgtypes/types/App'
-
 export const AppColorPickers: React.FC<{}> = ({}) => {
   const { appColors, setAppColors, mapTheme, setMapTheme } = useCreateAppStore(
     (state) => state
