@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { Button } from '../ui/button';
 import {
@@ -35,6 +35,16 @@ import { Separator } from '../ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Label } from '../ui/label';
 import { appendMutableCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
+import { range } from 'lodash';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
+import { getPanelElement } from 'react-resizable-panels';
+import MockupTopBar from '../pages/TopBar';
+import MockupBottomNav from '../pages/BottomNav';
+import MockupMapSearchContainer from '../pages/MapSearchContainer';
 
 const MapLabelsMaker: React.FC<{}> = ({}) => {
   const {
@@ -43,16 +53,26 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
     mapLabels,
     addMapLabel,
     setZoomThresholds,
+    appColors,
   } = useCreateAppStore((state) => state);
 
   const [displayedMapViewState, setDisplayedMapViewState] = useState<{
-    latitude: number;
-    longitude: number;
+    latitude: number | undefined;
+    longitude: number | undefined;
     zoom: number;
-  }>();
+  }>({
+    latitude: undefined,
+    longitude: undefined,
+    zoom: 16,
+  });
 
   const handleMove = (e: ViewStateChangeEvent) => {
     setDisplayedMapViewState(e.viewState);
+    setAppDetails({
+      ...appDetails,
+      'Event latitude': e.viewState.latitude,
+      'Event longitude': e.viewState.longitude,
+    });
   };
 
   useEffect(() => {
@@ -63,10 +83,19 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
     });
   }, [appDetails['Event latitude'], appDetails['Event longitude']]);
 
+  const setThresholdsFromLayout = (sizes: number[]) => {
+    console.log('sizes', sizes);
+
+    const satThreshold = (sizes[0] * 22) / 100;
+    const crowThreshold = ((sizes[0] + sizes[1]) * 22) / 100;
+
+    setZoomThresholds([crowThreshold, satThreshold]);
+  };
+
   return (
-    <div className={'flex flex-row items-center gap-8 justify-center border'}>
-      <div className={'flex flex-col gap-2 w-[580px]'}>
-        <div className={'flex flex-col gap-2 w-full'}>
+    <div className={'flex flex-row items-center gap-8 justify-center'}>
+      <div className={'flex flex-col gap-2 w-[580px] items-center'}>
+        <div className={'flex flex-col gap-2 w-96'}>
           {/*  INSTRUCTIONS */}
           <Popover>
             <PopoverTrigger asChild>
@@ -83,62 +112,96 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
               </div>
             </PopoverContent>
           </Popover>
+          <div className={'flex flex-row gap-4 justify-center w-full'}>
+            <div
+              className={
+                'relative flex flex-col items-end justify-end max-h-[580px] border-2 w-full'
+              }
+            >
+              <ResizablePanelGroup
+                direction='vertical'
+                onLayout={(sizes) => {
+                  setThresholdsFromLayout(sizes);
+                }}
+                className={'w-full'}
+              >
+                <ResizablePanel
+                  id={'satellite'}
+                  defaultSize={25}
+                  className={'flex flex-col justify-center items-center'}
+                >
+                  <div className={'flex grow items-center'}>Satellite</div>
+                  <div className={'text-sm font-mono'}>
+                    {mapLabels.zoomThresholds[1]}
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle />
+                <ResizablePanel
+                  id={'crow'}
+                  defaultSize={25}
+                  className={'flex flex-col justify-center items-center'}
+                >
+                  <div className={'flex grow items-center'}>Crow</div>
+                  <div className={'text-sm font-mono'}>
+                    {mapLabels.zoomThresholds[0]}
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle />
+                <ResizablePanel
+                  className={'flex flex-col justify-center items-center'}
+                  id={'ground'}
+                >
+                  Ground
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
+            <div className={'flex flex-row h-full gap-2'}>
+              <div className={'flex flex-col text-right py-[3px]'}>
+                {range(23).map((number) => (
+                  <div
+                    key={`zoom-graph-y-axis-${number}`}
+                    className={'text-xs font-mono'}
+                  >
+                    {number}
+                  </div>
+                ))}
+              </div>
 
-          <div className={'flex flex-col min-h-64 border'}>
-            <div className={'flex flex-row items-center gap-2'}>
-              <span className={'font-bold'}>Top level: </span>Event label
-              <Flag />
-            </div>
-            <div>Area threshold</div>
-            <div className={'flex flex-row items-center gap-2'}>
-              <span className={'font-bold'}>Middle level: </span> Area labels
-              <Milestone />
-            </div>
-            <div>Pin threshold</div>
-            <div className={'flex flex-row items-center gap-2'}>
-              <span className={'font-bold'}>Bottom level: </span>Pin, plan &
-              route labels
-              <MapPin />
+              {/* SLIDERS */}
+              <div className={'flex flex-col'}>
+                <Slider
+                  orientation='vertical'
+                  value={[displayedMapViewState?.zoom as number]}
+                  onValueChange={(e) => {
+                    setDisplayedMapViewState({
+                      ...displayedMapViewState,
+                      zoom: Math.round(e[0] * 4) / 4, // rounds to nearest 1/4
+                    });
+                  }}
+                  min={0}
+                  max={22}
+                  step={0.25}
+                  inverted={true}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* SLIDERS */}
-        <div className={'flex flex-col gap-2'}>
-          <Label>Area threshold: {mapLabels.zoomThresholds[1]}</Label>
-          <Slider
-            min={0}
-            max={22}
-            step={0.5}
-            onValueChange={(e) => {
-              const areaThresholdZoom = e[0];
-              setZoomThresholds([
-                mapLabels.zoomThresholds[0],
-                areaThresholdZoom,
-              ]);
-            }}
-            value={[mapLabels.zoomThresholds[1]]}
-          />
-          <Label>Pin threshold: {mapLabels.zoomThresholds[0]}</Label>
-          <Slider
-            value={[mapLabels.zoomThresholds[0]]}
-            min={0}
-            max={22}
-            step={0.5}
-            onValueChange={(e) => {
-              const pinThresholdZoom = e[0];
-              setZoomThresholds([
-                pinThresholdZoom,
-                mapLabels.zoomThresholds[1],
-              ]);
-            }}
-          />
+          <div className={'flex justify-end w-full font-mono'}>
+            Zoom: {displayedMapViewState.zoom}
+          </div>
         </div>
 
         {/* CONTROLS */}
         <div className={'flex flex-row items-center gap-1 justify-between'}>
           <div className={'flex flex-col w-full'}>
-            <div className='font-mono create-event-form-title'>Map center</div>
+            <div className='font-mono create-event-form-title'>
+              Center your map
+            </div>
+            <div className={'leading-[1.3]'}>
+              Click and drag the map to re-center your event in the frame of the
+              phone to best display the boundaries of your event.
+            </div>
             <div className={'flex flex-row'}>
               <span className={'font-bold'}>Latitude:&nbsp;</span>
               {appDetails['Event latitude'] &&
@@ -151,125 +214,41 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
                 appDetails['Event longitude'].toFixed(3)}
             </div>
           </div>
-          {/* Zoom/Save/Close buttons */}
-          <div className={'flex gap-2 w-full justify-end'}>
-            <Button
-              onClick={() => {
-                setDisplayedMapViewState({
-                  ...displayedMapViewState,
-                  zoom: displayedMapViewState.zoom + 1,
-                });
-              }}
-              size={'icon'}
-            >
-              <ZoomIn />
-            </Button>
-            <Button
-              onClick={() => {
-                setDisplayedMapViewState({
-                  ...displayedMapViewState,
-                  zoom: displayedMapViewState.zoom - 1,
-                });
-              }}
-              size={'icon'}
-            >
-              <ZoomOut />
-            </Button>
-          </div>
         </div>
       </div>
       {/* MAP */}
-      <div className='flex relative items-center justify-center overflow-hidden border-4 border-neutral-800 shadow rounded-[38px] pt-10 pb-16'>
-        {/* <Target className={'z-40 flex absolute'} size={36} color={'orange'} /> */}
-        {displayedMapViewState?.latitude && displayedMapViewState.longitude && (
-          <Map
-            id={'centerMap'}
-            mapboxAccessToken={
-              'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
-            }
-            mapStyle='mapbox://styles/mapbox/light-v11'
-            initialViewState={{
-              longitude: -100,
-              latitude: 40,
-              zoom: 13,
-            }}
-            style={{ width: 268, height: 460 }}
-            onDrag={handleMove}
-            {...displayedMapViewState}
-          />
-        )}
-        <div
-          className={
-            'absolute flex justify-around items-center w-full bottom-0 h-16 bg-neutral-50 text-black text-xs rounded-b-lg z-50'
-          }
-        >
-          <div className={'flex flex-col items-center ml-2 p-1.5'}>
-            <Home size={24} color={'black'} />
-            <p>Home</p>
+      <div className='flex flex-col items-center justify-center overflow-hidden border-4 border-neutral-800 shadow-lg rounded-[38px] w-[276px] h-[572px]'>
+        {/* FAKE TOP BAR */}
+        <MockupTopBar />
+
+        {/* MAP CONTAINER */}
+        <div className={'flex grow relative justify-center items-center'}>
+          <MockupMapSearchContainer colors={appColors} />
+          <div className={'flex justify-center z-40 w-full absolute'}>
+            <Target size={20} color={'orange'} />
           </div>
-          <div
-            className={
-              'flex flex-col items-center bg-neutral-300 p-1.5 rounded'
-            }
-          >
-            <MapIcon size={24} color={'black'} />
-            <p>Map</p>
-          </div>
-          <div className={'flex flex-col items-center p-1.5'}>
-            <Send size={24} color={'black'} />
-            <p>Send</p>
-          </div>
-          <div className={'flex flex-col items-center p-1.5'}>
-            <Cog size={24} color={'black'} />
-            <p>Help</p>
-          </div>
-          <div className={'flex flex-col items-center mr-2 p-1.5'}>
-            <User size={24} color={'black'} />
-            <p>User</p>
-          </div>
+          {displayedMapViewState?.latitude &&
+            displayedMapViewState.longitude && (
+              <Map
+                id={'centerMap'}
+                mapboxAccessToken={
+                  'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
+                }
+                mapStyle='mapbox://styles/mapbox/light-v11'
+                initialViewState={{
+                  longitude: -100,
+                  latitude: 40,
+                  zoom: 13,
+                }}
+                style={{ width: 268, height: 460 }}
+                onDrag={handleMove}
+                {...displayedMapViewState}
+              />
+            )}
         </div>
-        <div
-          className={
-            'absolute flex items-center justify-around top-1 h-10 w-full mx-4'
-          }
-        >
-          <div className={'w-1/6 text-xs'}>2:59</div>
-          <div className={'w-20 h-6 rounded-xl bg-neutral-800'} />
-          <div className={'flex flex-row gap-2 w-1/6'}>
-            <Ellipsis /> <Signal /> <Battery />
-          </div>
-        </div>
-        <div
-          className={
-            'flex flex-col gap-1.5 p-2 justify-center items-center absolute mx-2 bg-neutral-50 z-50 rounded-xl top-12 left-0 right-0 border border-neutral-200'
-          }
-        >
-          <div
-            className={
-              'flex flex-row items-center w-full justify-center gap-2 px-1'
-            }
-          >
-            <Input
-              placeholder='Search the map...'
-              className={'w-full h-7 text-[10px]'}
-            />
-            <div
-              className={
-                'flex items-center justify-center border rounded-full w-8 h-7 p-1'
-              }
-            >
-              <Search size={14} />
-            </div>
-          </div>
-          <div
-            className={
-              'flex flex-row justify-center rounded-lg items-center gap-2 w-48 h-5 border w-3/4 text-xs font-bold font-sans'
-            }
-          >
-            <ChevronDown size={16} />{' '}
-            <span className={'text-[8px] font-bold'}>SHOW MAP FILTERS</span>
-          </div>
-        </div>
+
+        {/* BOTTOM NAV */}
+        <MockupBottomNav colors={appColors} page={'map'} />
       </div>
     </div>
   );

@@ -252,7 +252,6 @@ export const createCreateAppStore = (
         const newLabelsArrays = [...state.mapLabels.labels];
 
         newLabelsArrays[zoomElevation].push(mapLabel);
-
         return {
           ...state,
           mapLabels: {

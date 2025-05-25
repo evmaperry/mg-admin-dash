@@ -16,6 +16,7 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
     <div className={'flex w-full pb-12'}>
       {appId ? (
         <div className={'flex flex-col gap-6 w-full'}>
+          {/*
           <div className={'flex flex-col gap-3 w-full'}>
             <div className={'create-event-form-title'}>The basics</div>
             <AppDetailInputs />
@@ -37,6 +38,7 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
             <div className={'create-event-form-title'}>Your app's markers</div>
             <MapMarkerTable />
           </div>
+          */}
 
           <div className={'flex flex-col gap-3'}>
             <div className={'create-event-form-title w-36'}>Map Labels</div>

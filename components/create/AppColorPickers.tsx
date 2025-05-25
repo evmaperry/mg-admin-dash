@@ -179,7 +179,6 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
     }
   );
 
-  console.log('appColors from pickers', appColors)
   return (
     <div className={'flex flex-row w-full justify-around items-center gap-2'}>
       <div
