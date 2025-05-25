@@ -20,7 +20,7 @@ import {
   ZoomOut,
   Milestone,
 } from 'lucide-react';
-import { Map, ViewStateChangeEvent } from 'react-map-gl/mapbox';
+import { Map, ViewStateChangeEvent, Marker } from 'react-map-gl/mapbox';
 import { Input } from '../ui/input';
 import {
   Dialog,
@@ -92,32 +92,28 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
     setZoomThresholds([crowThreshold, satThreshold]);
   };
 
+  // Shows the form to add label to map
+  const initAddLabel = () => {
+    // TODO:
+  }
+
+
+  const handleAddLabel = () => {
+    // TODO:
+  }
+
+
   return (
     <div className={'flex flex-row items-center gap-8 justify-center'}>
       <div className={'flex flex-col gap-2 w-[580px] items-center'}>
         <div className={'flex flex-col gap-2 w-96'}>
-          {/*  INSTRUCTIONS */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button className={'mx-auto'}>Instructions</Button>
-            </PopoverTrigger>
-            <PopoverContent className={'leading-[1.3]'}>
-              <div>
-                The map displays different content depending on how zoomed in
-                the view is. When the map is relatively zoomed in, the user sees
-                pins, routes and plans. When the map is relatively zoomed out,
-                the user sees labels, which locate the event within a wider
-                geographic context and help to section off the areas of your
-                event.
-              </div>
-            </PopoverContent>
-          </Popover>
           <div className={'flex flex-row gap-4 justify-center w-full'}>
             <div
               className={
                 'relative flex flex-col items-end justify-end max-h-[580px] border-2 w-full'
               }
             >
+              {/* PANELS */}
               <ResizablePanelGroup
                 direction='vertical'
                 onLayout={(sizes) => {
@@ -127,23 +123,21 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
               >
                 <ResizablePanel
                   id={'satellite'}
-                  defaultSize={25}
                   className={'flex flex-col justify-center items-center'}
                 >
                   <div className={'flex grow items-center'}>Satellite</div>
                   <div className={'text-sm font-mono'}>
-                    {mapLabels.zoomThresholds[1]}
+                    {mapLabels.zoomThresholds[1].toFixed(2)}
                   </div>
                 </ResizablePanel>
                 <ResizableHandle />
                 <ResizablePanel
                   id={'crow'}
-                  defaultSize={25}
                   className={'flex flex-col justify-center items-center'}
                 >
                   <div className={'flex grow items-center'}>Crow</div>
                   <div className={'text-sm font-mono'}>
-                    {mapLabels.zoomThresholds[0]}
+                    {mapLabels.zoomThresholds[0].toFixed(2)}
                   </div>
                 </ResizablePanel>
                 <ResizableHandle />
@@ -155,6 +149,7 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
                 </ResizablePanel>
               </ResizablePanelGroup>
             </div>
+            {/* SCALE */}
             <div className={'flex flex-row h-full gap-2'}>
               <div className={'flex flex-col text-right py-[3px]'}>
                 {range(23).map((number) => (
@@ -187,31 +182,20 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
             </div>
           </div>
 
-          <div className={'flex justify-end w-full font-mono'}>
-            Zoom: {displayedMapViewState.zoom}
-          </div>
-        </div>
-
-        {/* CONTROLS */}
-        <div className={'flex flex-row items-center gap-1 justify-between'}>
-          <div className={'flex flex-col w-full'}>
-            <div className='font-mono create-event-form-title'>
-              Center your map
-            </div>
-            <div className={'leading-[1.3]'}>
-              Click and drag the map to re-center your event in the frame of the
-              phone to best display the boundaries of your event.
-            </div>
-            <div className={'flex flex-row'}>
-              <span className={'font-bold'}>Latitude:&nbsp;</span>
+          <div className={'flex justify-between w-full font-mono'}>
+            <div className={'flex flex-row w-1/4'}>
+              <span className={'font-bold'}>Lat:&nbsp;</span>
               {appDetails['Event latitude'] &&
                 appDetails['Event latitude'].toFixed(3)}
             </div>
-
-            <div className={'flex flex-row'}>
-              <span className={'font-bold'}>Longitude:&nbsp;</span>
+            <div className={'flex flex-row w-1/4'}>
+              <span className={'font-bold'}>Lng:&nbsp;</span>
               {appDetails['Event longitude'] &&
                 appDetails['Event longitude'].toFixed(3)}
+            </div>
+            <div className={'flex flex-row w-1/4'}>
+              <span className={'font-bold'}>Zoom:&nbsp;</span>
+              {displayedMapViewState.zoom}
             </div>
           </div>
         </div>
@@ -222,11 +206,21 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
         <MockupTopBar />
 
         {/* MAP CONTAINER */}
-        <div className={'flex grow relative justify-center items-center'}>
+        <div className={'flex grow relative'}>
           <MockupMapSearchContainer colors={appColors} />
-          <div className={'flex justify-center z-40 w-full absolute'}>
-            <Target size={20} color={'orange'} />
+          <div
+            className={
+              'flex absolute z-50 bottom-1 border bg-neutral-50 py-1 px-2 rounded left-1 font-mono'
+            }
+          >
+            Zoom level:
+            {displayedMapViewState.zoom < mapLabels.zoomThresholds[1]
+              ? 'Satellite'
+              : displayedMapViewState.zoom > mapLabels.zoomThresholds[0]
+                ? 'Ground'
+                : 'Crow'}
           </div>
+
           {displayedMapViewState?.latitude &&
             displayedMapViewState.longitude && (
               <Map
@@ -243,7 +237,15 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
                 style={{ width: 268, height: 460 }}
                 onDrag={handleMove}
                 {...displayedMapViewState}
-              />
+                onClick={initAddLabel}
+              >
+                <Marker
+                  longitude={appDetails['Event longitude'] as number}
+                  latitude={appDetails['Event latitude'] as number}
+                >
+                  <Target size={20} color={'orange'} />
+                </Marker>
+              </Map>
             )}
         </div>
 

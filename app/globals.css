@@ -90,7 +90,7 @@
   }
 
   .create-event-form-title {
-    @apply text-base font-mono text-sky-400
+    @apply text-xl font-mono text-sky-400
   }
 
 }
