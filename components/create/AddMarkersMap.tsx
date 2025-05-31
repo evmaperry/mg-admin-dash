@@ -32,13 +32,32 @@ import { getMapMarkersFromDb } from './createActions';
 import CustomMapMarker from './popups/CustomMapMarker';
 import { Separator } from '../ui/separator';
 import 'mapbox-gl/dist/mapbox-gl.css';
-
+import { convertMapThemeToStyleURL } from '@/utils/mapbox/utils';
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
 const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
-  const { mapTheme, markers, setMarkers, appDetails } =
-    useCreateAppStore((state) => state);
+  const { mapTheme, markers, setMarkers, appDetails } = useCreateAppStore(
+    (state) => state
+  );
+
+  // const [displayedMapViewState, setDisplayedMapViewState] = useState<{
+  //   latitude: number | undefined;
+  //   longitude: number | undefined;
+  //   zoom: number;
+  // }>({
+  //   latitude: undefined,
+  //   longitude: undefined,
+  //   zoom: 16,
+  // });
+
+  // useEffect(() => {
+  //   setDisplayedMapViewState({
+  //     ...displayedMapViewState,
+  //     latitude: appDetails['Event latitude'] as number,
+  //     longitude: appDetails['Event longitude'] as number,
+  //   });
+  // }, [appDetails['Event latitude'], appDetails['Event longitude']]);
 
   const [selectedMarkerType, setSelectedMarkerType] =
     useState<MarkerType>(null);
@@ -86,44 +105,51 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
     <div className={'flex w-full'}>
       <div className={'flex flex-col items-center w-full gap-4'}>
         <div className={'flex flex-row w-full justify-between gap-3'}>
-          <div className={'flex rounded overflow-hidden'}>
-            <Map
-              mapboxAccessToken={
-                'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
-              }
-              mapStyle={`mapbox://styles/mapbox/${mapTheme}`}
-              style={{ width: 500, height: 600 }}
-              initialViewState={{
-                latitude: appDetails['Event latitude'],
-                longitude: appDetails['Event longitude'],
-                zoom: 12,
-              }}
-              onClick={(event) => {
-                console.log('event', event);
-                setNewMarker({
-                  ...newMarker,
-                  coordinates: [event.lngLat.lat, event.lngLat.lng],
-                  isVisible: true,
-                  event,
-                });
-              }}
-            >
-              <NavigationControl />
-              {newMarker.coordinates && (
-                <Marker
-                  latitude={newMarker.coordinates[0]}
-                  longitude={newMarker.coordinates[1]}
+          <div
+            className={
+              'flex rounded overflow-hidden h-[600px]'
+            }
+          >
+            {appDetails['Event latitude'] &&
+              appDetails['Event longitude'] && (
+                <Map
+                  mapboxAccessToken={
+                    'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
+                  }
+                  mapStyle={convertMapThemeToStyleURL(mapTheme)}
+                  style={{ width: 500, height: 600 }}
+                  initialViewState={{
+                    longitude:  appDetails['Event longitude'],
+                    latitude: appDetails['Event latitude'],
+                    zoom: 14,
+                  }}
+                  onClick={(event) => {
+                    console.log('event', event);
+                    setNewMarker({
+                      ...newMarker,
+                      coordinates: [event.lngLat.lat, event.lngLat.lng],
+                      isVisible: true,
+                      event,
+                    });
+                  }}
                 >
-                  {newMarker.icon}
-                </Marker>
-              )}
+                  <NavigationControl />
+                  {newMarker.coordinates && (
+                    <Marker
+                      latitude={newMarker.coordinates[0]}
+                      longitude={newMarker.coordinates[1]}
+                    >
+                      {newMarker.icon}
+                    </Marker>
+                  )}
 
-              {markers.pins.map((pin, index) => {
-                return (
-                  <CustomMapMarker key={`pin-marker-${index}`} post={pin} />
-                );
-              })}
-            </Map>
+                  {markers.pins.map((pin, index) => {
+                    return (
+                      <CustomMapMarker key={`pin-marker-${index}`} post={pin} />
+                    );
+                  })}
+                </Map>
+              )}
           </div>
           {/* POPUPS */}
           <div

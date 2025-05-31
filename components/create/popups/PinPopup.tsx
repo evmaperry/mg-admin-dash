@@ -145,7 +145,6 @@ const PinPopup: React.FC<{
             </DropdownMenuPortal>
           </DropdownMenuSub>
         );
-        acc = acc.concat();
         return acc;
       },
       []

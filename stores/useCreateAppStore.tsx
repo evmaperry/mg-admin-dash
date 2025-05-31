@@ -27,7 +27,7 @@ export type CreateAppState = {
   appId: number | undefined;
   appDetails: AppDetails;
   appColors: AppColors;
-  mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12';
+  mapTheme: 'light' | 'streets' | 'dark' | 'outdoors';
   markers: MapMarkers;
   mapLabels: MapLabels;
 };
@@ -37,7 +37,7 @@ export type CreateAppActions = {
   setAppDetails: (AppDetailsPartialObj: Partial<AppDetails>) => void;
   setAppColors: (AppColorsPartialObj: Partial<AppColors>) => void;
   setMapTheme: (
-    mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
+    mapTheme: 'light' | 'streets' | 'dark' | 'outdoors'
   ) => void;
   setMarkers: (markers: MapMarkers) => void;
   setApp: (app: any) => void;
@@ -71,7 +71,7 @@ export const defaultInitState: CreateAppState = {
     outline: '#e5e5e5',
     surfaceVariant: '#e5e5e5',
   },
-  mapTheme: 'light-v11',
+  mapTheme: 'light',
   markers: {
     pins: [],
     plans: [],
@@ -97,7 +97,7 @@ export const defaultInitState: CreateAppState = {
         },
         {
           title: 'Festival Stage',
-          icon: 'music',
+          icon: 'microphone',
           latitude: 44.766354,
           longitude: -85.625294,
           image: null,
@@ -135,10 +135,10 @@ export const defaultInitState: CreateAppState = {
       [
         {
           title: 'National Fruit Festival',
-          icon: null,
+          icon: 'party-popper',
           latitude: 44.766686,
           longitude: -85.623914,
-          iconColor: null,
+          iconColor: 'red',
           image: 'logo-small',
           boundingBox: [
             [-85.626142, 44.765011],
@@ -188,7 +188,7 @@ export const createCreateAppStore = (
       });
     },
     setMapTheme: (
-      mapTheme: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
+      mapTheme: 'light' | 'streets' | 'dark' | 'outdoors'
     ) => {
       set((state) => {
         return {
@@ -208,10 +208,7 @@ export const createCreateAppStore = (
     setApp: (app: App) => {
       set((state) => {
         const [startDate, startTime] = app.startDateTime.split('T');
-
         const [endDate, endTime] = app.endDateTime.split('T');
-
-        console.log('app inside setApp', app);
 
         // appId and eventLocation do not need to be set
         // it's set from AppSelectOrCreate
@@ -235,6 +232,7 @@ export const createCreateAppStore = (
             structures: [],
           },
           appColors: app.appColors,
+          mapTheme: app.mapTheme
         };
       });
     },

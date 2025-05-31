@@ -58,7 +58,6 @@ const MapMarkerTable: React.FC<{}> = ({}) => {
   };
 
   const PinsTable: React.FC<{}> = ({}) => {
-    console.log('pins', pins)
     return (
       <>
         <TableHeader>

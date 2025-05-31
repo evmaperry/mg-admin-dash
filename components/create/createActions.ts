@@ -117,7 +117,6 @@ export const getUserAppsFromDb = async (userId: string) => {
       .select()
       .eq('userId', userId)
       .then((res) => res.data);
-    console.log('userApps', userApps);
     return userApps;
   } catch (e) {
     console.error('CREATE ACTIONS ERROR: failed to get user apps from db', e);
@@ -143,6 +142,7 @@ export const getAppInfoFromDb = async (appId: number) => {
         eventLatitude,
         mapLabels,
         mapStyleUrl,
+        mapTheme,
         appColors,
         pins (
           id,

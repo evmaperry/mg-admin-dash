@@ -110,9 +110,8 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
         ...configurableColors.outline,
         hex: appColors.outline
       },
-
     })
-
+   
 
 
   }, [appColors])
@@ -196,21 +195,21 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
           <div className={'font-mono font-bold text-md w-1/2'}>Select Map Theme</div>
           <Select
             onValueChange={(
-              value: 'light-v11' | 'streets-v12' | 'dark-v11' | 'outdoors-v12'
+              value: 'light' | 'streets' | 'dark' | 'outdoors'
             ) => {
               setMapTheme(value);
             }}
           >
             <SelectTrigger className={'w-1/2'}>
-              <SelectValue placeholder={'Light'} />
+            <SelectValue placeholder={'Light'} defaultValue={mapTheme}/>
             </SelectTrigger>
 
             <SelectContent>
               <SelectGroup>
-                <SelectItem value={'light-v11'}>Light</SelectItem>
-                <SelectItem value={'dark-v11'}>Dark</SelectItem>
-                <SelectItem value={'outdoors-v12'}>Outdoors</SelectItem>
-                <SelectItem value={'streets-v12'}>Streets</SelectItem>
+                <SelectItem value={'light'}>Light</SelectItem>
+                <SelectItem value={'dark'}>Dark</SelectItem>
+                <SelectItem value={'outdoors'}>Outdoors</SelectItem>
+                <SelectItem value={'streets'}>Streets</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

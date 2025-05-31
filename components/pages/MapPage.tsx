@@ -20,6 +20,7 @@ import { AppColors } from 'mgtypes/types/App';
 import MockupBottomNav from './BottomNav';
 import MockupTopBar from './TopBar';
 import MockupMapSearchContainer from './MapSearchContainer';
+import { convertMapThemeToStyleURL } from '@/utils/mapbox/utils';
 // Map page used for coloring
 const MapPage: React.FC<{
   colors: AppColors;
@@ -62,7 +63,8 @@ const MapPage: React.FC<{
     });
   }, [appDetails['Event longitude'], appDetails['Event latitude']]);
 
-  console.log(mapViewState);
+
+  console.log('mapTheme', mapTheme)
   return (
     <div className='flex flex-col items-center justify-center overflow-hidden border-4 border-neutral-800 shadow-lg rounded-[38px] w-[276px] h-[572px]'>
       {/* FAKE TOP BAR */}
@@ -76,7 +78,7 @@ const MapPage: React.FC<{
             mapboxAccessToken={
               'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
             }
-            mapStyle={`mapbox://styles/mapbox/${mapTheme}`}
+            mapStyle={convertMapThemeToStyleURL(mapTheme)}
             style={{ width: 268, height: 460 }}
             initialViewState={{ ...mapViewState }}
             {...mapViewState}
