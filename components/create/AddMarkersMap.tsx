@@ -33,6 +33,7 @@ import CustomMapMarker from './popups/CustomMapMarker';
 import { Separator } from '../ui/separator';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { convertMapThemeToStyleURL } from '@/utils/mapbox/utils';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
@@ -40,24 +41,6 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
   const { mapTheme, markers, setMarkers, appDetails } = useCreateAppStore(
     (state) => state
   );
-
-  // const [displayedMapViewState, setDisplayedMapViewState] = useState<{
-  //   latitude: number | undefined;
-  //   longitude: number | undefined;
-  //   zoom: number;
-  // }>({
-  //   latitude: undefined,
-  //   longitude: undefined,
-  //   zoom: 16,
-  // });
-
-  // useEffect(() => {
-  //   setDisplayedMapViewState({
-  //     ...displayedMapViewState,
-  //     latitude: appDetails['Event latitude'] as number,
-  //     longitude: appDetails['Event longitude'] as number,
-  //   });
-  // }, [appDetails['Event latitude'], appDetails['Event longitude']]);
 
   const [selectedMarkerType, setSelectedMarkerType] =
     useState<MarkerType>(null);
@@ -102,108 +85,92 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
   };
 
   return (
-    <div className={'flex w-full'}>
+    <div className={'flex flex-col gap-3 w-full'}>
+      <div className={'flex flex-row h-20 items-center gap-3 w-full'}>
+        <div className={'flex w-1/5 text-sky-500 font-mono'}>Select a marker type 👉</div>
+        <ToggleGroup
+          onValueChange={(value: string) => {
+            setSelectedMarkerType(value as MarkerType);
+          }}
+          type={'single'}
+          className={'flex w-2/5'}
+          variant={'outline'}
+        >
+          <ToggleGroupItem value={'pin'}>Pin</ToggleGroupItem>
+          <ToggleGroupItem value={'plan'}>Plan</ToggleGroupItem>
+          <ToggleGroupItem value={'route'}>Route</ToggleGroupItem>
+          <ToggleGroupItem value={'area'}>Area</ToggleGroupItem>
+          <ToggleGroupItem value={'structure'}>Structure</ToggleGroupItem>
+        </ToggleGroup>
+        <div className={'leading-[1.1] h-full flex items-center w-2/5 text-xs border bg-neutral-100 p-2 rounded font-mono'}>
+          {selectedMarkerType
+            ? MarkerTypeInstructions[selectedMarkerType]
+            : 'Select a marker type to add to the map.'}
+        </div>
+      </div>
       <div className={'flex flex-col items-center w-full gap-4'}>
         <div className={'flex flex-row w-full justify-between gap-3'}>
-          <div
-            className={
-              'flex rounded overflow-hidden h-[600px]'
-            }
-          >
-            {appDetails['Event latitude'] &&
-              appDetails['Event longitude'] && (
-                <Map
-                  mapboxAccessToken={
-                    'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
-                  }
-                  mapStyle={convertMapThemeToStyleURL(mapTheme)}
-                  style={{ width: 500, height: 600 }}
-                  initialViewState={{
-                    longitude:  appDetails['Event longitude'],
-                    latitude: appDetails['Event latitude'],
-                    zoom: 14,
-                  }}
-                  onClick={(event) => {
-                    console.log('event', event);
-                    setNewMarker({
-                      ...newMarker,
-                      coordinates: [event.lngLat.lat, event.lngLat.lng],
-                      isVisible: true,
-                      event,
-                    });
-                  }}
-                >
-                  <NavigationControl />
-                  {newMarker.coordinates && (
-                    <Marker
-                      latitude={newMarker.coordinates[0]}
-                      longitude={newMarker.coordinates[1]}
-                    >
-                      {newMarker.icon}
-                    </Marker>
-                  )}
+         {/* MAP */}
+          <div className={'flex rounded overflow-hidden h-[600px] w-2/3'}>
+            {appDetails['Event latitude'] && appDetails['Event longitude'] && (
+              <Map
+                mapboxAccessToken={
+                  'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
+                }
+                mapStyle={convertMapThemeToStyleURL(mapTheme)}
+                style={{ width: 2000, height: 600 }}
+                initialViewState={{
+                  longitude: appDetails['Event longitude'],
+                  latitude: appDetails['Event latitude'],
+                  zoom: 14,
+                }}
+                onClick={(event) => {
+                  setNewMarker({
+                    ...newMarker,
+                    coordinates: [event.lngLat.lat, event.lngLat.lng],
+                    isVisible: true,
+                    event,
+                  });
+                }}
+              >
+                <NavigationControl />
+                {newMarker.coordinates && (
+                  <Marker
+                    latitude={newMarker.coordinates[0]}
+                    longitude={newMarker.coordinates[1]}
+                  >
+                    {newMarker.icon}
+                  </Marker>
+                )}
 
-                  {markers.pins.map((pin, index) => {
-                    return (
-                      <CustomMapMarker key={`pin-marker-${index}`} post={pin} />
-                    );
-                  })}
-                </Map>
-              )}
+                {markers.pins.map((pin, index) => {
+                  return (
+                    <CustomMapMarker key={`pin-marker-${index}`} post={pin} />
+                  );
+                })}
+              </Map>
+            )}
           </div>
           {/* POPUPS */}
           <div
             className={
-              'flex flex-col gap-3 items-center justify-start font-light rounded w-full px-4 py-3 border bg-neutral-50]'
+              'flex flex-col gap-3 items-center justify-start font-light rounded w-1/3 px-4 py-3 border bg-neutral-50]'
             }
           >
-            <div className={'create-event-form-title'}>Select Marker Type</div>
-            <div className={'flex flex-row items-center gap-6 w-full'}>
-              <Select
-                onValueChange={(value: string) => {
-                  setSelectedMarkerType(value as MarkerType);
-                }}
-              >
-                <SelectTrigger className={'w-1/3 text-base'}>
-                  <SelectValue placeholder={'...'} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value={'pin'}>Pin</SelectItem>
-                    <SelectItem value={'plan'}>Plan</SelectItem>
-                    <SelectItem value={'route'}>Route</SelectItem>
-                    <SelectItem value={'area'}>Area</SelectItem>
-                    <SelectItem value={'structure'}>Structure</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <div className={'leading-[1.1] w-full w-2/3 text-sm'}>
-                {selectedMarkerType
-                  ? MarkerTypeInstructions[selectedMarkerType]
-                  : 'Select a marker type to add to the map.'}
-              </div>
-            </div>
-            <Separator className='' />
             {/* Popup container */}
-            <div
-              className={
-                'flex flex-col h-[474px] w-full items-center justify-center'
-              }
-            >
-              {!selectedMarkerType && <Smile className={''} />}
-              {selectedMarkerType === 'pin' && (
-                <PinPopup
-                  lastClickEvent={newMarker.event}
-                  user={user}
-                  setMarkerIcon={setMarkerIcon}
-                  getAndSetMapMarkers={getAndSetMapMarkers}
-                />
-              )}
-              {selectedMarkerType === 'plan' && <PlanPopup />}
-              {selectedMarkerType === 'route' && <RoutePopup />}
-              {selectedMarkerType === 'area' && <AreaPopup />}
-              {selectedMarkerType === 'structure' && <StructurePopup />}
-            </div>
+            {!selectedMarkerType && <Smile className={''} />}
+            {selectedMarkerType === 'pin' && (
+              <PinPopup
+                lastClickEvent={newMarker.event}
+                user={user}
+                setMarkerIcon={setMarkerIcon}
+                getAndSetMapMarkers={getAndSetMapMarkers}
+              />
+            )}
+            {selectedMarkerType === 'plan' && <PlanPopup />}
+            {selectedMarkerType === 'route' && <RoutePopup />}
+            {selectedMarkerType === 'area' && <AreaPopup />}
+            {selectedMarkerType === 'structure' && <StructurePopup />}
           </div>
         </div>
       </div>

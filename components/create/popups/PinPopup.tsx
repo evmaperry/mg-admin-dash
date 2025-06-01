@@ -151,36 +151,34 @@ const PinPopup: React.FC<{
     );
 
     return (
-      <div className={'flex flex-col gap-2 justify-center items-center'}>
-        <div className={'text-center text-sm'}>
-          <span className={'font-bold text-sky-400'}>Step 2: </span>Select pin type
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button>
-              {pin.pinType && pin.pinCategory ? (
-                <div className={'flex flex-row items-center gap-2'}>
-                  <Image
-                    src={`/assets/images/pin-${pin.pinCategory}-${pin.pinType}.png`}
-                    height={24}
-                    width={24}
-                    alt={'alt'}
-                  />
-                  <div>{capitalize(pin.pinType)}</div>
-                </div>
-              ) : (
-                'Select a Pin'
-              )}
-            </Button>
-          </DropdownMenuTrigger>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant={'default'}>
+            {pin.pinType && pin.pinCategory ? (
+              <div className={'flex flex-row items-center gap-2'}>
+                <Image
+                  src={`/assets/images/pin-${pin.pinCategory}-${pin.pinType}.png`}
+                  height={24}
+                  width={24}
+                  alt={'alt'}
+                />
+                <div>{capitalize(pin.pinType)}</div>
+              </div>
+            ) : (
+              <div>
+                <span className={'font-bold text-sky-400'}>Step 2 </span>Select
+                a Pin Type
+              </div>
+            )}
+          </Button>
+        </DropdownMenuTrigger>
 
-          <DropdownMenuContent>
-            <DropdownMenuGroup className={'flex flex-col'}>
-              {dropdownMenuGroup}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+        <DropdownMenuContent>
+          <DropdownMenuGroup className={'flex flex-col'}>
+            {dropdownMenuGroup}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   };
 
@@ -213,6 +211,8 @@ const PinPopup: React.FC<{
       endDate: undefined,
       endTime: undefined,
     });
+    setImage(undefined);
+    setImageFile(undefined);
   };
 
   const PinHours: React.FC<{}> = ({}) => {
@@ -413,44 +413,35 @@ const PinPopup: React.FC<{
     setIsLoading(false);
   };
 
-  console.log(
-    'pinHours',
-    pinHours,
-    'appDetails',
-    appDetails,
-    'pinHour',
-    pinHour
-  );
-
   return (
     <div className={'flex w-full flex-col gap-4'}>
       {/* COORDINATES */}
       <div className={'flex flex-row items-center gap-2'}>
-        {/* <div className={'w-20 create-event-form-title'}>Location</div> */}
         <div
           className={
             'flex flex-col justify-center w-full rounded gap-1 text-sm'
           }
         >
-          <div className={'text-center text-sm'}>
-            <span className={'font-bold text-sky-400'}>Step 1: </span>Click the map to locate
-            your new pin
+          <div className={'text-sm'}>
+            <span className={'font-bold text-sky-400'}>Step 1 </span>Click on a pin to edit it, or click the map to drop a new pin.
           </div>
 
-          <div className={'flex flex-row items-center justify-start'}>
-            <div className={'flex text-sm w-28 gap-2'}>
-              <div className={'font-bold'}>Lat </div>
-              <div>{`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}</div>
-            </div>
+          <div className={'flex flex-col'}>
+            <div className={'flex'}>
+              <div className={'flex text-sm w-full gap-2'}>
+                <div className={'font-bold'}>Lat </div>
+                <div>{`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}</div>
+              </div>
 
-            <div className={'flex text-sm w-32 gap-2'}>
-              <div className={'flex font-bold'}>Lng </div>
-              <div>{`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}</div>
+              <div className={'flex text-sm w-full gap-2'}>
+                <div className={'flex font-bold'}>Lng </div>
+                <div>{`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}</div>
+              </div>
             </div>
 
             <div className={'flex flex-row items-center text-sm gap-2'}>
-              <div className='font-bold'>Address: </div>
-              <div className={''}>
+              <div className='font-bold'>Address </div>
+              <div className={'leading-[1.1] h-8 flex items-center'}>
                 {`${pin.latitude === 0 && pin.longitude === 0 ? 'N/A' : pin.address}`}
               </div>
             </div>
@@ -458,86 +449,83 @@ const PinPopup: React.FC<{
         </div>
       </div>
 
-      {/* PIN TYPE */}
-      <div className={'flex flex-row items-center justify-between w-full'}>
-        <PinSelector />
-        {/* IMAGE */}
-        <div className={'flex flex-row items-center gap-4'}>
-          <div className={'flex flex-col justify-center items-center gap-2'}>
-            <div className={'text-center text-sm '}>
-              <span className={'font-bold text-sky-400'}>Step 3: </span>Select an image
-            </div>
-            <div className={'flex w-60'}>
-              <Input
-                className={
-                  'file:text-white text-white bg-primary file:bg-primary'
-                }
-                ref={fileInputRef}
-                disabled={isLoading}
-                type='file'
-                accept='image/*'
-                placeholder=''
-                id='upload-results'
-                onChange={(event) => {
-                  handleFileSelection(event);
-                }}
-              />
-            </div>
+      <PinSelector />
+      {/* IMAGE */}
+      <div className={'flex flex-row items-center gap-4'}>
+        <div className={'flex flex-col gap-2'}>
+          <div className={'text-sm '}>
+            <span className={'font-bold text-sky-400'}>Step 3 </span>Select an
+            image
           </div>
+          <div className={'flex w-60'}>
+            <Input
+              className={
+                'file:text-white text-white bg-primary file:bg-primary'
+              }
+              ref={fileInputRef}
+              disabled={isLoading}
+              type='file'
+              accept='image/*'
+              placeholder=''
+              id='upload-results'
+              onChange={(event) => {
+                handleFileSelection(event);
+              }}
+            />
+          </div>
+        </div>
 
-          <div className={'flex flex-row items-center'}>
-            {image ? (
-              <Image
-                className={'rounded'}
-                alt={'The image associated with the pin being created'}
-                src={image}
-                height={100}
-                width={100}
-              />
-            ) : (
-              <div
-                className={
-                  'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[100px] w-[100px] text-sm'
-                }
-              >
-                <ImageOff />
-              </div>
-            )}
-          </div>
+        <div className={'flex flex-row items-center'}>
+          {image ? (
+            <Image
+              className={'rounded'}
+              alt={'The image associated with the pin being created'}
+              src={image}
+              height={100}
+              width={100}
+            />
+          ) : (
+            <div
+              className={
+                'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[100px] w-[100px] text-sm'
+              }
+            >
+              <ImageOff />
+            </div>
+          )}
         </div>
       </div>
 
       {/* TEXT DETAILS */}
-      <div className={'flex flex-col gap-1 text-center w-full'}>
-        <div
-          className={'flex flex-row justify-between items-center gap-1 w-full'}
-        >
-          <div className={'text-sm min-w-32'}>
-            <span className={'text-sky-400 font-bold'}>Step 4: </span>Add details
+      <div className={'flex flex-col gap-1 w-full'}>
+        <div className={'flex items-center gap-2 text-sm'}>
+          <div className={'flex w-64 gap-1'}>
+            <span className={'text-sky-400 font-bold'}>Step 4 </span>Add details
           </div>
           <Input
             name={'primaryText'}
             value={pin.primaryText}
             onChange={handleTextInput}
             placeholder='Pin title'
-            className={'w-48 text-center'}
+            className={'w-full text-center'}
           />
+        </div>
+        <div className={'flex flex-row items-center gap-1 w-full'}>
           <Input
             placeholder='Phone # (optional)'
             value={pin.phoneNumber as string}
             name={'phoneNumber'}
             onChange={handleTextInput}
-            className={'w-40 text-center'}
+            className={'w-1/2 text-center'}
           />
           <Input
             placeholder='Website link (optional)'
             value={pin.link as string}
             name={'link'}
             onChange={handleTextInput}
-            className={'text-center'}
+            className={'w-1/2 text-center'}
           />
         </div>
-
         <div className={'flex flex-row items-center gap-1'}>
           <Input
             placeholder='Description'
@@ -550,33 +538,22 @@ const PinPopup: React.FC<{
       </div>
 
       {/* PIN HOURS */}
-      <div className={'flex flex-col items-center gap-2'}>
-        <div className={'text-sm'}>
-          <span className={'text-sky-400 font-bold'}>Step 5: </span>Add pin Hours
-        </div>
-        <div
-          className={
-            'flex flex-row justify-between items-center gap-2 bg-neutral-200 p-3'
-          }
-        >
-          <div className={'text-sm leading-[1.1]'}>
-            Add hours to a pin if you'd like to indicate whether a pin is open or closed.
-          </div>
-          <div
-            className={'flex flex-row items-center gap-1 justify-center w-1/2'}
-          >
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button>Add hours to this pin</Button>
-              </PopoverTrigger>
-              <PopoverContent className={'flex w-[600px] grow'}>
-                <PinHours />
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
+      <div className={'flex flex-col gap-2'}>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button>
+              <div className={'text-sm'}>
+                <span className={'text-sky-400 font-bold'}>Step 5 </span>
+                Add Pin Hours (optional)
+              </div>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className={'flex w-[600px] grow'}>
+            <PinHours />
+          </PopoverContent>
+        </Popover>
       </div>
-      <Separator className={'my-2'}/>
+      <Separator className={'my-2'} />
       <Button
         className={'bg-sky-500 w-48 mx-auto'}
         onClick={() => handleCreatePin()}
