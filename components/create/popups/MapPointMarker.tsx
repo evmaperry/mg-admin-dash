@@ -38,7 +38,7 @@ const MapPointMarker: React.FC<{
           : (post.longitude as number)
       }
       draggable={true}
-      onDrag={(e: MarkerDragEvent) => {
+      onDragEnd={(e: MarkerDragEvent) => {
         setCoordinates({ longitude: e.lngLat.lng, latitude: e.lngLat.lat });
       }}
       onClick={(e: MarkerEvent<MouseEvent>) => {}}

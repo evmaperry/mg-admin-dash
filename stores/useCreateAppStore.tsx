@@ -15,11 +15,11 @@ export interface AppDetails {
 }
 
 interface MapMarkers {
-  pins: any[]; // TODO: type these
-  plans: any[];
-  routes: any[];
-  structures: any[];
-  areas: any[];
+  pins: { [id: string]: any }; // TODO: type these
+  plans: { [id: string]: any };
+  routes: { [id: string]: any };
+  structures: { [id: string]: any };
+  areas: { [id: string]: any };
 }
 
 export type CreateAppState = {
@@ -36,14 +36,24 @@ export type CreateAppActions = {
   setAppId: (appId: number) => void;
   setAppDetails: (AppDetailsPartialObj: Partial<AppDetails>) => void;
   setAppColors: (AppColorsPartialObj: Partial<AppColors>) => void;
-  setMapTheme: (
-    mapTheme: 'light' | 'streets' | 'dark' | 'outdoors'
-  ) => void;
+  setMapTheme: (mapTheme: 'light' | 'streets' | 'dark' | 'outdoors') => void;
   setMarkers: (markers: MapMarkers) => void;
   setApp: (app: any) => void;
   addMapLabel: (mapLabel: MapLabel, zoomElevation: number) => void;
   setZoomThresholds: (zoomThresholds: number[]) => void;
   setCanSave: (canSave: boolean) => void;
+  addCoordinate: (
+    markerType: 'route' | 'structure' | 'area',
+    markerId: number,
+    index: number,
+    coordinate: Position
+  ) => void;
+  moveCoordinate: (
+    markerType: 'route' | 'structure' | 'area',
+    markerId: number,
+    index: number,
+    coordinate: Position
+  ) => void;
 };
 
 export type CreateAppStore = CreateAppState & CreateAppActions;
@@ -187,9 +197,7 @@ export const createCreateAppStore = (
         };
       });
     },
-    setMapTheme: (
-      mapTheme: 'light' | 'streets' | 'dark' | 'outdoors'
-    ) => {
+    setMapTheme: (mapTheme: 'light' | 'streets' | 'dark' | 'outdoors') => {
       set((state) => {
         return {
           ...state,
@@ -227,12 +235,12 @@ export const createCreateAppStore = (
           markers: {
             pins: app.pins,
             plans: [],
-            routes: [],
+            routes: app.routes,
             areas: [],
             structures: [],
           },
           appColors: app.appColors,
-          mapTheme: app.mapTheme
+          mapTheme: app.mapTheme,
         };
       });
     },
@@ -244,7 +252,7 @@ export const createCreateAppStore = (
         };
       });
     },
-    addMapLabel: (mapLabel:MapLabel, zoomElevation :number) => {
+    addMapLabel: (mapLabel: MapLabel, zoomElevation: number) => {
       set((state) => {
         const newLabelsArrays = [...state.mapLabels.labels];
 
@@ -253,10 +261,67 @@ export const createCreateAppStore = (
           ...state,
           mapLabels: {
             ...state.mapLabels,
-            labels: newLabelsArrays
-          }
-        }
-      })
-    }
+            labels: newLabelsArrays,
+          },
+        };
+      });
+    },
+    addCoordinate: (
+      markerType: 'route' | 'structure' | 'area',
+      markerId: number,
+      index: number,
+      coordinate: Position
+    ) => {
+      const pluralMarkerType: 'routes' | 'structures' | 'areas' = (markerType +
+        's') as 'routes' | 'structures' | 'areas';
+
+      set((state) => {
+        return {
+          ...state,
+          markers: {
+            ...state.markers,
+            [pluralMarkerType]: {
+              ...state.markers[pluralMarkerType],
+              [state.markers[pluralMarkerType][markerId].id]: {
+                ...state.markers[pluralMarkerType][markerId],
+                coordinates: state.markers[pluralMarkerType][
+                  markerId
+                ].coordinates.toSpliced(index, 0, coordinate),
+              },
+            },
+          },
+        };
+      });
+    },
+    moveCoordinate: (
+      markerType: 'route' | 'structure' | 'area',
+      markerId: number,
+      index: number,
+      coordinate: Position
+    ) => {
+      console.log('movingCoord', markerType, markerId, index, coordinate);
+      const pluralMarkerType: 'routes' | 'structures' | 'areas' = (markerType +
+        's') as 'routes' | 'structures' | 'areas';
+
+      set((state) => {
+        console.log('here', state.markers[pluralMarkerType])
+        const updatedCoords =
+          state.markers[pluralMarkerType][markerId].coordinates;
+
+        updatedCoords[index] = coordinate;
+        return {
+          ...state,
+          markers: {
+            ...state.markers,
+            [pluralMarkerType]: {
+              [state.markers[pluralMarkerType][markerId].id]: {
+                ...state.markers[pluralMarkerType][markerId],
+                coordinates: updatedCoords,
+              },
+            },
+          },
+        };
+      });
+    },
   }));
 };

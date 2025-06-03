@@ -1,11 +1,13 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  Layer,
   Map,
   MapMouseEvent,
   Marker,
   NavigationControl,
   Popup,
+  Source,
 } from 'react-map-gl/mapbox';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import {
@@ -26,7 +28,7 @@ import RoutePopup from './popups/RoutePopup';
 import AreaPopup from './popups/AreaPopup';
 import StructurePopup from './popups/StructurePopup';
 import { Crosshair, Smile, TreeDeciduous } from 'lucide-react';
-import { Position } from 'geojson';
+import { FeatureCollection, Position } from 'geojson';
 import { User } from '@supabase/supabase-js';
 import { getMapMarkersFromDb } from './createActions';
 import MapPointMarker from './popups/MapPointMarker';
@@ -35,13 +37,18 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { convertMapThemeToStyleURL } from '@/utils/mapbox/utils';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import MapRouteMarker from './popups/MapRouteMarker';
+import {
+  CircleLayerSpecification,
+  FillLayer,
+  FillLayerSpecification,
+  MapLayerMouseEvent,
+} from 'mapbox-gl';
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
 const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
-  const { mapTheme, markers, setMarkers, appDetails } = useCreateAppStore(
-    (state) => state
-  );
+  const { mapTheme, markers, setMarkers, appDetails, addCoordinate } =
+    useCreateAppStore((state) => state);
 
   const [selectedMarkerType, setSelectedMarkerType] =
     useState<MarkerType>(null);
@@ -85,6 +92,10 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
     }
   };
 
+  /**
+   * Used to refresh markers after something has been added.
+   * Gets passed down to each [marker type]Popup
+   */
   const getAndSetMapMarkers = async () => {
     try {
       const markers = await getMapMarkersFromDb(1);
@@ -95,6 +106,22 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
   };
 
   const handleMapClick = (event: MapMouseEvent) => {
+    console.log('singleClickEvent', event, event.features);
+
+    if (event.features && event.features.length > 0) {
+      const coordinate: Position = [event.lngLat.lng, event.lngLat.lat];
+      const [markerType, id, shape, index] = event.features?.[0].layer?.id.split(
+        '-'
+      ) as string[];
+
+      addCoordinate(
+        markerType as 'route' | 'area' | 'structure',
+        Number(id),
+        Number(index),
+        coordinate
+      );
+    }
+
     if (selectedMarkerType === 'pin' || selectedMarkerType === 'plan') {
       setNewPointMarker({
         ...newPointMarker,
@@ -108,7 +135,21 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
     }
   };
 
-  console.log('markers', markers)
+  const handleMapDblClick = (event: MapMouseEvent) => {
+    console.log('EvEnT', event);
+  };
+
+  const interactiveRouteIds = (Object.values(markers.routes).reduce(
+    (acc: any[], cur: any, index: number, array: any[]) => {
+      return acc.concat(cur.coordinates.map((coord:Position, coordIndex:number)=> {
+        return `route-${cur.id}-line-${coordIndex + 1}-layer`
+      }))
+    },
+    []
+  ));
+
+  console.log('iRids', interactiveRouteIds)
+
   return (
     <div className={'flex flex-col gap-3 w-full'}>
       <div className={'flex flex-row h-20 items-center gap-3 w-full'}>
@@ -155,9 +196,10 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                   latitude: appDetails['Event latitude'],
                   zoom: 14,
                 }}
-                onClick={(event: MapMouseEvent) => {
-                  handleMapClick(event);
-                }}
+                onClick={handleMapClick}
+                onDblClick={handleMapDblClick}
+                interactiveLayerIds={interactiveRouteIds}
+                doubleClickZoom={false}
               >
                 <NavigationControl />
                 {newPointMarker.coordinates && (
@@ -186,20 +228,31 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                 )}
 
                 {/* MARKERS FROM STORE */}
-                {markers.pins.map((pin, index) => {
-                  return (
-                    <MapPointMarker key={`pin-marker-${index}`} post={pin} />
-                  );
-                })}
-                {markers.plans.map((plan, index) => {
-                  return (
-                    <MapPointMarker key={`plan-marker-${index}`} post={plan} />
-                  );
-                })}
+                {markers.pins &&
+                  Object.values(markers.pins).map((pin, index) => {
+                    return (
+                      <MapPointMarker key={`pin-marker-${index}`} post={pin} />
+                    );
+                  })}
+                {markers.plans &&
+                  Object.values(markers.plans).map((plan, index) => {
+                    return (
+                      <MapPointMarker
+                        key={`plan-marker-${index}`}
+                        post={plan}
+                      />
+                    );
+                  })}
 
-                {markers.routes.map((route, index) => {
-                  return <MapRouteMarker key={`route-marker-${index}`} post={route} />;
-                })}
+                {markers.routes &&
+                  Object.values(markers.routes).map((route, index) => {
+                    return (
+                      <MapRouteMarker
+                        key={`route-marker-${index}`}
+                        post={route}
+                      />
+                    );
+                  })}
               </Map>
             )}
           </div>

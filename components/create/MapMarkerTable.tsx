@@ -71,7 +71,7 @@ const MapMarkerTable: React.FC<{}> = ({}) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {pins && pins.map((pin: Pin, index: number) => {
+          {pins && Object.values(pins).map((pin: Pin, index: number) => {
 
             console.log
             return (

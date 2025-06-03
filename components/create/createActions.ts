@@ -6,6 +6,7 @@ import { Post } from 'mgtypes/types/Content';
 import { addPostToDb } from '@/actions';
 import { createClient } from '@/utils/supabase/client';
 import { App } from 'mgtypes/types/App';
+import { keyBy } from 'lodash';
 
 export const createPost = async (
   file: File,
@@ -90,6 +91,11 @@ export const getCoordinatesFromAddress = async (address: any) => {
   }
 };
 
+/**
+ * Used to refresh markers in AddMarkersMap after a marker is created
+ * @param appId
+ * @returns markers object: {pins, plans, routes, structures, areas }
+ */
 export const getMapMarkersFromDb = async (appId: number) => {
   try {
     const supabaseClient = await createClient();
@@ -105,9 +111,9 @@ export const getMapMarkersFromDb = async (appId: number) => {
       .eq('appId', appId)
       .then((res) => res.data as any[]);
 
-    console.log('routes', routes)
+    console.log('routes', routes);
 
-    return { pins, routes, plans: [], structures: [], areas: [] };
+    return { pins: [], routes, plans: [], structures: [], areas: [] };
   } catch (e: any) {
     console.error('CREATE ACTIONS ERROR: failed to get markers from DB');
     return e;
@@ -152,6 +158,15 @@ export const getAppInfoFromDb = async (appId: number) => {
         mapStyleUrl,
         mapTheme,
         appColors,
+        routes (
+          id,
+          primaryText,
+          secondaryText,
+          routeCategory,
+          color,
+          coordinates,
+          link
+        ),
         pins (
           id,
           primaryText,
@@ -161,13 +176,21 @@ export const getAppInfoFromDb = async (appId: number) => {
           pinCategory,
           pinType,
           address,
-          photoURL
+          photoURL,
+          link
         )
         `
       )
       .eq('id', appId)
-      .then((res) => res.data);
-    return app?.[0];
+      .then((res) => {
+        return res.data;
+      });
+
+    const appData:any = {...app?.[0]}
+    appData.pins = keyBy(appData.pins, 'id');
+    appData.routes = keyBy(appData.routes, 'id')
+
+    return appData
   } catch (e) {
     console.error('CREATE ACTIONS ERROR: failed to get app info from db', e);
   }
