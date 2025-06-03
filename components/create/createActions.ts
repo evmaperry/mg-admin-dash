@@ -99,7 +99,15 @@ export const getMapMarkersFromDb = async (appId: number) => {
       .eq('appId', appId)
       .then((res) => res.data as any[]);
 
-    return { pins, routes: [], plans: [], structures: [], areas: [] };
+    const routes = await supabaseClient
+      .from('routes')
+      .select()
+      .eq('appId', appId)
+      .then((res) => res.data as any[]);
+
+    console.log('routes', routes)
+
+    return { pins, routes, plans: [], structures: [], areas: [] };
   } catch (e: any) {
     console.error('CREATE ACTIONS ERROR: failed to get markers from DB');
     return e;

@@ -2905,14 +2905,14 @@ merge2@^1.3.0:
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
 mgmarkers@^1.0.0:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/mgmarkers/-/mgmarkers-1.0.3.tgz#cb1e7bc9d6443702b80d4c6a48487095028025fd"
-  integrity sha512-KoUBifIv379lymemp6Q5idDfoFDW71RVg7CTkNBxB6NJCnICgSpPJc3Ze0quYO5hfR9wYsrUt8flSJI58COmuA==
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/mgmarkers/-/mgmarkers-1.0.4.tgz#3ffba857ae7b37010fd6a0b83be9785dce3c871d"
+  integrity sha512-+akwkzzZ7AlaBdiPwD1UsPxo+cDAk65i9Dbc8TGHEkuTFH2CX8DWpR0L67LCoR6DWb3RT6ZWvixzAXjcgYRQ0Q==
 
-mgtypes@^1.0.0:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/mgtypes/-/mgtypes-1.0.9.tgz#4642baa3b0510faacbc93f3cb0e33f2ae08966ed"
-  integrity sha512-tysyiuKJFU/OEoWb7Lu25kKRjsqlMGCu/sjGaW2FvVpqg1Zx2gj2ZQ1yrah94VfxuUwpxfxfR6K7tQ+0tjWGeQ==
+mgtypes@1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/mgtypes/-/mgtypes-1.0.12.tgz#b2180709ce1252b190a7cc2426f50cf9f26a2d81"
+  integrity sha512-yqvUIpAiCoG02ZJX9762ZtE3TLlZJ6bo493T9aYcUr3XjgDqtbM6sMx5ICYqMc4w61hwk/9pDHgSIvGbE1ya6Q==
   dependencies:
     "@types/geojson" "^7946.0.16"
 

@@ -29,11 +29,12 @@ import { Crosshair, Smile, TreeDeciduous } from 'lucide-react';
 import { Position } from 'geojson';
 import { User } from '@supabase/supabase-js';
 import { getMapMarkersFromDb } from './createActions';
-import CustomMapMarker from './popups/CustomMapMarker';
+import MapPointMarker from './popups/MapPointMarker';
 import { Separator } from '../ui/separator';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { convertMapThemeToStyleURL } from '@/utils/mapbox/utils';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import MapRouteMarker from './popups/MapRouteMarker';
 
 type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 
@@ -55,24 +56,33 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
       'Structures display as three-dimensional shapes on your map. They can represent tents, stages, vendor booths, and so on.',
   };
 
-  const [newMarker, setNewMarker] = useState<{
+  // represents a new pin or plan being worked on
+  const [newPointMarker, setNewPointMarker] = useState<{
     isVisible: boolean;
     coordinates: Position | null;
     event: null | MapMouseEvent;
     icon: React.ReactElement;
+    type: string | null;
+    category: string | null;
   }>({
     isVisible: false,
     coordinates: null,
     event: null,
     icon: <Crosshair />,
+    type: null,
+    category: null,
   });
 
-  const setMarkerIcon = (icon: React.ReactElement) => {
+  const setMarkerIcon = (category: string, type: string) => {
     console.log('set marker');
-    setNewMarker({
-      ...newMarker,
-      icon,
-    });
+
+    if (selectedMarkerType === 'pin' || selectedMarkerType === 'plan') {
+      setNewPointMarker({
+        ...newPointMarker,
+        type,
+        category,
+      });
+    }
   };
 
   const getAndSetMapMarkers = async () => {
@@ -84,10 +94,27 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
     }
   };
 
+  const handleMapClick = (event: MapMouseEvent) => {
+    if (selectedMarkerType === 'pin' || selectedMarkerType === 'plan') {
+      setNewPointMarker({
+        ...newPointMarker,
+        coordinates: [event.lngLat.lat, event.lngLat.lng],
+        isVisible: true,
+        event,
+      });
+    }
+
+    if (selectedMarkerType === 'route') {
+    }
+  };
+
+  console.log('markers', markers)
   return (
     <div className={'flex flex-col gap-3 w-full'}>
       <div className={'flex flex-row h-20 items-center gap-3 w-full'}>
-        <div className={'flex w-1/5 text-sky-500 font-mono'}>Select a marker type 👉</div>
+        <div className={'flex w-1/5 text-sky-500 font-mono'}>
+          Select a marker type 👉
+        </div>
         <ToggleGroup
           onValueChange={(value: string) => {
             setSelectedMarkerType(value as MarkerType);
@@ -102,7 +129,11 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
           <ToggleGroupItem value={'area'}>Area</ToggleGroupItem>
           <ToggleGroupItem value={'structure'}>Structure</ToggleGroupItem>
         </ToggleGroup>
-        <div className={'leading-[1.1] h-full flex items-center w-2/5 text-xs border bg-neutral-100 p-2 rounded font-mono'}>
+        <div
+          className={
+            'leading-[1.1] h-full flex items-center w-2/5 text-xs border bg-neutral-100 p-2 rounded font-mono'
+          }
+        >
           {selectedMarkerType
             ? MarkerTypeInstructions[selectedMarkerType]
             : 'Select a marker type to add to the map.'}
@@ -110,7 +141,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
       </div>
       <div className={'flex flex-col items-center w-full gap-4'}>
         <div className={'flex flex-row w-full justify-between gap-3'}>
-         {/* MAP */}
+          {/* MAP */}
           <div className={'flex rounded overflow-hidden h-[600px] w-2/3'}>
             {appDetails['Event latitude'] && appDetails['Event longitude'] && (
               <Map
@@ -124,29 +155,50 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                   latitude: appDetails['Event latitude'],
                   zoom: 14,
                 }}
-                onClick={(event) => {
-                  setNewMarker({
-                    ...newMarker,
-                    coordinates: [event.lngLat.lat, event.lngLat.lng],
-                    isVisible: true,
-                    event,
-                  });
+                onClick={(event: MapMouseEvent) => {
+                  handleMapClick(event);
                 }}
               >
                 <NavigationControl />
-                {newMarker.coordinates && (
-                  <Marker
-                    latitude={newMarker.coordinates[0]}
-                    longitude={newMarker.coordinates[1]}
-                  >
-                    {newMarker.icon}
-                  </Marker>
+                {newPointMarker.coordinates && (
+                  <MapPointMarker
+                    post={{
+                      latitude: newPointMarker.coordinates[0],
+                      longitude: newPointMarker.coordinates[1],
+                      pinCategory:
+                        selectedMarkerType === 'pin' && newPointMarker.category
+                          ? newPointMarker.category
+                          : undefined,
+                      pinType:
+                        selectedMarkerType === 'pin' && newPointMarker.type
+                          ? newPointMarker.type
+                          : undefined,
+                      planCategory:
+                        selectedMarkerType === 'plan' && newPointMarker.category
+                          ? newPointMarker.category
+                          : undefined,
+                      planType:
+                        selectedMarkerType === 'plan' && newPointMarker.type
+                          ? newPointMarker.type
+                          : undefined,
+                    }}
+                  />
                 )}
 
+                {/* MARKERS FROM STORE */}
                 {markers.pins.map((pin, index) => {
                   return (
-                    <CustomMapMarker key={`pin-marker-${index}`} post={pin} />
+                    <MapPointMarker key={`pin-marker-${index}`} post={pin} />
                   );
+                })}
+                {markers.plans.map((plan, index) => {
+                  return (
+                    <MapPointMarker key={`plan-marker-${index}`} post={plan} />
+                  );
+                })}
+
+                {markers.routes.map((route, index) => {
+                  return <MapRouteMarker key={`route-marker-${index}`} post={route} />;
                 })}
               </Map>
             )}
@@ -161,7 +213,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
             {!selectedMarkerType && <Smile className={''} />}
             {selectedMarkerType === 'pin' && (
               <PinPopup
-                lastClickEvent={newMarker.event}
+                lastClickEvent={newPointMarker.event}
                 user={user}
                 setMarkerIcon={setMarkerIcon}
                 getAndSetMapMarkers={getAndSetMapMarkers}

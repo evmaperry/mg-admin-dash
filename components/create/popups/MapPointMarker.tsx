@@ -2,15 +2,24 @@ import { Marker, MarkerDragEvent, MarkerEvent } from 'react-map-gl/mapbox';
 import { Contentable, Post } from 'mgtypes/types/Content';
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { X } from 'lucide-react';
 
-const CustomMapMarker: React.FC<{ post: Contentable }> = ({ post }) => {
+const MapPointMarker: React.FC<{
+  post: Partial<Contentable>;
+  [key: string]: any;
+}> = ({ post, ...props }) => {
   let imageSRC;
   if (post.pinCategory) {
     imageSRC = `/assets/images/pin-${post.pinCategory}-${post.pinType}.png`;
   } else if (post.planCategory) {
     imageSRC = `/assets/images/plan-${post.planCategory}-${post.planType}`;
-  } else {
-    imageSRC = '';
+  }
+  // else if (post.routeCategory) {
+  //   imageSRC = `/assets/images/route-${post.routeCategory}-${props.routeStage}`;
+  // }
+  else {
+    imageSRC = undefined;
+    console.log('no image source defined')
   }
 
   const [coordinates, setCoordinates] = useState<{
@@ -32,11 +41,9 @@ const CustomMapMarker: React.FC<{ post: Contentable }> = ({ post }) => {
       onDrag={(e: MarkerDragEvent) => {
         setCoordinates({ longitude: e.lngLat.lng, latitude: e.lngLat.lat });
       }}
-      onClick={(e:MarkerEvent<MouseEvent>) => {
-        
-      }}
+      onClick={(e: MarkerEvent<MouseEvent>) => {}}
     >
-      <Image
+      {imageSRC ? <Image
         src={imageSRC}
         height={36}
         width={36}
@@ -44,9 +51,9 @@ const CustomMapMarker: React.FC<{ post: Contentable }> = ({ post }) => {
         className={
           'border border-neutral-500 rounded-full p-[2px] bg-background'
         }
-      />
+      /> : <X />}
     </Marker>
   );
 };
 
-export default CustomMapMarker;
+export default MapPointMarker;

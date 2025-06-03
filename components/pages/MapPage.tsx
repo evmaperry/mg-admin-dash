@@ -63,8 +63,6 @@ const MapPage: React.FC<{
     });
   }, [appDetails['Event longitude'], appDetails['Event latitude']]);
 
-
-  console.log('mapTheme', mapTheme)
   return (
     <div className='flex flex-col items-center justify-center overflow-hidden border-4 border-neutral-800 shadow-lg rounded-[38px] w-[276px] h-[572px]'>
       {/* FAKE TOP BAR */}

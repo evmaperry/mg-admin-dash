@@ -243,7 +243,6 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
     []
   );
 
-  console.log('label', label);
   return (
     <div className={'flex flex-row items-center gap-8 justify-center'}>
       {/* LEFT SIDE: ZOOM TOOLS */}
