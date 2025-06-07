@@ -20,7 +20,7 @@ const s3Client = new S3Client({
   },
 });
 
-export const uploadFileS3 = async ({
+export const uploadImageToS3 = async ({
   key,
   content,
 }: {
@@ -36,7 +36,6 @@ export const uploadFileS3 = async ({
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME || '',
       Key: key,
-
       ContentType: 'image/*',
       Body: buffer,
     });
@@ -111,4 +110,3 @@ export const addPinHoursToDb = async (
   console.log('pinHours sbRes', data, error);
   return { data, error };
 };
-

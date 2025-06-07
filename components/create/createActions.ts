@@ -1,4 +1,4 @@
-import { uploadFileS3 } from '@/actions';
+import { uploadImageToS3 } from '@/actions';
 import { User } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
 import axios from 'axios';
@@ -24,7 +24,7 @@ export const createPost = async (
     const data = new FormData();
     data.append('file', file);
 
-    s3Res = await uploadFileS3({
+    s3Res = await uploadImageToS3({
       key,
       content: data,
     });
@@ -186,11 +186,11 @@ export const getAppInfoFromDb = async (appId: number) => {
         return res.data;
       });
 
-    const appData:any = {...app?.[0]}
+    const appData: any = { ...app?.[0] };
     appData.pins = keyBy(appData.pins, 'id');
-    appData.routes = keyBy(appData.routes, 'id')
+    appData.routes = keyBy(appData.routes, 'id');
 
-    return appData
+    return appData;
   } catch (e) {
     console.error('CREATE ACTIONS ERROR: failed to get app info from db', e);
   }
