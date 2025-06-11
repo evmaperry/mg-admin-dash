@@ -22,31 +22,32 @@ const MapMarkerTable: React.FC<{}> = ({}) => {
   const { pins } = useCreateAppStore((state) => state.markers);
 
   const ImageCell: React.FC<{ photoURL: string }> = ({ photoURL }) => {
-    const [presignedURL, setPresignedURL] = useState<string>('');
+    const [presignedImageURL, setPresignedImageURL] = useState<string>('');
 
-    const getAndSetPresignedURL = async () => {
+    const getAndSetPresignedImageURL = async () => {
       try{
-        const presignedURL = await createPresignedUrlWithClient({
+        const presignedImageURL = await createPresignedUrlWithClient({
         key: photoURL,
         bucket: 'mg-app-drafts',
       });
-      setPresignedURL(presignedURL);}
+      setPresignedImageURL(presignedImageURL);}
       catch (e) {
         console.error("CLIENT ERROR: failed to get and set presigned url in MapMarkerTable's ImageCell", e)
       }
     };
 
     useEffect(() => {
-      getAndSetPresignedURL();
+      getAndSetPresignedImageURL();
     }, []);
 
+    console.log(presignedImageURL)
     return (
       <TableCell
         className={'flex items-center justify-center'}
       >
-        {presignedURL.length > 0 && (
+        {presignedImageURL.length > 0 && (
           <img
-            src={presignedURL as string}
+            src={presignedImageURL as string}
             height={60}
             width={60}
             alt={'Pin table row image'}
