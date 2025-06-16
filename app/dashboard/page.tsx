@@ -31,8 +31,6 @@ export default async function DashboardPage() {
     return redirect('/sign-in');
   }
 
-  console.log('user', user);
-
   return (
     <div>Home page</div>
   );

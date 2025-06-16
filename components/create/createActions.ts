@@ -2,7 +2,7 @@ import { uploadImageToS3 } from '@/actions';
 import { User } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
 import axios from 'axios';
-import { Post } from 'mgtypes/types/Content';
+import { Contentable, Post } from 'mgtypes/types/Content';
 import { addPostToDb } from '@/actions';
 import { createClient } from '@/utils/supabase/client';
 import { App } from 'mgtypes/types/App';
@@ -10,7 +10,7 @@ import { keyBy } from 'lodash';
 
 export const createPost = async (
   file: File,
-  post: Post,
+  contentable: Contentable,
   postType: 'pin' | 'plan' | 'route',
   user: User,
   appId: number
@@ -39,7 +39,7 @@ export const createPost = async (
   try {
     supabaseRes = await addPostToDb(
       postType,
-      { ...post, photoURL: key },
+      { ...contentable, photoURL: key },
       appId
     );
     console.log('supabase res', supabaseRes);
@@ -178,6 +178,15 @@ export const getAppInfoFromDb = async (appId: number) => {
           address,
           photoURL,
           link
+        ),
+        plans (
+          id,
+          primaryText,
+          secondaryText,
+          latitude,
+          longitude,
+          planCategory,
+          planType
         )
         `
       )
@@ -189,6 +198,7 @@ export const getAppInfoFromDb = async (appId: number) => {
     const appData: any = { ...app?.[0] };
     appData.pins = keyBy(appData.pins, 'id');
     appData.routes = keyBy(appData.routes, 'id');
+    appData.plans = keyBy(appData.plans, 'id')
 
     return appData;
   } catch (e) {

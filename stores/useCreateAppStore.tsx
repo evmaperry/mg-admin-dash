@@ -234,7 +234,7 @@ export const createCreateAppStore = (
           },
           markers: {
             pins: app.pins,
-            plans: [],
+            plans: app.plans,
             routes: app.routes,
             areas: [],
             structures: [],

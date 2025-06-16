@@ -10,6 +10,8 @@ import {
 } from './ui/select';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { ClockIcon } from 'lucide-react';
+import { Button } from './ui/button';
 dayjs.extend(customParseFormat);
 
 const TimePicker: React.FC<{
@@ -125,10 +127,18 @@ const TimePicker: React.FC<{
 
   return (
     <Select onValueChange={(time: string) => onSelectTime(time)}>
-      <SelectTrigger className='w-[136px]'>
-        {timeToDisplay ? (
-          <div className={'text-primary'}>{dayjs(timeToDisplay,'HH:mm:ss').format('h:mm a')}</div>
-        ) : <div>Select a time</div>}
+      <SelectTrigger>
+        <div>
+          {timeToDisplay ? (
+            <div className={'text-primary'}>
+              {dayjs(timeToDisplay, 'HH:mm:ss').format('h:mm a')}
+            </div>
+          ) : (
+            <div className={'flex item-center gap-2'}>
+              <ClockIcon /><span>Select a time</span>
+            </div>
+          )}
+        </div>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>{selectTimes}</SelectGroup>

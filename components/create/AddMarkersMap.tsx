@@ -81,8 +81,6 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
   });
 
   const setMarkerIcon = (category: string, type: string) => {
-    console.log('set marker');
-
     if (selectedMarkerType === 'pin' || selectedMarkerType === 'plan') {
       setNewPointMarker({
         ...newPointMarker,
@@ -106,20 +104,21 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
   };
 
   const handleMapClick = (event: MapMouseEvent) => {
-    console.log('singleClickEvent', event, event.features);
+    // console.log('singleClickEvent', event, event.features);
 
-    if (event.features && event.features.length > 0) {
-      const coordinate: Position = [event.lngLat.lng, event.lngLat.lat];
-      const [markerType, id, shape, index] = event.features?.[0].layer?.id.split(
-        '-'
-      ) as string[];
+    if (selectedMarkerType === 'route') {
+      if (event.features && event.features.length > 0) {
+        const coordinate: Position = [event.lngLat.lng, event.lngLat.lat];
+        const [markerType, id, shape, index] =
+          event.features?.[0].layer?.id.split('-') as string[];
 
-      addCoordinate(
-        markerType as 'route' | 'area' | 'structure',
-        Number(id),
-        Number(index),
-        coordinate
-      );
+        addCoordinate(
+          markerType as 'route' | 'area' | 'structure',
+          Number(id),
+          Number(index),
+          coordinate
+        );
+      }
     }
 
     if (selectedMarkerType === 'pin' || selectedMarkerType === 'plan') {
@@ -130,25 +129,31 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
         event,
       });
     }
-
-    if (selectedMarkerType === 'route') {
-    }
   };
 
   const handleMapDblClick = (event: MapMouseEvent) => {
-    console.log('EvEnT', event);
+    console.log('Double click event:', event);
   };
 
-  const interactiveRouteIds = (Object.values(markers.routes).reduce(
+  const interactiveRouteIds = Object.values(markers.routes).reduce(
     (acc: any[], cur: any, index: number, array: any[]) => {
-      return acc.concat(cur.coordinates.map((coord:Position, coordIndex:number)=> {
-        return `route-${cur.id}-line-${coordIndex + 1}-layer`
-      }))
+      return acc.concat(
+        cur.coordinates.map((coord: Position, coordIndex: number) => {
+          return `route-${cur.id}-line-${coordIndex + 1}-layer`;
+        })
+      );
     },
     []
-  ));
+  );
 
-  console.log('iRids', interactiveRouteIds)
+  console.log(
+    'iRids',
+    interactiveRouteIds,
+    'MaRkErS:',
+    markers,
+    'selected marker type',
+    selectedMarkerType
+  );
 
   return (
     <div className={'flex flex-col gap-3 w-full'}>
@@ -172,7 +177,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
         </ToggleGroup>
         <div
           className={
-            'leading-[1.1] h-full flex items-center w-2/5 text-xs border bg-neutral-100 p-2 rounded font-mono'
+            'leading-[1.1] h-full flex items-center w-2/5 text-xs border bg-neutral-100 p-2 rounded font-mono justify-center'
           }
         >
           {selectedMarkerType
@@ -272,7 +277,14 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                 getAndSetMapMarkers={getAndSetMapMarkers}
               />
             )}
-            {selectedMarkerType === 'plan' && <PlanPopup />}
+            {selectedMarkerType === 'plan' && (
+              <PlanPopup
+                lastClickEvent={newPointMarker.event}
+                user={user}
+                setMarkerIcon={setMarkerIcon}
+                getAndSetMapMarkers={getAndSetMapMarkers}
+              />
+            )}
             {selectedMarkerType === 'route' && <RoutePopup />}
             {selectedMarkerType === 'area' && <AreaPopup />}
             {selectedMarkerType === 'structure' && <StructurePopup />}

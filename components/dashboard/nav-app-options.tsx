@@ -57,7 +57,6 @@ export function NavAppOptions({
           </SidebarMenuButton>
         </SidebarMenuItem>
         {items.map((item) => {
-          console.log('item', item)
           return (
             <Collapsible
               key={item.title}

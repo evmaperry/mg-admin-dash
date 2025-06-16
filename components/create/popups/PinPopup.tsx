@@ -34,7 +34,7 @@ import Image from 'next/image';
 import { User } from '@supabase/supabase-js';
 import { createPost, getAddressFromCoordinates } from '../createActions';
 import { MapMouseEvent } from 'mapbox-gl';
-import { Pin, Post } from 'mgtypes/types/Content';
+import { Contentable, Pin, Post } from 'mgtypes/types/Content';
 import dayjs from 'dayjs';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -59,7 +59,7 @@ export interface PinHourInputs {
 const PinPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
   user: User;
-  setMarkerIcon: (category:string, type:string) => void;
+  setMarkerIcon: (category: string, type: string) => void;
   getAndSetMapMarkers: () => void;
 }> = ({ lastClickEvent, user, setMarkerIcon, getAndSetMapMarkers }) => {
   const { appDetails, setCanSave, appId } = useCreateAppStore((state) => state);
@@ -81,8 +81,6 @@ const PinPopup: React.FC<{
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  console.log('lce', lastClickEvent);
 
   const handleMapClick = async () => {
     const address = await getAddressFromCoordinates(
@@ -118,17 +116,16 @@ const PinPopup: React.FC<{
                       className={'flex flex-row items-center gap-2'}
                       onClick={() => {
                         setPin({ ...pin, pinCategory: cur[0], pinType });
-                        setMarkerIcon(cur[0], pinType)
-                          // <Image
-                          //   src={`/assets/images/pin-${cur[0]}-${pinType}.png`}
-                          //   height={36}
-                          //   width={36}
-                          //   alt={'Pin image'}
-                          //   className={
-                          //     'border border-neutral-500 rounded-full p-[2px] bg-background'
-                          //   }
-                          // />
-
+                        setMarkerIcon(cur[0], pinType);
+                        // <Image
+                        //   src={`/assets/images/pin-${cur[0]}-${pinType}.png`}
+                        //   height={36}
+                        //   width={36}
+                        //   alt={'Pin image'}
+                        //   className={
+                        //     'border border-neutral-500 rounded-full p-[2px] bg-background'
+                        //   }
+                        // />
                       }}
                     >
                       <Image
@@ -391,7 +388,7 @@ const PinPopup: React.FC<{
 
     const pinId = await createPost(
       imageFile as File,
-      pin as Post,
+      pin as Contentable,
       'pin',
       user,
       appId as number
@@ -423,7 +420,8 @@ const PinPopup: React.FC<{
           }
         >
           <div className={'text-sm'}>
-            <span className={'font-bold text-sky-400'}>Step 1 </span>Click on a pin to edit it, or click the map to drop a new pin.
+            <span className={'font-bold text-sky-400'}>Step 1 </span>Click on a
+            pin to edit it, or click the map to drop a new pin.
           </div>
 
           <div className={'flex flex-col'}>

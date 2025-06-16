@@ -40,7 +40,7 @@ const MapMarkerTable: React.FC<{}> = ({}) => {
       getAndSetPresignedImageURL();
     }, []);
 
-    console.log(presignedImageURL)
+    // console.log(presignedImageURL)
     return (
       <TableCell
         className={'flex items-center justify-center'}
@@ -73,8 +73,6 @@ const MapMarkerTable: React.FC<{}> = ({}) => {
         </TableHeader>
         <TableBody>
           {pins && Object.values(pins).map((pin: Pin, index: number) => {
-
-            console.log
             return (
               <TableRow className={''} key={`pin-table-row-${index}`}>
                 <ImageCell photoURL={pin.photoURL as string} />

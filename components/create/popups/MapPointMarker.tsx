@@ -12,14 +12,10 @@ const MapPointMarker: React.FC<{
   if (post.pinCategory) {
     imageSRC = `/assets/images/pin-${post.pinCategory}-${post.pinType}.png`;
   } else if (post.planCategory) {
-    imageSRC = `/assets/images/plan-${post.planCategory}-${post.planType}`;
-  }
-  // else if (post.routeCategory) {
-  //   imageSRC = `/assets/images/route-${post.routeCategory}-${props.routeStage}`;
-  // }
-  else {
+    imageSRC = `/assets/images/plan-${post.planCategory}-${post.planType}.png`;
+  } else {
     imageSRC = undefined;
-    console.log('no image source defined')
+    console.log('no image source defined');
   }
 
   const [coordinates, setCoordinates] = useState<{
@@ -43,15 +39,19 @@ const MapPointMarker: React.FC<{
       }}
       onClick={(e: MarkerEvent<MouseEvent>) => {}}
     >
-      {imageSRC ? <Image
-        src={imageSRC}
-        height={36}
-        width={36}
-        alt={'Pin image'}
-        className={
-          'border border-neutral-500 rounded-full p-[2px] bg-background'
-        }
-      /> : <X />}
+      {imageSRC ? (
+        <Image
+          src={imageSRC}
+          height={36}
+          width={36}
+          alt={'Pin image'}
+          className={
+            'border border-neutral-500 rounded-full p-[2px] bg-background'
+          }
+        />
+      ) : (
+        <X />
+      )}
     </Marker>
   );
 };

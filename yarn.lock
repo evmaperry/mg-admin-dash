@@ -2909,10 +2909,10 @@ mgmarkers@^1.0.0:
   resolved "https://registry.yarnpkg.com/mgmarkers/-/mgmarkers-1.0.4.tgz#3ffba857ae7b37010fd6a0b83be9785dce3c871d"
   integrity sha512-+akwkzzZ7AlaBdiPwD1UsPxo+cDAk65i9Dbc8TGHEkuTFH2CX8DWpR0L67LCoR6DWb3RT6ZWvixzAXjcgYRQ0Q==
 
-mgtypes@1.0.12:
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/mgtypes/-/mgtypes-1.0.12.tgz#b2180709ce1252b190a7cc2426f50cf9f26a2d81"
-  integrity sha512-yqvUIpAiCoG02ZJX9762ZtE3TLlZJ6bo493T9aYcUr3XjgDqtbM6sMx5ICYqMc4w61hwk/9pDHgSIvGbE1ya6Q==
+mgtypes@1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/mgtypes/-/mgtypes-1.0.13.tgz#c72c3b46d62022a01187019580e623a194b22ad3"
+  integrity sha512-Py+RZr1nTloQmYFelXQbqSK60ydJNeYWVJGosd/Lvdq8m5ogRUJXakT/IpurnGjqTFDTk8D+fX/yRTYoUvNQHg==
   dependencies:
     "@types/geojson" "^7946.0.16"
 

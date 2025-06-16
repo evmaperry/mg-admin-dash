@@ -30,7 +30,6 @@ const AppDetailInputs: React.FC<{}> = () => {
 
   const getAndSetCoordinates = async () => {
     const coordinates = await getCoordinatesFromAddress(location);
-    console.log(coordinates);
     setAppDetails({
       'Event latitude': coordinates[0],
       'Event longitude': coordinates[1],
