@@ -3,11 +3,15 @@ import { Contentable, Post } from 'mgtypes/types/Content';
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
+import { useCreateAppStore } from '@/providers/create-app-provider';
+import { cn } from '@/lib/utils';
 
 const MapPointMarker: React.FC<{
   post: Partial<Contentable>;
   [key: string]: any;
 }> = ({ post, ...props }) => {
+  const { selectedMarkerType } = useCreateAppStore((state) => state);
+
   let imageSRC;
   if (post.pinCategory) {
     imageSRC = `/assets/images/pin-${post.pinCategory}-${post.pinType}.png`;
@@ -33,7 +37,7 @@ const MapPointMarker: React.FC<{
           ? coordinates.longitude
           : (post.longitude as number)
       }
-      draggable={true}
+      draggable={props.contentType === selectedMarkerType}
       onDragEnd={(e: MarkerDragEvent) => {
         setCoordinates({ longitude: e.lngLat.lng, latitude: e.lngLat.lat });
       }}
@@ -42,12 +46,13 @@ const MapPointMarker: React.FC<{
       {imageSRC ? (
         <Image
           src={imageSRC}
-          height={36}
-          width={36}
+          height={props.contentType === selectedMarkerType ? 48 : 36}
+          width={props.contentType === selectedMarkerType ? 48 : 36}
           alt={'Pin image'}
-          className={
-            'border border-neutral-500 rounded-full p-[2px] bg-background'
-          }
+          className={cn(
+            'border border-neutral-500 rounded-full p-[2px] bg-background',
+            props.contentType === selectedMarkerType ? 'border-2' : ''
+          )}
         />
       ) : (
         <X />

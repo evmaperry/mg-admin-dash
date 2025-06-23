@@ -12,19 +12,25 @@ import Image from 'next/image';
 import { FeatureCollection, Position } from 'geojson';
 import { CircleDot, Dot, X } from 'lucide-react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
+import { cn } from '@/lib/utils';
 
-const MapRouteMarker: React.FC<{ post: Contentable }> = ({ post }) => {
+const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
   const [routeCoordinates, setRouteCoordinates] = useState<Position[]>([]);
 
-  const { moveCoordinate } = useCreateAppStore((state) => state);
+  const { moveCoordinate, selectedMarkerType } = useCreateAppStore(
+    (state) => state
+  );
 
   const handleRouteMarkerDrag = (e: MarkerDragEvent, index: number) => {
     console.log('moving event', e, 'index', index);
 
     const coords = [e.lngLat.lng, e.lngLat.lat];
 
-    // TODO: change coordinates in store
-    moveCoordinate('route', post.id, index, coords);
+    // if it's saved to db
+    if (post.id) {
+      // update coordinate it in store
+      moveCoordinate('route', post.id, index, coords);
+    }
   };
 
   // Load the coords from the stored route into state
@@ -38,18 +44,19 @@ const MapRouteMarker: React.FC<{ post: Contentable }> = ({ post }) => {
       <Marker
         longitude={coordinates[0]}
         latitude={coordinates[1]}
-        draggable
+        draggable={'route' === selectedMarkerType}
         onDragEnd={(e: MarkerDragEvent) => handleRouteMarkerDrag(e, 0)}
       >
         {startingImageSRC && (
           <Image
             src={startingImageSRC}
-            height={36}
-            width={36}
+            height={'route' === selectedMarkerType ? 48 : 36}
+            width={'route' === selectedMarkerType ? 48 : 36}
             alt={'Pin image'}
-            className={
-              'border border-neutral-500 rounded-full p-[2px] bg-background'
-            }
+            className={cn(
+              'border border-neutral-500 rounded-full p-[2px] bg-background',
+              'route' === selectedMarkerType ? 'border-2' : ''
+            )}
           />
         )}
       </Marker>
@@ -64,19 +71,20 @@ const MapRouteMarker: React.FC<{ post: Contentable }> = ({ post }) => {
       <Marker
         longitude={coordinates[0]}
         latitude={coordinates[1]}
-        draggable
+        draggable={'route' === selectedMarkerType}
         onDragEnd={(e: MarkerDragEvent) => {
           handleRouteMarkerDrag(e, routeCoordinates.length - 1);
         }}
       >
         <Image
           src={finishImageSRC}
-          height={36}
-          width={36}
+          height={'route' === selectedMarkerType ? 48 : 36}
+          width={'route' === selectedMarkerType ? 48 : 36}
           alt={'Pin image'}
-          className={
-            'border border-neutral-500 rounded-full p-[2px] bg-background'
-          }
+          className={cn(
+            'border border-neutral-500 rounded-full p-[2px] bg-background',
+            'route' === selectedMarkerType ? 'border-2' : ''
+          )}
         />
       </Marker>
     );
@@ -90,15 +98,15 @@ const MapRouteMarker: React.FC<{ post: Contentable }> = ({ post }) => {
       <Marker
         longitude={coordinates[0]}
         latitude={coordinates[1]}
-        draggable={true}
+        draggable={'route' === selectedMarkerType}
         onDragEnd={(e) => {
-          handleRouteMarkerDrag(e, index+1); // b/c we are slicing off the start
+          handleRouteMarkerDrag(e, index + 1); // b/c we are slicing off the start
         }}
       >
         <div
           style={{
-            height: 16,
-            width: 16,
+            height: 'route' === selectedMarkerType ? 24 : 16,
+            width: 'route' === selectedMarkerType ? 24 : 16,
             backgroundColor: post.color,
             borderRadius: '100%',
           }}
@@ -138,8 +146,8 @@ const MapRouteMarker: React.FC<{ post: Contentable }> = ({ post }) => {
                   type={'line'}
                   paint={{
                     'line-color': post.color,
-                    'line-width': 4,
-                    'line-opacity': 0.5,
+                    'line-width': 'route' === selectedMarkerType ? 6 : 4,
+                    'line-opacity': 'route' === selectedMarkerType ? 0.7 : 0.5,
                   }}
                   id={`route-${post.id}-line-${index + 1}-layer`}
                 />

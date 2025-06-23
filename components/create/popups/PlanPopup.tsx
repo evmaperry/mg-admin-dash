@@ -33,9 +33,9 @@ import { setDate } from 'date-fns';
 const PlanPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
   user: User;
-  setMarkerIcon: (category: string, type: string) => void;
+  setPlanMarkerIcon: (category: string, type: string) => void;
   getAndSetMapMarkers: () => void;
-}> = ({ lastClickEvent, user, setMarkerIcon, getAndSetMapMarkers }) => {
+}> = ({ lastClickEvent, user, setPlanMarkerIcon, getAndSetMapMarkers }) => {
   const { appDetails, setCanSave, appId } = useCreateAppStore((state) => state);
 
   const [plan, setPlan] = useState<Partial<Plan>>({
@@ -73,11 +73,14 @@ const PlanPopup: React.FC<{
       lastClickEvent?.lngLat.lat as number,
       lastClickEvent?.lngLat.lng as number
     );
+
+    const formattedAddress = address.split(",").slice(0,2).join(",")
+
     setPlan({
       ...plan,
       longitude: lastClickEvent?.lngLat.lng ?? 0,
       latitude: lastClickEvent?.lngLat.lat ?? 0,
-      address,
+      address: formattedAddress
     });
   };
 
@@ -102,7 +105,7 @@ const PlanPopup: React.FC<{
                       className={'flex flex-row items-center gap-2'}
                       onClick={() => {
                         setPlan({ ...plan, planCategory: cur[0], planType });
-                        setMarkerIcon(cur[0], planType);
+                        setPlanMarkerIcon(cur[0], planType);
                       }}
                     >
                       <Image

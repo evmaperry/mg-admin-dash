@@ -30,6 +30,7 @@ export type CreateAppState = {
   mapTheme: 'light' | 'streets' | 'dark' | 'outdoors';
   markers: MapMarkers;
   mapLabels: MapLabels;
+  selectedMarkerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | null
 };
 
 export type CreateAppActions = {
@@ -54,6 +55,7 @@ export type CreateAppActions = {
     index: number,
     coordinate: Position
   ) => void;
+  setSelectedMarkerType: (markerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | 'null')=> void
 };
 
 export type CreateAppStore = CreateAppState & CreateAppActions;
@@ -158,6 +160,7 @@ export const defaultInitState: CreateAppState = {
       ],
     ],
   },
+  selectedMarkerType: null
 };
 
 export const createCreateAppStore = (
@@ -323,5 +326,13 @@ export const createCreateAppStore = (
         };
       });
     },
+    setSelectedMarkerType: (markerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | 'null') => {
+      set((state)=> {
+        return {
+          ...state,
+          selectedMarkerType: markerType === 'null' ? null : markerType
+        }
+      })
+    }
   }));
 };

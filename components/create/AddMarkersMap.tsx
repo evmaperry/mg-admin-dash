@@ -44,14 +44,16 @@ import {
   MapLayerMouseEvent,
 } from 'mapbox-gl';
 
-type MarkerType = 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
-
 const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
-  const { mapTheme, markers, setMarkers, appDetails, addCoordinate } =
-    useCreateAppStore((state) => state);
-
-  const [selectedMarkerType, setSelectedMarkerType] =
-    useState<MarkerType>(null);
+  const {
+    mapTheme,
+    markers,
+    setMarkers,
+    appDetails,
+    addCoordinate,
+    selectedMarkerType,
+    setSelectedMarkerType,
+  } = useCreateAppStore((state) => state);
 
   const MarkerTypeInstructions = {
     pin: 'Pins indicate the location of services and points of interest: bathrooms, vendors, emergency services, and so on. A pin can have hours of operations.',
@@ -80,7 +82,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
     category: null,
   });
 
-  const setMarkerIcon = (category: string, type: string) => {
+  const setPointMarkerIcon = (category: string, type: string) => {
     if (selectedMarkerType === 'pin' || selectedMarkerType === 'plan') {
       setNewPointMarker({
         ...newPointMarker,
@@ -88,6 +90,25 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
         category,
       });
     }
+  };
+
+  // represents a new multi-coordinate marker being drawn
+  // eg, route, area or structure
+  const [newMultiMarker, setNewMultiMarker] = useState<{
+    category: string | null;
+    coordinates: { coords: Position; address: string }[];
+    event: null | MapMouseEvent;
+  }>({
+    category: null,
+    coordinates: [],
+    event: null,
+  });
+
+  const setMultiMarkerIcon = (category: string) => {
+    setNewMultiMarker({
+      ...newMultiMarker,
+      category,
+    });
   };
 
   /**
@@ -107,8 +128,10 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
     // console.log('singleClickEvent', event, event.features);
 
     if (selectedMarkerType === 'route') {
+      const coordinate: Position = [event.lngLat.lng, event.lngLat.lat];
+
+      // add a turn to a pre-existing route
       if (event.features && event.features.length > 0) {
-        const coordinate: Position = [event.lngLat.lng, event.lngLat.lat];
         const [markerType, id, shape, index] =
           event.features?.[0].layer?.id.split('-') as string[];
 
@@ -118,6 +141,17 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
           Number(index),
           coordinate
         );
+      }
+
+      // create a new route
+      else {
+        setNewMultiMarker({
+          ...newMultiMarker,
+          event,
+          coordinates: newMultiMarker.coordinates.concat([
+            { coords: coordinate, address: '1234' },
+          ]),
+        });
       }
     }
 
@@ -163,17 +197,21 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
         </div>
         <ToggleGroup
           onValueChange={(value: string) => {
-            setSelectedMarkerType(value as MarkerType);
+            setSelectedMarkerType(
+              value as 'pin' | 'plan' | 'route' | 'area' | 'structure' | 'null'
+            );
           }}
           type={'single'}
           className={'flex w-2/5'}
           variant={'outline'}
+          value={selectedMarkerType === null ? 'null' : selectedMarkerType}
         >
           <ToggleGroupItem value={'pin'}>Pin</ToggleGroupItem>
           <ToggleGroupItem value={'plan'}>Plan</ToggleGroupItem>
           <ToggleGroupItem value={'route'}>Route</ToggleGroupItem>
           <ToggleGroupItem value={'area'}>Area</ToggleGroupItem>
           <ToggleGroupItem value={'structure'}>Structure</ToggleGroupItem>
+          <ToggleGroupItem value={'null'}>Null</ToggleGroupItem>
         </ToggleGroup>
         <div
           className={
@@ -207,6 +245,8 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                 doubleClickZoom={false}
               >
                 <NavigationControl />
+
+                {/* NEW PIN/PLAN MARKER */}
                 {newPointMarker.coordinates && (
                   <MapPointMarker
                     post={{
@@ -232,11 +272,30 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                   />
                 )}
 
+                {/* NEW ROUTE MARKER */}
+                {selectedMarkerType === 'route' &&
+                  newMultiMarker.coordinates.length > 0 && (
+                    <MapRouteMarker
+                      post={{
+                        coordinates: newMultiMarker.coordinates,
+                        routeCategory:
+                          selectedMarkerType === 'route' &&
+                          newMultiMarker.category
+                            ? newMultiMarker.category
+                            : undefined,
+                      }}
+                    />
+                  )}
+
                 {/* MARKERS FROM STORE */}
                 {markers.pins &&
                   Object.values(markers.pins).map((pin, index) => {
                     return (
-                      <MapPointMarker key={`pin-marker-${index}`} post={pin} />
+                      <MapPointMarker
+                        key={`pin-marker-${index}`}
+                        post={pin}
+                        contentType={'pin'}
+                      />
                     );
                   })}
                 {markers.plans &&
@@ -245,6 +304,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                       <MapPointMarker
                         key={`plan-marker-${index}`}
                         post={plan}
+                        contentType={'plan'}
                       />
                     );
                   })}
@@ -273,7 +333,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
               <PinPopup
                 lastClickEvent={newPointMarker.event}
                 user={user}
-                setMarkerIcon={setMarkerIcon}
+                setPinMarkerIcon={setPointMarkerIcon}
                 getAndSetMapMarkers={getAndSetMapMarkers}
               />
             )}
@@ -281,11 +341,18 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
               <PlanPopup
                 lastClickEvent={newPointMarker.event}
                 user={user}
-                setMarkerIcon={setMarkerIcon}
+                setPlanMarkerIcon={setPointMarkerIcon}
                 getAndSetMapMarkers={getAndSetMapMarkers}
               />
             )}
-            {selectedMarkerType === 'route' && <RoutePopup />}
+            {selectedMarkerType === 'route' && (
+              <RoutePopup
+                lastClickEvent={newMultiMarker.event}
+                setRouteMarkerIcon={setMultiMarkerIcon}
+                user={user}
+                getAndSetMapMarkers={getAndSetMapMarkers}
+              />
+            )}
             {selectedMarkerType === 'area' && <AreaPopup />}
             {selectedMarkerType === 'structure' && <StructurePopup />}
           </div>

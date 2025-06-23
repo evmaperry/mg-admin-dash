@@ -59,9 +59,9 @@ export interface PinHourInputs {
 const PinPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
   user: User;
-  setMarkerIcon: (category: string, type: string) => void;
+  setPinMarkerIcon: (category: string, type: string) => void;
   getAndSetMapMarkers: () => void;
-}> = ({ lastClickEvent, user, setMarkerIcon, getAndSetMapMarkers }) => {
+}> = ({ lastClickEvent, user, setPinMarkerIcon, getAndSetMapMarkers }) => {
   const { appDetails, setCanSave, appId } = useCreateAppStore((state) => state);
 
   const [pin, setPin] = useState<Partial<Pin>>({
@@ -87,11 +87,14 @@ const PinPopup: React.FC<{
       lastClickEvent?.lngLat.lat as number,
       lastClickEvent?.lngLat.lng as number
     );
+
+    const formattedAddress = address.split(",").slice(0,2).join(",")
+
     setPin({
       ...pin,
       longitude: lastClickEvent?.lngLat.lng ?? 0,
       latitude: lastClickEvent?.lngLat.lat ?? 0,
-      address,
+      address:formattedAddress,
     });
   };
 
@@ -116,7 +119,7 @@ const PinPopup: React.FC<{
                       className={'flex flex-row items-center gap-2'}
                       onClick={() => {
                         setPin({ ...pin, pinCategory: cur[0], pinType });
-                        setMarkerIcon(cur[0], pinType);
+                        setPinMarkerIcon(cur[0], pinType);
                         // <Image
                         //   src={`/assets/images/pin-${cur[0]}-${pinType}.png`}
                         //   height={36}
