@@ -113,7 +113,7 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
             })}
         </SelectContent>
       </Select>
-      <Button onClick={handleSave} disabled={!canSave}>
+      <Button onClick={handleSave} disabled={!canSave} className={'bg-indigo-600'}>
         Save draft
       </Button>
       <Button className={'bg-sky-600'}>Start a new app</Button>

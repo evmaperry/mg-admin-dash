@@ -23,6 +23,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Position } from 'geojson';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { CalendarIcon } from 'lucide-react';
+import dayjs from 'dayjs';
+import { Calendar } from '@/components/ui/calendar';
+import { useCreateAppStore } from '@/providers/create-app-provider';
+import TimePicker from '@/components/time-picker';
 
 const RoutePopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
@@ -30,17 +37,34 @@ const RoutePopup: React.FC<{
   setRouteMarkerIcon: (category: string) => void;
   getAndSetMapMarkers: () => void;
 }> = ({ lastClickEvent, setRouteMarkerIcon, user, getAndSetMapMarkers }) => {
+
+    const { appDetails, setCanSave, appId } = useCreateAppStore((state) => state);
+
+
+
   const [route, setRoute] = useState<Partial<Route>>({
     routeCategory: '',
     primaryText: '',
     secondaryText: '',
     photoURL: '',
     color: '',
-    startDateTime: '',
-    endDateTime: '',
+    //startDateTime: '',
+    //endDateTime: '',
     link: '',
     phoneNumber: '',
   });
+
+  const [dateTimes, setDateTimes] = useState<{
+      startDate: string | undefined;
+      startTime: string | undefined;
+      endDate: string | undefined;
+      endTime: string | undefined;
+    }>({
+      startDate: undefined,
+      startTime: undefined,
+      endDate: undefined,
+      endTime: undefined,
+    });
 
   const [imageFile, setImageFile] = useState<File>();
   const [image, setImage] = useState<string>();
@@ -119,9 +143,9 @@ const RoutePopup: React.FC<{
           <ul>
             <li>Click on a route's line to add a new turn</li>
             <li>Click and drag a turn to move it</li>
-            <li>Click else where on the map to start a new route</li>
+            <li>Click elsewhere on the map to start a new route</li>
           </ul>
-          <div className={'font-bold'}>Turns</div>
+          {/* <div className={'font-bold'}>Turns</div>
           {route.coordinates && route.coordinates.length > 0 && (
             <Table>
               <TableHeader>
@@ -139,10 +163,112 @@ const RoutePopup: React.FC<{
                 );
               })}
             </Table>
-          )}
+          )} */}
         </div>
       </div>
       <RouteSelector />
+      <div className={'flex flex-col gap-1'}>
+          <div className={'flex flex-row items-center gap-1'}>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={cn(
+                    'justify-start text-left font-light w-1/2',
+                    !dateTimes.startDate && 'text-muted-foreground'
+                  )}
+                >
+                  <CalendarIcon className={'mr-2'} />
+                  {dateTimes.endDate ? (
+                    dayjs(dateTimes.startDate).format('ddd, MMM D')
+                  ) : (
+                    <span>Start date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className='w-auto p-0' align='start'>
+                <Calendar
+                  mode='single'
+                  selected={
+                    dateTimes['startDate']
+                      ? new Date(dateTimes['startDate'])
+                      : undefined
+                  }
+                  onSelect={(value) => {
+                    setDateTimes({ ...dateTimes, startDate: String(value) });
+                  }}
+                  initialFocus
+                  disabled={
+                    appDetails['Start date'] && appDetails['End date']
+                      ? {
+                          before: new Date(appDetails['Start date']),
+                          after: new Date(appDetails['End date']),
+                        }
+                      : undefined
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+            <TimePicker
+              onSelectTime={(time: string) => {
+                setDateTimes({ ...dateTimes, startTime: time });
+              }}
+              timeToDisplay={dateTimes.startTime}
+              hint={'Start time'}
+              triggerClassName='w-1/2'
+            />
+          </div>
+          <div className={'flex flex-row items-center gap-1'}>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={cn(
+                    'justify-start text-left font-light w-1/2',
+                    !dateTimes['endDate'] && 'text-muted-foreground'
+                  )}
+                >
+                  <CalendarIcon className={'mr-2'} />
+                  {dateTimes['endDate'] ? (
+                    dayjs(dateTimes['endDate']).format('ddd, MMM D')
+                  ) : (
+                    <span>End date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className='w-auto p-0' align='start'>
+                <Calendar
+                  mode='single'
+                  selected={
+                    dateTimes['endDate']
+                      ? new Date(dateTimes['endDate'])
+                      : undefined
+                  }
+                  onSelect={(value) => {
+                    setDateTimes({ ...dateTimes, endDate: String(value) });
+                  }}
+                  initialFocus
+                  disabled={
+                    appDetails['Start date'] && appDetails['End date']
+                      ? {
+                          before: new Date(appDetails['Start date']),
+                          after: new Date(appDetails['End date']),
+                        }
+                      : undefined
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+            <TimePicker
+              onSelectTime={(time: string) => {
+                setDateTimes({ ...dateTimes, endTime: time });
+              }}
+              timeToDisplay={dateTimes.endTime}
+              hint={'End time'}
+              triggerClassName='w-1/2'
+            />
+          </div>
+        </div>
     </div>
   );
 };

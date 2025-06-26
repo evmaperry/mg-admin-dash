@@ -20,15 +20,20 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { Input } from '@/components/ui/input';
-import { CalendarIcon, ImageOff } from 'lucide-react';
-import { Popover, PopoverContent } from '@/components/ui/popover';
-import { PopoverTrigger } from '@radix-ui/react-popover';
+import { ArrowDown, CalendarIcon, ChevronDown, ImageOff } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Calendar } from '@/components/ui/calendar';
 import TimePicker from '@/components/time-picker';
+import DatePicker from '@/components/date-picker';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { setDate } from 'date-fns';
+import { Label } from '@/components/ui/label';
 
 const PlanPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
@@ -74,13 +79,13 @@ const PlanPopup: React.FC<{
       lastClickEvent?.lngLat.lng as number
     );
 
-    const formattedAddress = address.split(",").slice(0,2).join(",")
+    const formattedAddress = address.split(',').slice(0, 2).join(',');
 
     setPlan({
       ...plan,
       longitude: lastClickEvent?.lngLat.lng ?? 0,
       latitude: lastClickEvent?.lngLat.lat ?? 0,
-      address: formattedAddress
+      address: formattedAddress,
     });
   };
 
@@ -335,100 +340,57 @@ const PlanPopup: React.FC<{
 
         {/* PLAN START & END */}
         <div className={'flex flex-col gap-1'}>
-          <div className={'flex flex-row items-center gap-1'}>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'justify-start text-left font-normal',
-                    !dateTimes.startDate && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className={'mr-2'} />
-                  {dateTimes.endDate ? (
-                    dayjs(dateTimes.startDate).format('ddd, MMM D')
-                  ) : (
-                    <span>Select a start date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className='w-auto p-0' align='start'>
-                <Calendar
-                  mode='single'
-                  selected={
-                    dateTimes['startDate']
-                      ? new Date(dateTimes['startDate'])
-                      : undefined
-                  }
-                  onSelect={(value) => {
-                    setDateTimes({ ...dateTimes, startDate: String(value) });
-                  }}
-                  initialFocus
-                  disabled={
-                    appDetails['Start date'] && appDetails['End date']
-                      ? {
-                          before: new Date(appDetails['Start date']),
-                          after: new Date(appDetails['End date']),
-                        }
-                      : undefined
-                  }
-                />
-              </PopoverContent>
-            </Popover>
+          {/* START */}
+          <div className={'flex flex-row items-center justify-between gap-2'}>
+            <Label className={'w-1/5'}>Start</Label>
+            <DatePicker
+              onSelect={(selectedStartDate: Date) => {
+                setDateTimes({
+                  ...dateTimes,
+                  startDate: String(selectedStartDate),
+                });
+              }}
+              selectedDateString={dateTimes.startDate}
+              hint={'Date'}
+               triggerClassName={cn(
+                !dateTimes.startDate && 'text-muted-foreground',
+                'w-2/5'
+              )}
+            />
             <TimePicker
               onSelectTime={(time: string) => {
                 setDateTimes({ ...dateTimes, startTime: time });
               }}
               timeToDisplay={dateTimes.startTime}
+              hint={'Time'}
+              triggerClassName='w-2/5'
             />
           </div>
-          <div className={'flex flex-row items-center gap-1'}>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'justify-start text-left font-normal',
-                    !dateTimes['endDate'] && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className={'mr-2'} />
-                  {dateTimes['endDate'] ? (
-                    dayjs(dateTimes['endDate']).format('ddd, MMM D')
-                  ) : (
-                    <span>Select an end date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className='w-auto p-0' align='start'>
-                <Calendar
-                  mode='single'
-                  selected={
-                    dateTimes['endDate']
-                      ? new Date(dateTimes['endDate'])
-                      : undefined
-                  }
-                  onSelect={(value) => {
-                    setDateTimes({ ...dateTimes, endDate: String(value) });
-                  }}
-                  initialFocus
-                  disabled={
-                    appDetails['Start date'] && appDetails['End date']
-                      ? {
-                          before: new Date(appDetails['Start date']),
-                          after: new Date(appDetails['End date']),
-                        }
-                      : undefined
-                  }
-                />
-              </PopoverContent>
-            </Popover>
+          {/* END */}
+          <div className={'flex flex-row items-center justify-between gap-2'}>
+            <Label className={'w-1/5 '}>End</Label>
+            <DatePicker
+              onSelect={(selectedEndDate: Date) => {
+                setDateTimes({
+                  ...dateTimes,
+                  endDate: String(selectedEndDate),
+                });
+              }}
+              selectedDateString={dateTimes.endDate}
+              // isTextMuted={!dateTimes.endDate}
+              hint={'Date'}
+              triggerClassName={cn(
+                !dateTimes.endDate && 'text-muted-foreground',
+                'w-2/5'
+              )}
+            />
             <TimePicker
               onSelectTime={(time: string) => {
                 setDateTimes({ ...dateTimes, endTime: time });
               }}
               timeToDisplay={dateTimes.endTime}
+              hint='Time'
+              triggerClassName={'w-2/5'}
             />
           </div>
         </div>

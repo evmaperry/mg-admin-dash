@@ -18,6 +18,7 @@ import {
   getAddressFromCoordinates,
   getCoordinatesFromAddress,
 } from './createActions';
+import DatePicker from '../date-picker';
 
 // APP NAME, EVENT NAME, START & END DATETIMES
 const AppDetailInputs: React.FC<{}> = () => {
@@ -41,7 +42,7 @@ const AppDetailInputs: React.FC<{}> = () => {
       appDetails['Event latitude'] as number,
       appDetails['Event longitude'] as number
     );
-    setLocation(location)
+    setLocation(location);
   };
 
   useEffect(() => {
@@ -51,12 +52,14 @@ const AppDetailInputs: React.FC<{}> = () => {
   }, [appDetails['Event latitude'], appDetails['Event longitude']]);
 
   return (
-    <div className={'flex flex-col gap-2'}>
-      <div className={'flex flex-col w-full gap-3'}>
-        <Label>Location</Label>
-        <div className={'flex flex-row items-center gap-6'}>
+    <div className={'flex flex-col gap-4'}>
+      <div className={'flex flex-col gap-2 bg-neutral-50 border rounded p-4 shadow'}>
+        <Label className={'font-mono'}>Event address</Label>
+        <div
+          className={'flex flex-row items-center w-full gap-6 justify-between'}
+        >
           <Input
-            className={'w-1/2'}
+            className={'w-full'}
             value={location}
             placeholder='e.g., Springfield, Illinois, the Washington Mall, or Central Park'
             onChange={(e) => {
@@ -64,17 +67,21 @@ const AppDetailInputs: React.FC<{}> = () => {
               setCanSave(true);
             }}
           />
-          <Button className={'bg-sky-600'} onClick={getAndSetCoordinates}>
+          <Button className={'bg-indigo-600'} onClick={getAndSetCoordinates}>
             Save location
           </Button>
         </div>
       </div>
 
-      <div className={'flex flex-row gap-6'}>
-        <div className={'flex flex-col w-1/2 gap-3'}>
-          <div className={'flex flex-col gap-2'}>
-            <Label>Event name</Label>
+      <div className={'flex flex-col gap-2 bg-neutral-50 border rounded p-4 shadow'}>
+        <Label className={'font-mono'}>Important names</Label>
+        <div
+          className={'flex flex-row w-full gap-8 items-center justify-between'}
+        >
+          <div className={'flex flex-row items-center gap-1 w-1/2'}>
+            <Label className={'flex flex-row w-1/3 justify-center'}>Event name</Label>
             <Input
+              className={''}
               placeholder={
                 'e.g., Springfield BBQ Festival, Washington Mall Walk, or Central Park Art Fair'
               }
@@ -86,119 +93,73 @@ const AppDetailInputs: React.FC<{}> = () => {
             />
           </div>
 
-          <div className={'flex flex-col gap-2'}>
-            <Label>App name</Label>
-            <div>
-              <Input
-                placeholder={
-                  'e.g., SpringfieldBBQ!, MallWalk Connect, or ParkArts+'
-                }
-                value={appDetails['App name'] ? appDetails['App name'] : ''}
-                onChange={(e) => {
-                  setAppDetails({ 'App name': e.target.value });
-                  setCanSave(true);
-                }}
-              />
-            </div>
+          <div className={'flex flex-row items-center gap-1 w-1/2'}>
+            <Label className={'flex flex-row w-1/3 justify-center'}>App name</Label>
+            <Input
+              className={''}
+              placeholder={
+                'e.g., SpringfieldBBQ!, MallWalk Connect, or ParkArts+'
+              }
+              value={appDetails['App name'] ? appDetails['App name'] : ''}
+              onChange={(e) => {
+                setAppDetails({ 'App name': e.target.value });
+                setCanSave(true);
+              }}
+            />
           </div>
         </div>
+      </div>
 
-        <div className={'flex flex-col grow gap-3'}>
-          <div className={'flex flex-col gap-2'}>
-            <Label>Start date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'w-[200px] justify-start text-left font-normal',
-                    !appDetails['Start date'] && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className={'mr-2'} />
-                  {appDetails['Start date'] ? (
-                    dayjs(appDetails['Start date']).format('ddd, MMM D')
-                  ) : (
-                    <span>Select a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className='w-auto p-0' align='start'>
-                <Calendar
-                  mode='single'
-                  selected={
-                    appDetails['Start date']
-                      ? new Date(appDetails['Start date'])
-                      : undefined
-                  }
-                  onSelect={(value) => {
-                    setAppDetails({ 'Start date': String(value) });
-                    setCanSave(true);
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className={'flex flex-col gap-2'}>
-            <Label>Start time</Label>
+      <div className={'flex flex-col gap-2 bg-neutral-50 border rounded p-4 shadow'}>
+        <Label className={'font-mono'}>Event dates & times</Label>
+        <div className={'flex flex-row items-center w-full'}>
+
+          <div className={'flex flex-row items-center gap-2 w-1/2'}>
+            <Label>Start</Label>
+            <DatePicker
+              hint={'Date'}
+              onSelect={(value) => {
+                setAppDetails({ 'Start date': String(value) });
+                setCanSave(true);
+              }}
+              selectedDateString={appDetails['Start date']}
+              triggerClassName='w-1/2'
+            />
             <TimePicker
               onSelectTime={(time: string) => {
                 setAppDetails({ 'Start time': time });
                 setCanSave(true);
               }}
               timeToDisplay={appDetails['Start time'] ?? undefined}
+              triggerClassName={'w-3/12'}
+              hint={'Time'}
             />
           </div>
-        </div>
 
-        <div className={'flex flex-col grow gap-3'}>
-          <div className={'flex flex-col gap-2'}>
-            <Label>End date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'w-[200px] justify-start text-left font-normal',
-                    !appDetails['End date'] && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className={'mr-2'} />
-                  {appDetails['End date'] ? (
-                    dayjs(appDetails['End date']).format('ddd, MMM D')
-                  ) : (
-                    <span>Select a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className='w-auto p-0' align='start'>
-                <Calendar
-                  mode='single'
-                  selected={
-                    appDetails['End date']
-                      ? new Date(appDetails['End date'])
-                      : undefined
-                  }
-                  onSelect={(value) => {
-                    setAppDetails({ 'End date': String(value) });
-                    setCanSave(true);
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className={'flex flex-col gap-2'}>
-            <Label>End time</Label>
+          <div className={'flex flex-row justify-end gap-2 items-center w-1/2'}>
+
+            <Label>End</Label>
+            <DatePicker
+              hint={'Date'}
+              onSelect={(value) => {
+                setAppDetails({ 'End date': String(value) });
+                setCanSave(true);
+              }}
+              selectedDateString={appDetails['End date']}
+              triggerClassName='w-1/2'
+            />
+
             <TimePicker
               onSelectTime={(time: string) => {
                 setAppDetails({ 'End time': time });
                 setCanSave(true);
               }}
               timeToDisplay={appDetails['End time'] ?? undefined}
+              hint={'Time'}
+              triggerClassName={'w-3/12'}
             />
           </div>
+
         </div>
       </div>
     </div>

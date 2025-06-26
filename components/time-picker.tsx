@@ -17,7 +17,10 @@ dayjs.extend(customParseFormat);
 const TimePicker: React.FC<{
   onSelectTime: (time: string) => void;
   timeToDisplay: string | undefined;
-}> = ({ onSelectTime, timeToDisplay }) => {
+  hint: string,
+  triggerClassName: string,
+
+}> = ({ onSelectTime, timeToDisplay, hint, triggerClassName }) => {
   const times = [
     '00:00:00',
     '00:15:00',
@@ -127,15 +130,15 @@ const TimePicker: React.FC<{
 
   return (
     <Select onValueChange={(time: string) => onSelectTime(time)}>
-      <SelectTrigger>
+      <SelectTrigger className={triggerClassName}>
         <div>
           {timeToDisplay ? (
             <div className={'text-primary'}>
               {dayjs(timeToDisplay, 'HH:mm:ss').format('h:mm a')}
             </div>
           ) : (
-            <div className={'flex item-center gap-2'}>
-              <ClockIcon /><span>Select a time</span>
+            <div className={'flex items-center gap-2'}>
+              <ClockIcon /><span>{hint}</span>
             </div>
           )}
         </div>

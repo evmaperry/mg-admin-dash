@@ -226,7 +226,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
       <div className={'flex flex-col items-center w-full gap-4'}>
         <div className={'flex flex-row w-full justify-between gap-3'}>
           {/* MAP */}
-          <div className={'flex rounded overflow-hidden h-[600px] w-2/3'}>
+          <div className={'flex rounded overflow-hidden h-[600px] w-7/12'}>
             {appDetails['Event latitude'] && appDetails['Event longitude'] && (
               <Map
                 mapboxAccessToken={
@@ -277,7 +277,9 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
                   newMultiMarker.coordinates.length > 0 && (
                     <MapRouteMarker
                       post={{
-                        coordinates: newMultiMarker.coordinates,
+                        coordinates: newMultiMarker.coordinates.map(
+                          (coordinate) => coordinate.coords
+                        ),
                         routeCategory:
                           selectedMarkerType === 'route' &&
                           newMultiMarker.category
@@ -324,7 +326,7 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
           {/* POPUPS */}
           <div
             className={
-              'flex flex-col gap-3 items-center justify-start font-light rounded w-1/3 px-4 py-3 border bg-neutral-50]'
+              'flex flex-col gap-3 items-center justify-start font-light rounded w-5/12 px-4 py-3 border bg-neutral-50]'
             }
           >
             {/* Popup container */}

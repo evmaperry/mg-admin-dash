@@ -16,15 +16,22 @@ const CreatePage: React.FC<{}> = async ({}) => {
   }
 
   return (
-    <div className={'flex flex-col max-w-6xl w-full'}>
-      <div className={'flex flex-row justify-between bg-neutral-200 pl-12 pr-8 pb-5 pt-10'}>
-        <div className={'text-3xl font-mono'}>Build an app</div>
-        <AppSelectOrCreate user={user} />
+    <div className={'flex flex-col w-full'}>
+      <div className={'flex flex-row justify-center bg-neutral-900 pb-5 pt-8'}>
+        <div className={'max-w-5xl w-full flex justify-between px-6'}>
+          <div className={'text-3xl font-mono text-neutral-50'}>
+            Build an app
+          </div>
+          <AppSelectOrCreate user={user} />
+        </div>
       </div>
-      <div className={'flex flex-col h-[calc(100vh-280px)] overflow-scroll pt-4'}>
-        <CreateForms user={user}/>
+      <div
+        className={
+          'flex flex-col h-[calc(100vh-280px)] overflow-scroll pt-12 px-12'
+        }
+      >
+        <CreateForms user={user} />
       </div>
-
     </div>
   );
 };

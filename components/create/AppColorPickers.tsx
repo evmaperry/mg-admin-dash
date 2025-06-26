@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import ColorPicker from './ColorPicker';
 import MapPage from '../pages/MapPage';
@@ -76,45 +76,42 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
   });
 
   // set app colors when app is selected
-  useEffect(()=> {
+  useEffect(() => {
     setConfigurableColors({
       primary: {
         ...configurableColors.primary,
-        hex: appColors.primary
+        hex: appColors.primary,
       },
-       inversePrimary: {
+      inversePrimary: {
         ...configurableColors.inversePrimary,
-        hex: appColors.inversePrimary
+        hex: appColors.inversePrimary,
       },
-       primaryContainer: {
+      primaryContainer: {
         ...configurableColors.primaryContainer,
-        hex: appColors.primaryContainer
+        hex: appColors.primaryContainer,
       },
-       onPrimaryContainer: {
+      onPrimaryContainer: {
         ...configurableColors.onPrimaryContainer,
-        hex: appColors.onPrimaryContainer
+        hex: appColors.onPrimaryContainer,
       },
       onPrimaryContainerUnselected: {
         ...configurableColors.onPrimaryContainerUnselected,
-        hex: appColors.onPrimaryContainerUnselected
+        hex: appColors.onPrimaryContainerUnselected,
       },
       secondary: {
         ...configurableColors.secondary,
-        hex: appColors.secondary
+        hex: appColors.secondary,
       },
       surfaceVariant: {
         ...configurableColors.surfaceVariant,
-        hex: appColors.surfaceVariant
+        hex: appColors.surfaceVariant,
       },
       outline: {
         ...configurableColors.outline,
-        hex: appColors.outline
+        hex: appColors.outline,
       },
-    })
-   
-
-
-  }, [appColors])
+    });
+  }, [appColors]);
 
   const handleColorChange = (
     hexColor: string,
@@ -140,7 +137,7 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
         >
           <div className={'flex flex-col'}>
             <div className={'font-mono font-bold'}>{entry[1].name}</div>
-            <div className={'font-light'}>( {entry[0]} )</div>
+            <div className={'font-light text-xs'}>( {entry[0]} )</div>
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -182,17 +179,20 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
     <div className={'flex flex-row w-full justify-around items-center gap-2'}>
       <div
         className={
-          'flex flex-col items-center gap-4 p-4 bg-neutral-100 rounded border'
+          'flex flex-col items-center gap-4 p-4 bg-neutral-50 rounded border shadow'
         }
       >
         <div className={'flex flex-col items-center gap-1'}>
           <div className={'text-sm font-bold text-sky-500'}>
-            CLICK THE SWATCHES TO CHANGE COLORS <span className={'text-lg'}>👇</span>
+            CLICK THE SWATCHES TO CHANGE COLORS{' '}
+            <span className={'text-lg'}>👇</span>
           </div>
         </div>
         <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
         <div className={'flex flex-row items-center gap-6 w-full'}>
-          <div className={'font-mono font-bold text-md w-1/2'}>Select Map Theme</div>
+          <div className={'font-mono font-bold text-md w-1/2'}>
+            Select Map Theme
+          </div>
           <Select
             onValueChange={(
               value: 'light' | 'streets' | 'dark' | 'outdoors'
@@ -201,7 +201,7 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
             }}
           >
             <SelectTrigger className={'w-1/2'}>
-            <SelectValue placeholder={'Light'} defaultValue={mapTheme}/>
+              <SelectValue placeholder={'Light'} defaultValue={mapTheme} />
             </SelectTrigger>
 
             <SelectContent>
@@ -215,38 +215,42 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
           </Select>
         </div>
       </div>
-      <div className={''}>
-        <div className={'font-mono font-bold text-center mb-2'}>Map Page</div>
-        <MapPage
-          colors={{
-            primary: configurableColors.primary.hex,
-            primaryContainer: configurableColors.primaryContainer.hex,
-            onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
-            onPrimaryContainerUnselected:
-              configurableColors.onPrimaryContainerUnselected.hex,
+      <div className={'bg-neutral-50 flex flex-row gap-12 rounded shadow border px-12 py-6'}>
+        <div >
+          <div className={'font-mono font-bold text-center mb-2'}>Map Page</div>
+          <MapPage
+            colors={{
+              primary: configurableColors.primary.hex,
+              primaryContainer: configurableColors.primaryContainer.hex,
+              onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+              onPrimaryContainerUnselected:
+                configurableColors.onPrimaryContainerUnselected.hex,
 
-            inversePrimary: configurableColors.inversePrimary.hex,
-            secondary: configurableColors.secondary.hex,
-            outline: configurableColors.outline.hex,
-            surfaceVariant: configurableColors.surfaceVariant.hex,
-          }}
-        />
-      </div>
-      <div>
-        <div className={'text-center font-mono font-bold mb-2'}>Feed Page</div>
-        <FeedPage
-          colors={{
-            primary: configurableColors.primary.hex,
-            primaryContainer: configurableColors.primaryContainer.hex,
-            onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
-            onPrimaryContainerUnselected:
-              configurableColors.onPrimaryContainerUnselected.hex,
-            inversePrimary: configurableColors.inversePrimary.hex,
-            secondary: configurableColors.secondary.hex,
-            outline: configurableColors.outline.hex,
-            surfaceVariant: configurableColors.surfaceVariant.hex,
-          }}
-        />
+              inversePrimary: configurableColors.inversePrimary.hex,
+              secondary: configurableColors.secondary.hex,
+              outline: configurableColors.outline.hex,
+              surfaceVariant: configurableColors.surfaceVariant.hex,
+            }}
+          />
+        </div>
+        <div>
+          <div className={'text-center font-mono font-bold mb-2'}>
+            Feed Page
+          </div>
+          <FeedPage
+            colors={{
+              primary: configurableColors.primary.hex,
+              primaryContainer: configurableColors.primaryContainer.hex,
+              onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+              onPrimaryContainerUnselected:
+                configurableColors.onPrimaryContainerUnselected.hex,
+              inversePrimary: configurableColors.inversePrimary.hex,
+              secondary: configurableColors.secondary.hex,
+              outline: configurableColors.outline.hex,
+              surfaceVariant: configurableColors.surfaceVariant.hex,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

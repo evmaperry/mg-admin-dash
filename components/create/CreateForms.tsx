@@ -17,20 +17,73 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
   return (
     <div className={'flex w-full pb-12'}>
       {appId ? (
-        <div className={'flex flex-col gap-6 w-full'}>
-          <div className={'flex flex-col gap-3 w-full'}>
-            <div className={'create-event-form-title'}>The basics</div>
+        <div className={'flex flex-col gap-12 w-full items-center'}>
+          {/* THE BASICS */}
+          <div
+            className={
+              'flex flex-col gap-3 w-full bg-neutral-100 rounded p-6 max-w-4xl shadow'
+            }
+          >
+            <div className={'flex items-center gap-4'}>
+              <div className={'create-event-form-title'}>1. The basics</div>
+              {/*  INSTRUCTIONS */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size={'sm'} variant={'outline'}>
+                    <Info className={'mr-1'} /> Instructions
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className={'leading-[1.2] font-light w-[600px]'}
+                >
+                  <div>Basics go here</div>
+                </PopoverContent>
+              </Popover>
+            </div>
             <AppDetailInputs />
           </div>
 
-          <div className={'flex flex-col gap-3'}>
-            <div className={'create-event-form-title'}>Colors</div>
+          {/* COLORS */}
+          <div
+            className={'flex flex-col gap-3 bg-neutral-100 rounded p-6 shadow max-w-7xl w-full'}
+          >
+            <div className={'flex gap-4 items-center'}>
+              <div className={'create-event-form-title'}>2. Colors</div>
+              {/*  INSTRUCTIONS */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size={'sm'} variant={'outline'}>
+                    <Info className={'mr-1'} /> Instructions
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className={'leading-[1.2] font-light w-[600px]'}
+                >
+                  <div>Color instructions go here</div>
+                </PopoverContent>
+              </Popover>
+            </div>
             <AppColorPickers />
           </div>
 
-          <div className={'flex flex-col gap-3'}>
-            <div className={'create-event-form-title'}>
-              Add Markers to Your Map
+          <div className={'flex flex-col gap-3 bg-neutral-100 p-6'}>
+            <div className={'flex items-center gap-4'}>
+              <div className={'create-event-form-title'}>
+                Add Markers to Your Map
+              </div>
+              {/*  INSTRUCTIONS */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size={'sm'} variant={'outline'}>
+                    <Info className={'mr-1'} /> Instructions
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className={'leading-[1.2] font-light w-[600px]'}
+                >
+                  <div>Marker map instructions go here</div>
+                </PopoverContent>
+              </Popover>
             </div>
             <AddMarkersMap user={user} />
           </div>
@@ -50,7 +103,9 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
                     <Info className={'mr-1'} /> Instructions
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
+                <PopoverContent
+                  className={'leading-[1.2] font-light w-[600px]'}
+                >
                   <div>
                     The map displays different content depending on how zoomed
                     in the view is. When the map is relatively zoomed in, the
@@ -58,8 +113,11 @@ const CreateForms: React.FC<{ user: User }> = ({ user }) => {
                     zoomed out, the user sees labels, which locate the event
                     within a wider geographic context and help to section off
                     the areas of your event.
-                  </div><div>Click and drag the map to re-center your event in the frame of the
-              phone to best display the boundaries of your event.</div>
+                  </div>
+                  <div>
+                    Click and drag the map to re-center your event in the frame
+                    of the phone to best display the boundaries of your event.
+                  </div>
                 </PopoverContent>
               </Popover>
             </div>
