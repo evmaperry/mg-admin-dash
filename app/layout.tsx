@@ -10,6 +10,7 @@ import './globals.css';
 import { Copyright } from 'lucide-react';
 import { DashboardConfigStoreProvider } from '@/providers/dashboard-config-provider';
 import { CreateAppStoreProvider } from '@/providers/create-app-provider';
+import NavPathIndicator from '@/components/nav-path-indicator';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -53,11 +54,11 @@ export default function RootLayout({
               <main className='min-h-screen flex flex-col items-center'>
                 <div className='w-full h-full flex flex-col items-center'>
                   <nav className='w-full flex justify-center border-b border-b-foreground/10 h-16'>
-                    <div className='w-full max-w-5xl flex justify-between items-center p-3 px-6 text-sm'>
+                    <div className='w-full flex justify-between items-center p-3 px-6 text-sm'>
                       <div className='flex gap-5 items-center font-semibold'>
                         <Link href={'/'}>
                           <div className={'font-mono'}>Fiesta Maestro</div>
-                          <div className='font-light'>Admin Dashboard</div>
+                         <NavPathIndicator />
                         </Link>
                       </div>
                       {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}

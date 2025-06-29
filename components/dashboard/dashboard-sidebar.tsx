@@ -25,9 +25,9 @@ import {
   Users,
   Users2,
 } from 'lucide-react';
-import { AppSwitcher } from './app-switcher';
-import { NavAppOptions } from '@/components/dashboard/nav-app-options';
-import { NavAccountOptions } from '@/components/dashboard/nav-account-options';
+import { DashboardAppSwitcher } from './dashboard-app-switcher';
+import { DashboardSidebarAppOptions } from '@/components/dashboard/dashboard-sidebar-app-options';
+import { DashboardSidebarAccountOptions } from '@/components/dashboard/dashboard-sidebar-account-options';
 import {
   Sidebar,
   SidebarContent,
@@ -38,13 +38,8 @@ import {
 } from '@/components/ui/sidebar';
 import { fakeApps } from '@/data/fakeData';
 
+
 const data = {
-  versions: ['1.0.1', '1.1.0-alpha', '2.0.0-beta1'],
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   navMain: [
     {
       title: 'Users',
@@ -150,18 +145,15 @@ export function DashboardSidebar({
   return (
     <Sidebar collapsible='none' {...props}>
       <SidebarHeader>
-        <AppSwitcher
-          apps={fakeApps}
-          defaultVersion={fakeApps[0]}
-        />
+        <DashboardAppSwitcher apps={fakeApps} defaultVersion={fakeApps[0]} />
       </SidebarHeader>
       <SidebarContent>
-        <NavAppOptions items={data.navMain} />
+
+        <DashboardSidebarAppOptions items={data.navMain} />
         <SidebarSeparator />
-        <NavAccountOptions options={data.options} />
+        <DashboardSidebarAccountOptions options={data.options} />
       </SidebarContent>
-      <SidebarFooter>
-      </SidebarFooter>
+      <SidebarFooter></SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

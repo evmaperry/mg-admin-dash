@@ -22,7 +22,7 @@ export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>)  {
+}>) {
   // const supabase = await createClient();
 
   // const {
@@ -34,7 +34,7 @@ export default function DashboardLayout({
   // }
 
   return (
-    <div className='flex-1 w-full flex flex-col gap-12'>
+    <div className='flex-1 w-full flex flex-col gap-8'>
       <div>
         <SidebarProvider>
           <DashboardSidebar />
@@ -47,14 +47,7 @@ export default function DashboardLayout({
               </div>
             </header>
             <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-              {/* <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
-                <div className='aspect-video rounded-xl bg-muted/50' />
-                <div className='aspect-video rounded-xl bg-muted/50' />
-                <div className='aspect-video rounded-xl bg-muted/50' />
-              </div>
-               */}
               {children}
-              {/* <div className='min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min' /> */}
             </div>
           </SidebarInset>
         </SidebarProvider>

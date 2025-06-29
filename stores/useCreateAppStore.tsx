@@ -23,6 +23,11 @@ interface MapMarkers {
 }
 
 export type CreateAppState = {
+  stepCompletions : {'basics': 'complete'|'incomplete'
+    , 'colors': 'complete'|'incomplete','labels': 'complete'|'incomplete','markers': 'complete'|'incomplete'
+  };
+  selectedStep: 'basics' | 'colors' | 'labels' | 'markers';
+  userId: string;
   canSave: boolean; // indicates a saveable change has been made
   appId: number | undefined;
   appDetails: AppDetails;
@@ -30,10 +35,12 @@ export type CreateAppState = {
   mapTheme: 'light' | 'streets' | 'dark' | 'outdoors';
   markers: MapMarkers;
   mapLabels: MapLabels;
-  selectedMarkerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | null
+  selectedMarkerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 };
 
 export type CreateAppActions = {
+  setSelectedStep: (step: 'basics' | 'colors' | 'labels' | 'markers') => void;
+  setUserId: (userId: string) => void;
   setAppId: (appId: number) => void;
   setAppDetails: (AppDetailsPartialObj: Partial<AppDetails>) => void;
   setAppColors: (AppColorsPartialObj: Partial<AppColors>) => void;
@@ -55,12 +62,22 @@ export type CreateAppActions = {
     index: number,
     coordinate: Position
   ) => void;
-  setSelectedMarkerType: (markerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | 'null')=> void
+  setSelectedMarkerType: (
+    markerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | 'null'
+  ) => void;
 };
 
 export type CreateAppStore = CreateAppState & CreateAppActions;
 
 export const defaultInitState: CreateAppState = {
+  stepCompletions: {
+    basics: 'incomplete',
+    colors: 'incomplete',
+    labels: 'incomplete',
+    markers: 'incomplete'
+  },
+  selectedStep: 'basics',
+  userId: '',
   appId: 1,
   canSave: false,
   appDetails: {
@@ -160,7 +177,7 @@ export const defaultInitState: CreateAppState = {
       ],
     ],
   },
-  selectedMarkerType: null
+  selectedMarkerType: null,
 };
 
 export const createCreateAppStore = (
@@ -168,6 +185,24 @@ export const createCreateAppStore = (
 ) => {
   return createStore<CreateAppStore>()((set) => ({
     ...initState,
+    setSelectedStep: (
+      selectedStep: 'basics' | 'colors' | 'labels' | 'markers'
+    ) => {
+      set((state) => {
+        return {
+          ...state,
+          selectedStep,
+        };
+      });
+    },
+    setUserId: (userId: string) => {
+      set((state) => {
+        return {
+          ...state,
+          userId,
+        };
+      });
+    },
     setCanSave: (canSave: boolean) => {
       set((state) => {
         return {
@@ -307,7 +342,7 @@ export const createCreateAppStore = (
         's') as 'routes' | 'structures' | 'areas';
 
       set((state) => {
-        console.log('here', state.markers[pluralMarkerType])
+        console.log('here', state.markers[pluralMarkerType]);
         const updatedCoords =
           state.markers[pluralMarkerType][markerId].coordinates;
 
@@ -326,13 +361,15 @@ export const createCreateAppStore = (
         };
       });
     },
-    setSelectedMarkerType: (markerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | 'null') => {
-      set((state)=> {
+    setSelectedMarkerType: (
+      markerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | 'null'
+    ) => {
+      set((state) => {
         return {
           ...state,
-          selectedMarkerType: markerType === 'null' ? null : markerType
-        }
-      })
-    }
+          selectedMarkerType: markerType === 'null' ? null : markerType,
+        };
+      });
+    },
   }));
 };

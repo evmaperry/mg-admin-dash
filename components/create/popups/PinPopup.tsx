@@ -273,6 +273,8 @@ const PinPopup: React.FC<{
                   setPinHour({ ...pinHour, startTime: time });
                 }}
                 timeToDisplay={pinHour.startTime}
+                hint={'Time'}
+                triggerClassName=''
               />
             </div>
             <div
@@ -326,6 +328,8 @@ const PinPopup: React.FC<{
                   setPinHour({ ...pinHour, endTime: time });
                 }}
                 timeToDisplay={pinHour.endTime}
+                hint='Time'
+                triggerClassName=''
               />
             </div>
           </div>

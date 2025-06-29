@@ -1,14 +1,14 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import ColorPicker from './ColorPicker';
-import MapPage from '../pages/MapPage';
-import FeedPage from '../pages/FeedPage';
+import ColorPicker from '../../color-picker';
+import MapPage from '../../pages/MapPage';
+import FeedPage from '../../pages/FeedPage';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { ColorResult } from 'react-color';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import {
@@ -19,7 +19,8 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from '../../ui/select';
+import { Info } from 'lucide-react';
 export interface IConfigurableColor {
   name: string;
   note: string;
@@ -176,80 +177,106 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
   );
 
   return (
-    <div className={'flex flex-row w-full justify-around items-center gap-2'}>
-      <div
-        className={
-          'flex flex-col items-center gap-4 p-4 bg-neutral-50 rounded border shadow'
-        }
-      >
-        <div className={'flex flex-col items-center gap-1'}>
-          <div className={'text-sm font-bold text-sky-500'}>
-            CLICK THE SWATCHES TO CHANGE COLORS{' '}
-            <span className={'text-lg'}>👇</span>
-          </div>
-        </div>
-        <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
-        <div className={'flex flex-row items-center gap-6 w-full'}>
-          <div className={'font-mono font-bold text-md w-1/2'}>
-            Select Map Theme
-          </div>
-          <Select
-            onValueChange={(
-              value: 'light' | 'streets' | 'dark' | 'outdoors'
-            ) => {
-              setMapTheme(value);
-            }}
-          >
-            <SelectTrigger className={'w-1/2'}>
-              <SelectValue placeholder={'Light'} defaultValue={mapTheme} />
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={'light'}>Light</SelectItem>
-                <SelectItem value={'dark'}>Dark</SelectItem>
-                <SelectItem value={'outdoors'}>Outdoors</SelectItem>
-                <SelectItem value={'streets'}>Streets</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+    <div
+      className={
+        'flex flex-col gap-3 bg-neutral-100 rounded p-6 shadow max-w-7xl w-full'
+      }
+    >
+      <div className={'flex gap-4 items-center'}>
+        <div className={'create-event-form-title'}>2. Colors</div>
+        {/*  INSTRUCTIONS */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button size={'sm'} variant={'outline'}>
+              <Info className={'mr-1'} /> Instructions
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
+            <div>Color instructions go here</div>
+          </PopoverContent>
+        </Popover>
       </div>
-      <div className={'bg-neutral-50 flex flex-row gap-12 rounded shadow border px-12 py-6'}>
-        <div >
-          <div className={'font-mono font-bold text-center mb-2'}>Map Page</div>
-          <MapPage
-            colors={{
-              primary: configurableColors.primary.hex,
-              primaryContainer: configurableColors.primaryContainer.hex,
-              onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
-              onPrimaryContainerUnselected:
-                configurableColors.onPrimaryContainerUnselected.hex,
-
-              inversePrimary: configurableColors.inversePrimary.hex,
-              secondary: configurableColors.secondary.hex,
-              outline: configurableColors.outline.hex,
-              surfaceVariant: configurableColors.surfaceVariant.hex,
-            }}
-          />
-        </div>
-        <div>
-          <div className={'text-center font-mono font-bold mb-2'}>
-            Feed Page
+      <div className={'flex flex-row w-full justify-around items-center gap-2'}>
+        <div
+          className={
+            'flex flex-col items-center gap-4 p-4 bg-neutral-50 rounded border shadow'
+          }
+        >
+          <div className={'flex flex-col items-center gap-1'}>
+            <div className={'text-sm font-bold text-sky-500'}>
+              CLICK THE SWATCHES TO CHANGE COLORS{' '}
+              <span className={'text-lg'}>👇</span>
+            </div>
           </div>
-          <FeedPage
-            colors={{
-              primary: configurableColors.primary.hex,
-              primaryContainer: configurableColors.primaryContainer.hex,
-              onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
-              onPrimaryContainerUnselected:
-                configurableColors.onPrimaryContainerUnselected.hex,
-              inversePrimary: configurableColors.inversePrimary.hex,
-              secondary: configurableColors.secondary.hex,
-              outline: configurableColors.outline.hex,
-              surfaceVariant: configurableColors.surfaceVariant.hex,
-            }}
-          />
+          <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
+          <div className={'flex flex-row items-center gap-6 w-full'}>
+            <div className={'font-mono font-bold text-md w-1/2'}>
+              Select Map Theme
+            </div>
+            <Select
+              onValueChange={(
+                value: 'light' | 'streets' | 'dark' | 'outdoors'
+              ) => {
+                setMapTheme(value);
+              }}
+            >
+              <SelectTrigger className={'w-1/2'}>
+                <SelectValue placeholder={'Light'} defaultValue={mapTheme} />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value={'light'}>Light</SelectItem>
+                  <SelectItem value={'dark'}>Dark</SelectItem>
+                  <SelectItem value={'outdoors'}>Outdoors</SelectItem>
+                  <SelectItem value={'streets'}>Streets</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div
+          className={
+            'bg-neutral-50 flex flex-row gap-12 rounded shadow border px-12 py-6'
+          }
+        >
+          <div>
+            <div className={'font-mono font-bold text-center mb-2'}>
+              Map Page
+            </div>
+            <MapPage
+              colors={{
+                primary: configurableColors.primary.hex,
+                primaryContainer: configurableColors.primaryContainer.hex,
+                onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+                onPrimaryContainerUnselected:
+                  configurableColors.onPrimaryContainerUnselected.hex,
+
+                inversePrimary: configurableColors.inversePrimary.hex,
+                secondary: configurableColors.secondary.hex,
+                outline: configurableColors.outline.hex,
+                surfaceVariant: configurableColors.surfaceVariant.hex,
+              }}
+            />
+          </div>
+          <div>
+            <div className={'text-center font-mono font-bold mb-2'}>
+              Feed Page
+            </div>
+            <FeedPage
+              colors={{
+                primary: configurableColors.primary.hex,
+                primaryContainer: configurableColors.primaryContainer.hex,
+                onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+                onPrimaryContainerUnselected:
+                  configurableColors.onPrimaryContainerUnselected.hex,
+                inversePrimary: configurableColors.inversePrimary.hex,
+                secondary: configurableColors.secondary.hex,
+                outline: configurableColors.outline.hex,
+                surfaceVariant: configurableColors.surfaceVariant.hex,
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

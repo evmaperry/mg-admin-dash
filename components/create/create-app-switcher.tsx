@@ -18,8 +18,10 @@ import { User } from '@supabase/supabase-js';
 import { Button } from '../ui/button';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { App } from 'mgtypes/types/App';
+import { SidebarGroupLabel } from '../ui/sidebar';
+import { Plus } from 'lucide-react';
 
-const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
+const CreateAppSwitcher: React.FC<{ user: User }> = ({ user }) => {
   // THE ACTIVE APP WE'RE WORKING ON
   // STARTS AS NULL
   const {
@@ -33,9 +35,9 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
     mapLabels,
   } = useCreateAppStore((state) => state);
 
-  const [userApps, setUserApps] = useState<any[]>();
+  const [userAppDrafts, setUserAppDrafts] = useState<any[]>();
 
-  const getAndSetUserApps = async () => {
+  const getAndSetUserDraftApps = async () => {
     try {
       const userApps: any = await getUserAppsFromDb(user.id);
 
@@ -46,14 +48,14 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
           return 1;
         }
       });
-      setUserApps(userApps);
+      setUserAppDrafts(userApps);
 
       // select first app
-      const firstAppId:number = userApps[0].id
+      const firstAppId: number = userApps[0].id;
       setAppId(firstAppId);
       const app = await getAppInfoFromDb(firstAppId);
-      console.log('ApP', app)
-      setApp(app)
+      console.log('ApP', app);
+      setApp(app);
     } catch (e) {
       console.error('APP SELECT ERROR: failed to getAndSetUserApps', e);
     }
@@ -61,7 +63,7 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
 
   useEffect(() => {
     // gets all of users apps
-    getAndSetUserApps();
+   getAndSetUserDraftApps();
   }, [user]);
 
   const handleAppSelection = async (appId: number) => {
@@ -70,38 +72,38 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
     setApp(app);
   };
 
-  const handleSave = async () => {
-    const updatedApp = await updateAppInDb(appId as number, {
-      eventName: appDetails['Event name'] as string,
-      appName: appDetails['App name'] as string,
-      eventLatitude: appDetails['Event latitude'] as number,
-      eventLongitude: appDetails['Event longitude'] as number,
-      startDateTime: appDetails['Start date'] + 'T' + appDetails['Start time'],
-      endDateTime: appDetails['End date'] + 'T' + appDetails['End time'],
-      appColors,
-      mapLabels
-    });
+  // const handleSave = async () => {
+  //   const updatedApp = await updateAppInDb(appId as number, {
+  //     eventName: appDetails['Event name'] as string,
+  //     appName: appDetails['App name'] as string,
+  //     eventLatitude: appDetails['Event latitude'] as number,
+  //     eventLongitude: appDetails['Event longitude'] as number,
+  //     startDateTime: appDetails['Start date'] + 'T' + appDetails['Start time'],
+  //     endDateTime: appDetails['End date'] + 'T' + appDetails['End time'],
+  //     appColors,
+  //     mapLabels
+  //   });
 
-    setCanSave(false);
-  };
+  //   setCanSave(false);
+  // };
 
   return (
-    <div className={'flex flex-row items-center gap-4'}>
+    <div className={'flex flex-col gap-4'}>
       <Select
         value={String(appId)}
         onValueChange={(value) => {
           handleAppSelection(Number(value));
         }}
       >
-        <SelectTrigger className={'w-48 ml-8'}>
+        <SelectTrigger className={''}>
           {!appId
             ? 'Select an existing app'
-            : userApps?.find((app) => app.id === appId).appName}
+            : userAppDrafts?.find((app) => app.id === appId).appName}
         </SelectTrigger>
         <SelectContent>
-          {userApps &&
-            userApps.length > 0 &&
-            userApps.map((userApp: any, index: number) => {
+          {userAppDrafts &&
+            userAppDrafts.length > 0 &&
+            userAppDrafts.map((userApp: any, index: number) => {
               return (
                 <SelectItem
                   value={String(userApp.id)}
@@ -113,12 +115,12 @@ const AppSelectOrCreate: React.FC<{ user: User }> = ({ user }) => {
             })}
         </SelectContent>
       </Select>
-      <Button onClick={handleSave} disabled={!canSave} className={'bg-indigo-600'}>
-        Save draft
+      <Button className={'bg-sky-600 gap-2'}>
+        <Plus />
+        Create an app draft
       </Button>
-      <Button className={'bg-sky-600'}>Start a new app</Button>
     </div>
   );
 };
 
-export default AppSelectOrCreate;
+export default CreateAppSwitcher;

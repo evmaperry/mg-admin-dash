@@ -27,7 +27,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-export function NavAccountOptions({
+export function CreateSidebarAccountOptions({
   options,
 }: {
   options: {

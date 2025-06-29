@@ -10,7 +10,7 @@ import {
   Plus,
   Smartphone,
 } from 'lucide-react';
-import { App } from '@/types/types';
+// import { App } from '@/types/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,18 +27,18 @@ import {
 import { Button } from '../ui/button';
 import { redirect } from 'next/navigation';
 
-export function AppSwitcher({
+export function DashboardAppSwitcher({
   apps,
   defaultVersion,
 }: {
-  apps: App[];
-  defaultVersion: App;
+  apps: any[]; // TODO: type this
+  defaultVersion: any;
 }) {
   const [selectedVersion, setSelectedVersion] = React.useState(defaultVersion);
 
   return (
     <SidebarMenu>
-      <SidebarGroupLabel>App</SidebarGroupLabel>
+      <SidebarGroupLabel>Select or create an app</SidebarGroupLabel>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

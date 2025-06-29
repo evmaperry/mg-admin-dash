@@ -21,7 +21,7 @@ import { redirect, usePathname } from 'next/navigation';
 import { useDashboardConfigStore } from '@/providers/dashboard-config-provider';
 import { cn } from '@/lib/utils';
 
-export function NavAppOptions({
+export function DashboardSidebarAppOptions({
   items,
 }: {
   items: {
@@ -39,7 +39,6 @@ export function NavAppOptions({
   const pathSegments = path.split('/').slice(2); // removes '' and 'dashboard';
   const { selectedApp } = useDashboardConfigStore((state) => state);
 
-  console.log('path', path, 'pSegs', pathSegments);
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Manage</SidebarGroupLabel>

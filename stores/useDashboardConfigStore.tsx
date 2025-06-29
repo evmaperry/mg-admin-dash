@@ -1,19 +1,19 @@
-import { App } from '@/types/types';
+import { App } from 'mgtypes/types/App';
 import { createStore } from 'zustand';
 
 export type DashboardConfigState = {
-  selectedApp: App | null;
+  selectedApp: Partial<App> | null;
 };
 
 export type DashboardConfigActions = {
-  setSelectedApp: (selectedApp: App | null) => void;
+  setSelectedApp: (selectedApp: Partial<App> | null) => void;
 };
 
 export type DashboardConfigStore = DashboardConfigState &
   DashboardConfigActions;
 
 export const defaultInitState: DashboardConfigState = {
-  selectedApp: {name: 'Fruitfest+'},
+  selectedApp: {eventName: 'Fruitfest+'},
 };
 
 export const createDashboardConfigStore = (
@@ -21,7 +21,7 @@ export const createDashboardConfigStore = (
 ) => {
   return createStore<DashboardConfigStore>()((set) => ({
     ...initState,
-    setSelectedApp: (selectedApp: App | null) =>
+    setSelectedApp: (selectedApp: Partial<App> | null) =>
       set((state) => {
         return { ...state, selectedApp };
       }),
