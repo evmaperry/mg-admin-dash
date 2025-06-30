@@ -36,6 +36,6 @@ function copyFiles(sourceDir: string, destDir: string) {
 }
 
 const sourceDirectory = 'node_modules/mgmarkers/markerImages';
-const destinationDirectory = 'public/assets/images';
+const destinationDirectory = 'public/assets/images/markers';
 
 copyFiles(sourceDirectory, destinationDirectory);

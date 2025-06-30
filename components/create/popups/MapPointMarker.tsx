@@ -14,9 +14,9 @@ const MapPointMarker: React.FC<{
 
   let imageSRC;
   if (post.pinCategory) {
-    imageSRC = `/assets/images/pin-${post.pinCategory}-${post.pinType}.png`;
+    imageSRC = `/assets/images/markers/pin-${post.pinCategory}-${post.pinType}.png`;
   } else if (post.planCategory) {
-    imageSRC = `/assets/images/plan-${post.planCategory}-${post.planType}.png`;
+    imageSRC = `/assets/images/markers/plan-${post.planCategory}-${post.planType}.png`;
   } else {
     imageSRC = undefined;
     console.log('no image source defined');

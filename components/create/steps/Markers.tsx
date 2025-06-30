@@ -45,6 +45,7 @@ import {
 } from 'mapbox-gl';
 import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import MapMarkerTable from '../MapMarkerTable';
+import { Label } from '@/components/ui/label';
 
 const Markers: React.FC<{ user: User }> = ({ user }) => {
   const {
@@ -182,19 +183,19 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
     []
   );
 
-  console.log(
-    'iRids',
-    interactiveRouteIds,
-    'MaRkErS:',
-    markers,
-    'selected marker type',
-    selectedMarkerType
-  );
+  // console.log(
+  //   'iRids',
+  //   interactiveRouteIds,
+  //   'MaRkErS:',
+  //   markers,
+  //   'selected marker type',
+  //   selectedMarkerType
+  // );
 
   return (
-    <div className={'flex flex-col gap-3 w-full'}>
+    <div className={'create-app-form-container'}>
       <div className={'flex gap-4 items-center'}>
-        <div className={'create-event-form-title'}>Map Content</div>
+        <div className={'create-app-form-title'}>Map Content</div>
         {/*  INSTRUCTIONS */}
         <Popover>
           <PopoverTrigger asChild>
@@ -217,49 +218,54 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
           </PopoverContent>
         </Popover>
       </div>
-      <div className={'flex flex-col gap-3 w-full border'}>
-        <div className={'flex flex-row h-20 items-center gap-3 w-full'}>
-          <div className={'flex w-1/5 text-sky-500 font-mono'}>
-            Select a marker type 👉
+      <div className={'flex flex-col gap-3 w-full'}>
+        <div className={'flex flex-row items-center gap-3 w-full'}>
+          <div className={'create-app-form-subcontainer'}>
+            <div className={'flex flex-col gap-3'}>
+              <Label className='text-center'>Select a marker type to add to your map</Label>
+              <ToggleGroup
+                variant={'default'}
+                type={'single'}
+                onValueChange={(value: string) => {
+                  setSelectedMarkerType(
+                    value as
+                      | 'pin'
+                      | 'plan'
+                      | 'route'
+                      | 'area'
+                      | 'structure'
+                      | 'null'
+                  );
+                }}
+                className={'font-mono'}
+                value={
+                  selectedMarkerType === null ? undefined : selectedMarkerType
+                }
+              >
+                <ToggleGroupItem value={'pin'}>Pin</ToggleGroupItem>
+                <ToggleGroupItem value={'plan'}>Plan</ToggleGroupItem>
+                <ToggleGroupItem value={'route'}>Route</ToggleGroupItem>
+                <ToggleGroupItem value={'area'}>Area</ToggleGroupItem>
+                <ToggleGroupItem value={'structure'}>Structure</ToggleGroupItem>
+                {/* <ToggleGroupItem value={'null'}>Null</ToggleGroupItem> */}
+              </ToggleGroup>
+            </div>
           </div>
-          <ToggleGroup
-            onValueChange={(value: string) => {
-              setSelectedMarkerType(
-                value as
-                  | 'pin'
-                  | 'plan'
-                  | 'route'
-                  | 'area'
-                  | 'structure'
-                  | 'null'
-              );
-            }}
-            type={'single'}
-            className={'flex w-2/5'}
-            variant={'outline'}
-            value={selectedMarkerType === null ? 'null' : selectedMarkerType}
-          >
-            <ToggleGroupItem value={'pin'}>Pin</ToggleGroupItem>
-            <ToggleGroupItem value={'plan'}>Plan</ToggleGroupItem>
-            <ToggleGroupItem value={'route'}>Route</ToggleGroupItem>
-            <ToggleGroupItem value={'area'}>Area</ToggleGroupItem>
-            <ToggleGroupItem value={'structure'}>Structure</ToggleGroupItem>
-            <ToggleGroupItem value={'null'}>Null</ToggleGroupItem>
-          </ToggleGroup>
           <div
             className={
-              'leading-[1.1] h-full flex items-center w-2/5 text-xs border bg-neutral-100 p-2 rounded font-mono justify-center'
+              'create-app-form-subcontainer leading-[1.1] items-center justify-center text-xs font-mono w-full h-full'
             }
           >
             {selectedMarkerType
               ? MarkerTypeInstructions[selectedMarkerType]
-              : 'Select a marker type to add to the map.'}
+              : <div className={'flex items-center flex-row'}><span className={'text-3xl'}>👈</span>&nbsp; Select a marker type to add to the map.</div>}
           </div>
         </div>
-        <div className={'flex flex-col items-center w-full gap-4'}>
+
+        <div className={'flex flex-col items-center w-full gap-4 border-4'}>
           <div className={'flex flex-row w-full justify-between gap-3'}>
             {/* MAP */}
-            <div className={'flex rounded overflow-hidden h-[600px] w-7/12'}>
+            <div className={'flex rounded overflow-hidden h-[600px]'}>
               {appDetails['Event latitude'] &&
                 appDetails['Event longitude'] && (
                   <Map

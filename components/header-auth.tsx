@@ -4,22 +4,15 @@ import Link from 'next/link';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { createClient } from '@/utils/supabase/server';
-import {
-  Menubar,
-  MenubarCheckboxItem,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarRadioGroup,
-  MenubarRadioItem,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
-  MenubarTrigger,
-} from '@/components/ui/menubar';
 import { DoorOpen, Eraser, LogOut, Menu, Pencil } from 'lucide-react';
+import {
+  DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  // DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -66,42 +59,33 @@ export default async function AuthButton() {
   }
   return user ? (
     <div className='flex items-center gap-4'>
-      <Menubar>
-        <MenubarMenu>
-          <MenubarTrigger>
-            <Menu size={18} />
-          </MenubarTrigger>
-          <MenubarContent className='mr-12 px-4'>
-            <MenubarItem>{user.email}</MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem>
-              <form
-                action={signOutAction}
-                className='flex flex-row items-center justify-between w-full'
-              >
-                <LogOut />
-                <div>Sign out</div>
-              </form>
-            </MenubarItem>
-            <MenubarItem>
-              <Link href={'/dashboard/reset-password'} className='flex flex-row items-center justify-between w-full'><Pencil />Change password</Link>
-            </MenubarItem>
-            {/* <MenubarItem disabled>New Incognito Window</MenubarItem>
-            <MenubarSub>
-              <MenubarSubTrigger>Share</MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarItem>Email link</MenubarItem>
-                <MenubarItem>Messages</MenubarItem>
-                <MenubarItem>Notes</MenubarItem>
-              </MenubarSubContent>
-            </MenubarSub>
-            <MenubarSeparator />
-            <MenubarItem>
-              Print... <MenubarShortcut>⌘P</MenubarShortcut>
-            </MenubarItem> */}
-          </MenubarContent>
-        </MenubarMenu>
-      </Menubar>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Menu size={28} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className='mr-12 px-4'>
+          <DropdownMenuItem>{user.email}</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <form
+              action={signOutAction}
+              className='flex flex-row items-center justify-between w-full'
+            >
+              <LogOut />
+              <div>Sign out</div>
+            </form>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link
+              href={'/dashboard/reset-password'}
+              className='flex flex-row items-center justify-between w-full'
+            >
+              <Pencil />
+              Change password
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   ) : (
     <div className='flex gap-2'>

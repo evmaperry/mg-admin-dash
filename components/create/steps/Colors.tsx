@@ -29,6 +29,7 @@ import {
   CarouselPrevious,
 } from '../../ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { Label } from '@/components/ui/label';
 
 export interface IConfigurableColor {
   name: string;
@@ -143,18 +144,14 @@ export const Colors: React.FC<{}> = ({}) => {
       return (
         <div
           key={`color-popover-${index}`}
-          className={'flex flex-row items-center justify-between gap-8'}
+          className={'flex flex-row items-center justify-between gap-6'}
         >
           <div className={'flex flex-col'}>
-            <div className={'font-mono font-bold'}>{entry[1].name}</div>
-            <div className={'font-light text-xs'}>( {entry[0]} )</div>
+            <Label>{entry[1].name}</Label>
           </div>
           <Popover>
             <PopoverTrigger asChild>
-              <Button
-                variant={'outline'}
-                className={'text-sm font-mono flex gap-2'}
-              >
+              <Button variant={'outline'} className={'font-mono flex gap-2'}>
                 <div
                   className={'h-6 w-6 rounded'}
                   style={{ backgroundColor: entry[1].hex }}
@@ -208,16 +205,11 @@ export const Colors: React.FC<{}> = ({}) => {
           }
         >
           <div className={'flex flex-col items-center gap-1'}>
-            <div className={'text-sm font-bold text-sky-500'}>
-              CLICK THE SWATCHES TO CHANGE COLORS{' '}
-              <span className={'text-lg'}>👇</span>
-            </div>
+            <div className={'create-app-form-subtitle'}>Brand Colors</div>
           </div>
           <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
-          <div className={'flex flex-row items-center gap-6 w-full'}>
-            <div className={'font-mono font-bold text-md w-1/2'}>
-              Select Map Theme
-            </div>
+          <div className={'flex flex-col items-center gap-1 w-full'}>
+            <div className={'create-app-form-subtitle'}>Map Theme</div>
             <Select
               onValueChange={(
                 value: 'light' | 'streets' | 'dark' | 'outdoors'
@@ -225,7 +217,7 @@ export const Colors: React.FC<{}> = ({}) => {
                 setMapTheme(value);
               }}
             >
-              <SelectTrigger className={'w-1/2'}>
+              <SelectTrigger className={'w-4/5'}>
                 <SelectValue placeholder={'Light'} defaultValue={mapTheme} />
               </SelectTrigger>
 
@@ -240,11 +232,11 @@ export const Colors: React.FC<{}> = ({}) => {
             </Select>
           </div>
         </div>
-        <div className={'border'}>
+        <div className={''}>
           <Carousel
             opts={{ align: 'start', loop: true }}
             className={
-              'bg-neutral-50 rounded shadow border px-12 py-6 w-[376px]'
+              'bg-neutral-50 rounded shadow border px-12 pb-6 pt-4 w-[420px]'
             }
             plugins={[
               Autoplay({
@@ -253,8 +245,8 @@ export const Colors: React.FC<{}> = ({}) => {
             ]}
           >
             <CarouselContent className={''}>
-              <CarouselItem className={''}>
-                <div className={'text-center font-mono font-bold mb-2'}>
+              <CarouselItem className={'flex flex-col items-center gap-1'}>
+                <div className={'create-app-form-subtitle'}>
                   Feed Page
                 </div>
                 <FeedPage
@@ -272,8 +264,8 @@ export const Colors: React.FC<{}> = ({}) => {
                   }}
                 />
               </CarouselItem>
-              <CarouselItem>
-                <div className={'font-mono font-bold text-center mb-2'}>
+              <CarouselItem className={'flex flex-col items-center gap-1'}>
+                <div className={'create-app-form-subtitle'}>
                   Map Page
                 </div>
                 <MapPage
@@ -293,8 +285,8 @@ export const Colors: React.FC<{}> = ({}) => {
                 />
               </CarouselItem>
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className={'ml-16'} />
+            <CarouselNext className={'mr-16'} />
           </Carousel>{' '}
         </div>
       </div>

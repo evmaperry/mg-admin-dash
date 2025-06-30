@@ -150,7 +150,7 @@ const Basics: React.FC<{}> = () => {
             <div className={'flex flex-col grow gap-2'}>
               <Label className={''}>City</Label>
               <Input
-                className={'flex min-w-48 max-w-full'}
+                className={'min-w-48 max-w-full'}
                 value={location.city}
                 placeholder='ex. Albany'
                 onChange={(e) => {
@@ -170,7 +170,7 @@ const Basics: React.FC<{}> = () => {
               >
                 <SelectTrigger
                   value={location.state}
-                  className={'min-w-40 max-w-56'}
+                  className={'min-w-40 max-w-full'}
                 >
                   <SelectValue placeholder={'ex. New York'} />
                 </SelectTrigger>
@@ -188,7 +188,7 @@ const Basics: React.FC<{}> = () => {
               </Select>
             </div>
 
-            <div className={'flex flex-col grow gap-2'}>
+            <div className={'flex flex-col gap-2'}>
               <Label className={''}>Zip</Label>
               <Input
                 className={'min-w-24 max-w-32 text-center'}
@@ -266,7 +266,7 @@ const Basics: React.FC<{}> = () => {
                     setCanSave(true);
                   }}
                   selectedDateString={appDetails['Start date']}
-                  triggerClassName='w-1/2'
+                  triggerClassName={'w-1/2'}
                 />
                 <TimePicker
                   onSelectTime={(time: string) => {

@@ -11,6 +11,8 @@ import { Copyright } from 'lucide-react';
 import { DashboardConfigStoreProvider } from '@/providers/dashboard-config-provider';
 import { CreateAppStoreProvider } from '@/providers/create-app-provider';
 import NavPathIndicator from '@/components/nav-path-indicator';
+import Image from 'next/image';
+import logo from '@/public/assets/images/logos/fiestaMaestroLogo.png';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -24,7 +26,6 @@ export const metadata = {
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
-  display: 'swap',
   subsets: ['latin'],
 });
 
@@ -39,9 +40,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' className={geistSans.className} suppressHydrationWarning>
+    <html lang='en'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground font-sans`}
       >
         <ThemeProvider
           attribute='class'
@@ -53,12 +54,25 @@ export default function RootLayout({
             <DashboardConfigStoreProvider>
               <main className='min-h-screen flex flex-col items-center'>
                 <div className='w-full h-full flex flex-col items-center'>
-                  <nav className='w-full flex justify-center border-b border-b-foreground/10 h-16'>
+                  <nav className='w-full flex justify-center border-b border-b-foreground/10 h-20'>
                     <div className='w-full flex justify-between items-center p-3 px-6 text-sm'>
-                      <div className='flex gap-5 items-center font-semibold'>
-                        <Link href={'/'}>
-                          <div className={'font-mono'}>Fiesta Maestro</div>
-                         <NavPathIndicator />
+                      <div className='flex gap-5 items-center'>
+                        <Link
+                          href={'/create'}
+                          className={'flex flex-row items-center gap-2'}
+                        >
+                          <Image
+                            height={56}
+                            width={56}
+                            alt={'FiestaMaestro logo'}
+                            src={logo}
+                          />
+                          <div className={`flex flex-col leading-none text-base font-mono mr-3`}>
+                            <span className={'font-bold'}>fiesta</span>
+                            <span>MAESTRO</span>
+                          </div>
+
+                          <NavPathIndicator />
                         </Link>
                       </div>
                       {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
