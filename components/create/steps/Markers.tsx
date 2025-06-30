@@ -44,9 +44,9 @@ import {
   MapLayerMouseEvent,
 } from 'mapbox-gl';
 import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
-import MapMarkerTable from './../MapMarkerTable';
+import MapMarkerTable from '../MapMarkerTable';
 
-const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
+const Markers: React.FC<{ user: User }> = ({ user }) => {
   const {
     mapTheme,
     markers,
@@ -402,4 +402,4 @@ const AddMarkersMap: React.FC<{ user: User }> = ({ user }) => {
   );
 };
 
-export default AddMarkersMap;
+export default Markers;

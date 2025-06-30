@@ -20,7 +20,7 @@ const CreatePage: React.FC<{}> = async ({}) => {
     <div className={'flex flex-col w-full'}>
       <div
         className={
-          'flex flex-col h-[calc(100vh-280px)] overflow-scroll pt-6 px-12'
+          'flex flex-col h-full overflow-scroll pt-6 px-8'
         }
       >
         <CreateDashboard user={user} />

@@ -17,7 +17,7 @@ import TimePicker from '../../time-picker';
 import {
   getAddressFromCoordinates,
   getCoordinatesFromAddress,
-} from './../createActions';
+} from '../createActions';
 import {
   Select,
   SelectContent,
@@ -30,7 +30,7 @@ import {
 import DatePicker from '../../date-picker';
 
 // APP NAME, EVENT NAME, START & END DATETIMES
-const AppDetailInputs: React.FC<{}> = () => {
+const Basics: React.FC<{}> = () => {
   const states = [
     'Alabama',
     'Alaska',
@@ -119,10 +119,10 @@ const AppDetailInputs: React.FC<{}> = () => {
 
   return (
     <div
-      className={'flex flex-col gap-3 w-full bg-neutral-100 rounded p-6 shadow'}
+      className={'create-app-form-container'}
     >
       <div className={'flex items-center gap-4'}>
-        <div className={'create-event-form-title'}>1. The basics</div>
+        <div className={'create-app-form-title'}>The basics</div>
         {/*  INSTRUCTIONS */}
         <Popover>
           <PopoverTrigger asChild>
@@ -138,19 +138,19 @@ const AppDetailInputs: React.FC<{}> = () => {
       <div className={'flex flex-col gap-4'}>
         <div
           className={
-            'flex flex-col gap-2 bg-neutral-50 border rounded p-4 shadow'
+            'create-app-form-subcontainer'
           }
         >
-          <Label className={'font-mono'}>Event location</Label>
+          <Label className={'create-app-form-subtitle'}>Event location</Label>
           <div
             className={
-              'flex flex-row items-center w-full gap-x-4 gap-y-2 justify-start xl:justify-around flex-wrap'
+              'flex flex-row items-center justify-between w-full gap-x-4 gap-y-2 flex-wrap'
             }
           >
-            <div className={'flex items-center gap-2'}>
-              <Label>City</Label>
+            <div className={'flex flex-col grow gap-2'}>
+              <Label className={''}>City</Label>
               <Input
-                className={'w-64'}
+                className={'flex min-w-48 max-w-full'}
                 value={location.city}
                 placeholder='ex. Albany'
                 onChange={(e) => {
@@ -159,15 +159,19 @@ const AppDetailInputs: React.FC<{}> = () => {
                 }}
               />
             </div>
-            <div className={'flex items-center gap-2'}>
-              <Label>State</Label>
+
+            <div className={'flex flex-col grow gap-2'}>
+              <Label className={''}>State</Label>
               <Select
                 onValueChange={(state: string) => {
                   setLocation({ ...location, state });
                 }}
                 value={location.state}
               >
-                <SelectTrigger value={location.state} className={'w-48'}>
+                <SelectTrigger
+                  value={location.state}
+                  className={'min-w-40 max-w-56'}
+                >
                   <SelectValue placeholder={'ex. New York'} />
                 </SelectTrigger>
                 <SelectContent>
@@ -183,10 +187,11 @@ const AppDetailInputs: React.FC<{}> = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className={'flex items-center gap-2'}>
-              <Label>Zip</Label>
+
+            <div className={'flex flex-col grow gap-2'}>
+              <Label className={''}>Zip</Label>
               <Input
-                className={'w-36 text-center'}
+                className={'min-w-24 max-w-32 text-center'}
                 value={location.zip}
                 placeholder='34566'
                 onChange={(e) => {
@@ -195,29 +200,24 @@ const AppDetailInputs: React.FC<{}> = () => {
                 }}
               />
             </div>
-            {/* <Button className={'bg-indigo-600'} onClick={getAndSetCoordinates}>
-              Save location
-            </Button> */}
           </div>
         </div>
 
         <div
           className={
-            'flex flex-col gap-2 bg-neutral-50 border rounded p-4 shadow'
+            'flex flex-col gap-4 bg-neutral-50 border rounded p-4 shadow'
           }
         >
-          <Label className={'font-mono'}>Important names</Label>
+          <Label className={'create-app-form-subtitle'}>Important names</Label>
           <div
             className={
-              'flex flex-row w-full gap-8 items-center justify-between'
+              'flex flex-row flex-wrap w-full gap-x-8 gap-y-2 items-center justify-around'
             }
           >
-            <div className={'flex flex-row items-center gap-1 w-1/2'}>
-              <Label className={'flex flex-row w-1/3 justify-center'}>
-                Event name
-              </Label>
+            <div className={'flex flex-col grow gap-2'}>
+              <Label className={'text-left'}>Event name</Label>
               <Input
-                className={'w-48'}
+                className={'min-w-48 max-w-full'}
                 placeholder={
                   'e.g., Springfield BBQ Festival, Washington Mall Walk, or Central Park Art Fair'
                 }
@@ -229,12 +229,10 @@ const AppDetailInputs: React.FC<{}> = () => {
               />
             </div>
 
-            <div className={'flex flex-row items-center gap-1 w-1/2'}>
-              <Label className={'flex flex-row w-1/3 justify-center'}>
-                App name
-              </Label>
+            <div className={'flex flex-col grow gap-2'}>
+              <Label className={'flex flex-row'}>App name</Label>
               <Input
-                className={''}
+                className={'min-w-48 max-w-full'}
                 placeholder={
                   'e.g., SpringfieldBBQ!, MallWalk Connect, or ParkArts+'
                 }
@@ -250,56 +248,61 @@ const AppDetailInputs: React.FC<{}> = () => {
 
         <div
           className={
-            'flex flex-col gap-2 bg-neutral-50 border rounded p-4 shadow'
+            'flex flex-col gap-4 bg-neutral-50 border rounded p-4 shadow'
           }
         >
-          <Label className={'font-mono'}>Event dates & times</Label>
-          <div className={'flex flex-row items-center w-full'}>
-            <div className={'flex flex-row items-center gap-2 w-1/2'}>
-              <Label>Start</Label>
-              <DatePicker
-                hint={'Date'}
-                onSelect={(value) => {
-                  setAppDetails({ 'Start date': String(value) });
-                  setCanSave(true);
-                }}
-                selectedDateString={appDetails['Start date']}
-                triggerClassName='w-1/2'
-              />
-              <TimePicker
-                onSelectTime={(time: string) => {
-                  setAppDetails({ 'Start time': time });
-                  setCanSave(true);
-                }}
-                timeToDisplay={appDetails['Start time'] ?? undefined}
-                triggerClassName={'w-3/12'}
-                hint={'Time'}
-              />
+          <Label className={'create-app-form-subtitle'}>
+            Event dates & times
+          </Label>
+
+          <div className={'flex flex-row flex-wrap items-center w-full gap-4'}>
+            <div className={'flex flex-col gap-2 grow'}>
+              <Label className=''>Start</Label>
+              <div className={'flex flex-row items-center grow gap-2'}>
+                <DatePicker
+                  hint={'Date'}
+                  onSelect={(value) => {
+                    setAppDetails({ 'Start date': String(value) });
+                    setCanSave(true);
+                  }}
+                  selectedDateString={appDetails['Start date']}
+                  triggerClassName='w-1/2'
+                />
+                <TimePicker
+                  onSelectTime={(time: string) => {
+                    setAppDetails({ 'Start time': time });
+                    setCanSave(true);
+                  }}
+                  timeToDisplay={appDetails['Start time'] ?? undefined}
+                  triggerClassName={'w-1/2'}
+                  hint={'Time'}
+                />
+              </div>
             </div>
 
-            <div
-              className={'flex flex-row justify-end gap-2 items-center w-1/2'}
-            >
-              <Label>End</Label>
-              <DatePicker
-                hint={'Date'}
-                onSelect={(value) => {
-                  setAppDetails({ 'End date': String(value) });
-                  setCanSave(true);
-                }}
-                selectedDateString={appDetails['End date']}
-                triggerClassName='w-1/2'
-              />
+            <div className={'flex flex-col gap-2 grow'}>
+              <Label className={''}>End</Label>
+              <div className={'flex flex-row items-center grow gap-2'}>
+                <DatePicker
+                  hint={'Date'}
+                  onSelect={(value) => {
+                    setAppDetails({ 'End date': String(value) });
+                    setCanSave(true);
+                  }}
+                  selectedDateString={appDetails['End date']}
+                  triggerClassName='w-1/2'
+                />
 
-              <TimePicker
-                onSelectTime={(time: string) => {
-                  setAppDetails({ 'End time': time });
-                  setCanSave(true);
-                }}
-                timeToDisplay={appDetails['End time'] ?? undefined}
-                hint={'Time'}
-                triggerClassName={'w-3/12'}
-              />
+                <TimePicker
+                  onSelectTime={(time: string) => {
+                    setAppDetails({ 'End time': time });
+                    setCanSave(true);
+                  }}
+                  timeToDisplay={appDetails['End time'] ?? undefined}
+                  hint={'Time'}
+                  triggerClassName={'w-1/2'}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -308,4 +311,4 @@ const AppDetailInputs: React.FC<{}> = () => {
   );
 };
 
-export default AppDetailInputs;
+export default Basics;

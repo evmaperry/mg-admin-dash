@@ -92,7 +92,7 @@ const LabelMarker: React.FC<{ label: Partial<MapLabel> }> = ({ label }) => {
   );
 };
 
-const MapLabelsMaker: React.FC<{}> = ({}) => {
+const Labels: React.FC<{}> = ({}) => {
   const {
     appDetails,
     setAppDetails,
@@ -622,4 +622,4 @@ const MapLabelsMaker: React.FC<{}> = ({}) => {
   );
 };
 
-export default MapLabelsMaker;
+export default Labels;

@@ -1,9 +1,9 @@
 'use client';
 import React, { useEffect } from 'react';
-import AppDetailInputs from './steps/AppDetailInputs';
-import MapLabelsMaker from './steps/MapLabelsMaker';
-import { AppColorPickers } from './steps/AppColorPickers';
-import AddMarkersMap from './steps/AddMarkersMap';
+import Basics from './steps/Basics';
+import MapLabelsMaker from './steps/Labels';
+import { Colors } from './steps/Colors';
+import Markers from './steps/Markers';
 import MapMarkerTable from './MapMarkerTable';
 import { Button } from '../ui/button';
 import { useCreateAppStore } from '@/providers/create-app-provider';
@@ -24,20 +24,17 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
     <div className={'flex w-full pb-12'}>
       {appId ? (
         <div className={'flex flex-col gap-8 w-full items-center'}>
-          <div
-            className={'flex flex-row w-full justify-end'}
-          >
+          <div className={'flex flex-row w-full justify-end'}>
             <Button className={'bg-indigo-600 w-48'}>Save draft</Button>
           </div>
           {/* THE BASICS */}
-          {selectedStep === 'basics' && <AppDetailInputs />}
+          {selectedStep === 'basics' && <Basics />}
 
           {/* COLORS */}
-
-          {selectedStep === 'colors' && <AppColorPickers />}
+          {selectedStep === 'colors' && <Colors />}
 
           {/* MARKERS */}
-          {selectedStep === 'markers' && <AddMarkersMap user={user} />}
+          {selectedStep === 'markers' && <Markers user={user} />}
 
           {/* LABELS */}
           {selectedStep === 'labels' && <MapLabelsMaker />}

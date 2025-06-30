@@ -21,12 +21,21 @@ import {
   SelectValue,
 } from '../../ui/select';
 import { Info } from 'lucide-react';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '../../ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
+
 export interface IConfigurableColor {
   name: string;
   note: string;
   hex: string;
 }
-export const AppColorPickers: React.FC<{}> = ({}) => {
+export const Colors: React.FC<{}> = ({}) => {
   const { appColors, setAppColors, mapTheme, setMapTheme } = useCreateAppStore(
     (state) => state
   );
@@ -177,13 +186,9 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
   );
 
   return (
-    <div
-      className={
-        'flex flex-col gap-3 bg-neutral-100 rounded p-6 shadow max-w-7xl w-full'
-      }
-    >
+    <div className={'create-app-form-container'}>
       <div className={'flex gap-4 items-center'}>
-        <div className={'create-event-form-title'}>2. Colors</div>
+        <div className={'create-app-form-title'}>Colors</div>
         {/*  INSTRUCTIONS */}
         <Popover>
           <PopoverTrigger asChild>
@@ -235,48 +240,62 @@ export const AppColorPickers: React.FC<{}> = ({}) => {
             </Select>
           </div>
         </div>
-        <div
-          className={
-            'bg-neutral-50 flex flex-row gap-12 rounded shadow border px-12 py-6'
-          }
-        >
-          <div>
-            <div className={'font-mono font-bold text-center mb-2'}>
-              Map Page
-            </div>
-            <MapPage
-              colors={{
-                primary: configurableColors.primary.hex,
-                primaryContainer: configurableColors.primaryContainer.hex,
-                onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
-                onPrimaryContainerUnselected:
-                  configurableColors.onPrimaryContainerUnselected.hex,
+        <div className={'border'}>
+          <Carousel
+            opts={{ align: 'start', loop: true }}
+            className={
+              'bg-neutral-50 rounded shadow border px-12 py-6 w-[376px]'
+            }
+            plugins={[
+              Autoplay({
+                delay: 10000,
+              }),
+            ]}
+          >
+            <CarouselContent className={''}>
+              <CarouselItem className={''}>
+                <div className={'text-center font-mono font-bold mb-2'}>
+                  Feed Page
+                </div>
+                <FeedPage
+                  colors={{
+                    primary: configurableColors.primary.hex,
+                    primaryContainer: configurableColors.primaryContainer.hex,
+                    onPrimaryContainer:
+                      configurableColors.onPrimaryContainer.hex,
+                    onPrimaryContainerUnselected:
+                      configurableColors.onPrimaryContainerUnselected.hex,
+                    inversePrimary: configurableColors.inversePrimary.hex,
+                    secondary: configurableColors.secondary.hex,
+                    outline: configurableColors.outline.hex,
+                    surfaceVariant: configurableColors.surfaceVariant.hex,
+                  }}
+                />
+              </CarouselItem>
+              <CarouselItem>
+                <div className={'font-mono font-bold text-center mb-2'}>
+                  Map Page
+                </div>
+                <MapPage
+                  colors={{
+                    primary: configurableColors.primary.hex,
+                    primaryContainer: configurableColors.primaryContainer.hex,
+                    onPrimaryContainer:
+                      configurableColors.onPrimaryContainer.hex,
+                    onPrimaryContainerUnselected:
+                      configurableColors.onPrimaryContainerUnselected.hex,
 
-                inversePrimary: configurableColors.inversePrimary.hex,
-                secondary: configurableColors.secondary.hex,
-                outline: configurableColors.outline.hex,
-                surfaceVariant: configurableColors.surfaceVariant.hex,
-              }}
-            />
-          </div>
-          <div>
-            <div className={'text-center font-mono font-bold mb-2'}>
-              Feed Page
-            </div>
-            <FeedPage
-              colors={{
-                primary: configurableColors.primary.hex,
-                primaryContainer: configurableColors.primaryContainer.hex,
-                onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
-                onPrimaryContainerUnselected:
-                  configurableColors.onPrimaryContainerUnselected.hex,
-                inversePrimary: configurableColors.inversePrimary.hex,
-                secondary: configurableColors.secondary.hex,
-                outline: configurableColors.outline.hex,
-                surfaceVariant: configurableColors.surfaceVariant.hex,
-              }}
-            />
-          </div>
+                    inversePrimary: configurableColors.inversePrimary.hex,
+                    secondary: configurableColors.secondary.hex,
+                    outline: configurableColors.outline.hex,
+                    surfaceVariant: configurableColors.surfaceVariant.hex,
+                  }}
+                />
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>{' '}
         </div>
       </div>
     </div>
