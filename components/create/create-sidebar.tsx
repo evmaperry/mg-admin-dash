@@ -65,15 +65,15 @@ export function CreateSidebar({
 }: React.ComponentProps<typeof Sidebar> & { [key: string]: any }) {
   return (
     <Sidebar
-      collapsible='none'
+      collapsible='offcanvas'
       {...props}
-      className={'h-full flex flex-col border-2'}
+      className={'mt-20'}
     >
       <SidebarHeader>
         <SidebarGroupLabel>Select or create</SidebarGroupLabel>
         <CreateAppSwitcher user={props.user} />
       </SidebarHeader>
-      <SidebarContent className={'h-full border flex flex-col grow'}>
+      <SidebarContent>
         <CreateSidebarSteps />
         <SidebarSeparator />
         <CreateSidebarAccountOptions options={data.options} />

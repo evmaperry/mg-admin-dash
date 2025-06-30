@@ -119,7 +119,7 @@ const Basics: React.FC<{}> = () => {
 
   return (
     <div
-      className={'create-app-form-container'}
+      className={'create-app-form-container w-full'}
     >
       <div className={'flex items-center gap-4'}>
         <div className={'create-app-form-title'}>The basics</div>

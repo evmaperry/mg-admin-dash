@@ -33,32 +33,9 @@ export default async function CreateLayout({
   }
 
   return (
-    <div className='flex-1 w-full flex flex-col gap-12'>
-        <SidebarProvider>
-          <CreateSidebar user={user}/>
-          <SidebarInset>
-            {/* <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-              <div className='flex items-center gap-2 px-4'>
-                <SidebarTrigger className='-ml-1' />
-                <Separator orientation='vertical' className='mr-2 h-4' />
-                <div
-                  className={
-                    'flex flex-row justify-center bg-neutral-900 h-full py-2'
-                  }
-                >
-                  <div className={'max-w-5xl w-full flex justify-between px-6'}>
-                    <div className={'text-3xl font-mono text-neutral-50'}>
-                      Build an app
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </header> */}
-            <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-              {children}
-            </div>
-          </SidebarInset>
-        </SidebarProvider>
-    </div>
+    <SidebarProvider className={''}>
+      <CreateSidebar user={user} />
+      <SidebarInset  className={'flex h-[calc(100dvh-144px)]'}>{children}</SidebarInset>
+    </SidebarProvider>
   );
 }

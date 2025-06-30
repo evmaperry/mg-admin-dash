@@ -183,33 +183,40 @@ export const Colors: React.FC<{}> = ({}) => {
   );
 
   return (
-    <div className={'create-app-form-container'}>
-      <div className={'flex gap-4 items-center'}>
-        <div className={'create-app-form-title'}>Colors</div>
-        {/*  INSTRUCTIONS */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button size={'sm'} variant={'outline'}>
-              <Info className={'mr-1'} /> Instructions
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
-            <div>Color instructions go here</div>
-          </PopoverContent>
-        </Popover>
-      </div>
-      <div className={'flex flex-row w-full justify-around items-center gap-2'}>
+    <div className={'flex flex-row items-center justify-around w-full'}>
+      {/* COLOR PANEL */}
+      <div className={'create-app-form-container px-8'}>
+        <div className={'flex gap-4 items-center'}>
+          <div className={'create-app-form-title'}>Colors</div>
+          {/*  INSTRUCTIONS */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button size={'sm'} variant={'outline'}>
+                <Info className={'mr-1'} /> Instructions
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
+              <div>Color instructions go here</div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
         <div
-          className={
-            'flex flex-col items-center gap-4 p-4 bg-neutral-50 rounded border shadow'
-          }
+          className={'flex flex-col justify-around items-center gap-2'}
         >
-          <div className={'flex flex-col items-center gap-1'}>
-            <div className={'create-app-form-subtitle'}>Brand Colors</div>
+          <div className={'create-app-form-subcontainer'}>
+
+            <div className={'create-app-form-subtitle w-full text-center'}>
+              Brand Colors
+            </div>
+
+            <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
           </div>
-          <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
-          <div className={'flex flex-col items-center gap-1 w-full'}>
-            <div className={'create-app-form-subtitle'}>Map Theme</div>
+
+
+
+          <div className={'create-app-form-subcontainer w-full flex-row items-center'}>
+            <Label className={'w-1/2'}>Map Theme</Label>
             <Select
               onValueChange={(
                 value: 'light' | 'streets' | 'dark' | 'outdoors'
@@ -217,7 +224,7 @@ export const Colors: React.FC<{}> = ({}) => {
                 setMapTheme(value);
               }}
             >
-              <SelectTrigger className={'w-4/5'}>
+              <SelectTrigger className={'w-1/2'}>
                 <SelectValue placeholder={'Light'} defaultValue={mapTheme} />
               </SelectTrigger>
 
@@ -231,64 +238,63 @@ export const Colors: React.FC<{}> = ({}) => {
               </SelectContent>
             </Select>
           </div>
-        </div>
-        <div className={''}>
-          <Carousel
-            opts={{ align: 'start', loop: true }}
-            className={
-              'bg-neutral-50 rounded shadow border px-12 pb-6 pt-4 w-[420px]'
-            }
-            plugins={[
-              Autoplay({
-                delay: 10000,
-              }),
-            ]}
-          >
-            <CarouselContent className={''}>
-              <CarouselItem className={'flex flex-col items-center gap-1'}>
-                <div className={'create-app-form-subtitle'}>
-                  Feed Page
-                </div>
-                <FeedPage
-                  colors={{
-                    primary: configurableColors.primary.hex,
-                    primaryContainer: configurableColors.primaryContainer.hex,
-                    onPrimaryContainer:
-                      configurableColors.onPrimaryContainer.hex,
-                    onPrimaryContainerUnselected:
-                      configurableColors.onPrimaryContainerUnselected.hex,
-                    inversePrimary: configurableColors.inversePrimary.hex,
-                    secondary: configurableColors.secondary.hex,
-                    outline: configurableColors.outline.hex,
-                    surfaceVariant: configurableColors.surfaceVariant.hex,
-                  }}
-                />
-              </CarouselItem>
-              <CarouselItem className={'flex flex-col items-center gap-1'}>
-                <div className={'create-app-form-subtitle'}>
-                  Map Page
-                </div>
-                <MapPage
-                  colors={{
-                    primary: configurableColors.primary.hex,
-                    primaryContainer: configurableColors.primaryContainer.hex,
-                    onPrimaryContainer:
-                      configurableColors.onPrimaryContainer.hex,
-                    onPrimaryContainerUnselected:
-                      configurableColors.onPrimaryContainerUnselected.hex,
 
-                    inversePrimary: configurableColors.inversePrimary.hex,
-                    secondary: configurableColors.secondary.hex,
-                    outline: configurableColors.outline.hex,
-                    surfaceVariant: configurableColors.surfaceVariant.hex,
-                  }}
-                />
-              </CarouselItem>
-            </CarouselContent>
-            <CarouselPrevious className={'ml-16'} />
-            <CarouselNext className={'mr-16'} />
-          </Carousel>{' '}
+
+
         </div>
+      </div>
+
+      {/* PAGES CAROUSEL */}
+      <div className={''}>
+        <Carousel
+          opts={{ align: 'start', loop: true }}
+          className={
+            'px-12 pb-4 pt-2 w-[420px]'
+          }
+          plugins={[
+            Autoplay({
+              delay: 10000,
+            }),
+          ]}
+        >
+          <CarouselContent className={''}>
+            <CarouselItem className={'flex flex-col items-center gap-3'}>
+              <div className={'create-app-form-subtitle'}>Feed Page</div>
+              <FeedPage
+                colors={{
+                  primary: configurableColors.primary.hex,
+                  primaryContainer: configurableColors.primaryContainer.hex,
+                  onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+                  onPrimaryContainerUnselected:
+                    configurableColors.onPrimaryContainerUnselected.hex,
+                  inversePrimary: configurableColors.inversePrimary.hex,
+                  secondary: configurableColors.secondary.hex,
+                  outline: configurableColors.outline.hex,
+                  surfaceVariant: configurableColors.surfaceVariant.hex,
+                }}
+              />
+            </CarouselItem>
+            <CarouselItem className={'flex flex-col items-center gap-3'}>
+              <div className={'create-app-form-subtitle'}>Map Page</div>
+              <MapPage
+                colors={{
+                  primary: configurableColors.primary.hex,
+                  primaryContainer: configurableColors.primaryContainer.hex,
+                  onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+                  onPrimaryContainerUnselected:
+                    configurableColors.onPrimaryContainerUnselected.hex,
+
+                  inversePrimary: configurableColors.inversePrimary.hex,
+                  secondary: configurableColors.secondary.hex,
+                  outline: configurableColors.outline.hex,
+                  surfaceVariant: configurableColors.surfaceVariant.hex,
+                }}
+              />
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious className={'ml-16'} />
+          <CarouselNext className={'mr-16'} />
+        </Carousel>{' '}
       </div>
     </div>
   );

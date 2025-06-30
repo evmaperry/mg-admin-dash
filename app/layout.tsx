@@ -42,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground font-sans`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground font-sans h-dvh`}
       >
         <ThemeProvider
           attribute='class'
@@ -54,6 +54,8 @@ export default function RootLayout({
             <DashboardConfigStoreProvider>
               <main className='min-h-screen flex flex-col items-center'>
                 <div className='w-full h-full flex flex-col items-center'>
+
+                  {/* TOP NAV */}
                   <nav className='w-full flex justify-center border-b border-b-foreground/10 h-20'>
                     <div className='w-full flex justify-between items-center p-3 px-6 text-sm'>
                       <div className='flex gap-5 items-center'>
@@ -83,7 +85,7 @@ export default function RootLayout({
                     {children}
                   </div>
 
-                  <footer className='w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-6'>
+                  <footer className='w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 h-16 z-50 bg-background'>
                     All Rights Reserved <Copyright /> EMP SOLUTIONS LLC 2025
                     <ThemeSwitcher />
                   </footer>

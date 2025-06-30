@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import CreateDashboard from '@/components/create/CreateDashboard';
 import { Button } from '@/components/ui/button';
 
+// KEEP THIS COMPONENT TO RUN AUTH ON SERVER BEFORE LOADING CreateDashboard, WHICH IS A CLIENT COMPONENT
 const CreatePage: React.FC<{}> = async ({}) => {
   const supabase = await createClient();
 
@@ -17,14 +18,10 @@ const CreatePage: React.FC<{}> = async ({}) => {
   }
 
   return (
-    <div className={'flex flex-col w-full'}>
-      <div
-        className={
-          'flex flex-col h-full overflow-scroll pt-6 px-8'
-        }
-      >
-        <CreateDashboard user={user} />
-      </div>
+    <div
+      className={'flex flex-col'}
+    >
+      <CreateDashboard user={user} />
     </div>
   );
 };

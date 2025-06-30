@@ -115,7 +115,7 @@ const CreateAppSwitcher: React.FC<{ user: User }> = ({ user }) => {
             })}
         </SelectContent>
       </Select>
-      <Button className={'bg-sky-600 gap-2'}>
+      <Button className={'bg-sky-400 gap-2'}>
         <Plus />
         Create an app draft
       </Button>

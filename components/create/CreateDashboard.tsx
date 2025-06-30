@@ -9,7 +9,9 @@ import { Button } from '../ui/button';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { User } from '@supabase/supabase-js';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { HelpCircle, HelpingHand, Info } from 'lucide-react';
+import { HelpCircle, HelpingHand, Info, Save } from 'lucide-react';
+import { SidebarTrigger } from '../ui/sidebar';
+import { Separator } from '../ui/separator';
 
 const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
   const { appId, setUserId, selectedStep } = useCreateAppStore(
@@ -21,12 +23,17 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
   }, [user]);
 
   return (
-    <div className={'flex w-full pb-12'}>
+    <div className={'flex flex-col gap-2 w-full h-[calc(100dvh-77px)] overflow-scroll pb-[77px]'}>
+      <div className={'flex flex-row w-full justify-between px-6 pt-4 pb-2'}>
+        <div className={'flex gap-2 items-center'}>
+          <SidebarTrigger className='-ml-1' />
+          <Separator orientation='vertical' className='mr-2' />
+        </div>
+
+        <Button className={'bg-indigo-600 w-48 gap-2'}><Save />Save draft</Button>
+      </div>
       {appId ? (
-        <div className={'flex flex-col gap-8 w-full items-center'}>
-          <div className={'flex flex-row w-full justify-end'}>
-            <Button className={'bg-indigo-600 w-48'}>Save draft</Button>
-          </div>
+        <div className={'flex w-full items-center px-6'}>
           {/* THE BASICS */}
           {selectedStep === 'basics' && <Basics />}
 
