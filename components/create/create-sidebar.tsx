@@ -67,9 +67,10 @@ export function CreateSidebar({
     <Sidebar
       collapsible='offcanvas'
       {...props}
-      className={'mt-20'}
+      className={'mt-20 h-[calc(100dvh-108px)]'}
+      variant='sidebar'
     >
-      <SidebarHeader>
+      <SidebarHeader className={'pt-4'}>
         <SidebarGroupLabel>Select or create</SidebarGroupLabel>
         <CreateAppSwitcher user={props.user} />
       </SidebarHeader>

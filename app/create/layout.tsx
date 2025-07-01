@@ -35,7 +35,7 @@ export default async function CreateLayout({
   return (
     <SidebarProvider className={''}>
       <CreateSidebar user={user} />
-      <SidebarInset  className={'flex h-[calc(100dvh-144px)]'}>{children}</SidebarInset>
+      <SidebarInset  className={'flex h-[calc(100dvh-128px)]'}>{children}</SidebarInset>
     </SidebarProvider>
   );
 }

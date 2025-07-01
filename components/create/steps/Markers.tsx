@@ -46,8 +46,17 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import MapMarkerTable from '../MapMarkerTable';
 import { Label } from '@/components/ui/label';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
+import { useSidebar } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
 const Markers: React.FC<{ user: User }> = ({ user }) => {
+  const { open } = useSidebar();
+
   const {
     mapTheme,
     markers,
@@ -197,29 +206,32 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
       <div className={'create-app-form-container'}>
         {/* TITLE / INSTRUCTIONS */}
         <div className={'flex gap-4 items-center'}>
-          <div className={'create-app-form-title'}>Map Content</div>
-          {/*  INSTRUCTIONS */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button size={'sm'} variant={'outline'}>
-                <Info className={'mr-1'} /> Instructions
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
-              <div>
-                The map displays different content depending on how zoomed in
-                the view is. When the map is relatively zoomed in, the user sees
-                pins, routes and plans. When the map is relatively zoomed out,
-                the user sees labels, which locate the event within a wider
-                geographic context and help to section off the areas of your
-                event.
-              </div>
-              <div>
-                Click and drag the map to re-center your event in the frame of
-                the phone to best display the boundaries of your event.
-              </div>
-            </PopoverContent>
-          </Popover>
+          <div className={'flex flex-col items-center gap-2 w-72'}>
+            <div className={'create-app-form-title'}>Map Content</div>
+            {/*  INSTRUCTIONS */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button size={'sm'} variant={'outline'}>
+                  <Info className={'mr-1'} /> Instructions
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
+                <div>
+                  The map displays different content depending on how zoomed in
+                  the view is. When the map is relatively zoomed in, the user
+                  sees pins, routes and plans. When the map is relatively zoomed
+                  out, the user sees labels, which locate the event within a
+                  wider geographic context and help to section off the areas of
+                  your event.
+                </div>
+                <div>
+                  Click and drag the map to re-center your event in the frame of
+                  the phone to best display the boundaries of your event.
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <div className={'flex flex-row items-center gap-3 w-full'}>
             <div className={'create-app-form-subcontainer flex-row w-full'}>
               <div className={'flex flex-col gap-3'}>
@@ -255,11 +267,17 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
                   {/* <ToggleGroupItem value={'null'}>Null</ToggleGroupItem> */}
                 </ToggleGroup>
               </div>
-              <div className={'flex justify-center font-mono w-full items-center flex-row text-xs leading-[1.1]'}>
+              <div
+                className={
+                  'text-xs leading-[1.1] flex shrink items-center justify-center w-full font-mono'
+                }
+              >
                 {selectedMarkerType ? (
-                  MarkerTypeInstructions[selectedMarkerType]
+                  <div className={'text-ellipsis overflow-hidden line-clamp-3'}>
+                    {MarkerTypeInstructions[selectedMarkerType]}
+                  </div>
                 ) : (
-                  <Smile />
+                  'Please select a marker type to add.'
                 )}
               </div>
             </div>
@@ -267,152 +285,151 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
         </div>
 
         {/* EVERYTHING ELSE */}
-        <div className={'flex flex-col gap-3 w-full'}>
-          <div className={'flex flex-col items-center w-full gap-4'}>
-            <div className={'flex flex-row w-full justify-between gap-3'}>
-              {/* MAP */}
-              <div className={'flex rounded overflow-hidden h-[600px]'}>
-                {appDetails['Event latitude'] &&
-                  appDetails['Event longitude'] && (
-                    <Map
-                      mapboxAccessToken={
-                        'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
-                      }
-                      mapStyle={convertMapThemeToStyleURL(mapTheme)}
-                      style={{ width: 500, height: 500 }}
-                      initialViewState={{
-                        longitude: appDetails['Event longitude'],
-                        latitude: appDetails['Event latitude'],
-                        zoom: 14,
-                      }}
-                      onClick={handleMapClick}
-                      onDblClick={handleMapDblClick}
-                      interactiveLayerIds={interactiveRouteIds}
-                      doubleClickZoom={false}
-                    >
-                      <NavigationControl />
 
-                      {/* NEW PIN/PLAN MARKER */}
-                      {newPointMarker.coordinates && (
-                        <MapPointMarker
-                          post={{
-                            latitude: newPointMarker.coordinates[0],
-                            longitude: newPointMarker.coordinates[1],
-                            pinCategory:
-                              selectedMarkerType === 'pin' &&
-                              newPointMarker.category
-                                ? newPointMarker.category
-                                : undefined,
-                            pinType:
-                              selectedMarkerType === 'pin' &&
-                              newPointMarker.type
-                                ? newPointMarker.type
-                                : undefined,
-                            planCategory:
-                              selectedMarkerType === 'plan' &&
-                              newPointMarker.category
-                                ? newPointMarker.category
-                                : undefined,
-                            planType:
-                              selectedMarkerType === 'plan' &&
-                              newPointMarker.type
-                                ? newPointMarker.type
-                                : undefined,
-                          }}
-                        />
-                      )}
-
-                      {/* NEW ROUTE MARKER */}
-                      {selectedMarkerType === 'route' &&
-                        newMultiMarker.coordinates.length > 0 && (
-                          <MapRouteMarker
-                            post={{
-                              coordinates: newMultiMarker.coordinates.map(
-                                (coordinate) => coordinate.coords
-                              ),
-                              routeCategory:
-                                selectedMarkerType === 'route' &&
-                                newMultiMarker.category
-                                  ? newMultiMarker.category
-                                  : undefined,
-                            }}
-                          />
-                        )}
-
-                      {/* MARKERS FROM STORE */}
-                      {markers.pins &&
-                        Object.values(markers.pins).map((pin, index) => {
-                          return (
-                            <MapPointMarker
-                              key={`pin-marker-${index}`}
-                              post={pin}
-                              contentType={'pin'}
-                            />
-                          );
-                        })}
-                      {markers.plans &&
-                        Object.values(markers.plans).map((plan, index) => {
-                          return (
-                            <MapPointMarker
-                              key={`plan-marker-${index}`}
-                              post={plan}
-                              contentType={'plan'}
-                            />
-                          );
-                        })}
-
-                      {markers.routes &&
-                        Object.values(markers.routes).map((route, index) => {
-                          return (
-                            <MapRouteMarker
-                              key={`route-marker-${index}`}
-                              post={route}
-                            />
-                          );
-                        })}
-                    </Map>
-                  )}
-              </div>
-              {/* POPUPS */}
-              <div
-                className={
-                  'flex flex-col gap-3 items-center justify-start font-light rounded w-[420px] px-4 py-3 border bg-neutral-50] tracking-tight'
+        <div className={'flex flex-row gap-2'} style={{}}>
+          {/* MAP */}
+          <div
+            className={cn(
+              'flex h-[500px] rounded-xl overflow-hidden',
+              open ? 'w-[calc(100dvw-750px)] border-4' : 'w-full'
+            )}
+          >
+            {appDetails['Event latitude'] && appDetails['Event longitude'] && (
+              <Map
+                mapboxAccessToken={
+                  'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
                 }
+                mapStyle={convertMapThemeToStyleURL(mapTheme)}
+                style={{ width: 2000, height: 500, objectFit: 'cover' }}
+                initialViewState={{
+                  longitude: appDetails['Event longitude'],
+                  latitude: appDetails['Event latitude'],
+                  zoom: 14,
+                }}
+                onClick={handleMapClick}
+                onDblClick={handleMapDblClick}
+                interactiveLayerIds={interactiveRouteIds}
+                doubleClickZoom={false}
               >
-                {/* Popup container */}
-                {!selectedMarkerType && <Smile className={''} />}
-                {selectedMarkerType === 'pin' && (
-                  <PinPopup
-                    lastClickEvent={newPointMarker.event}
-                    user={user}
-                    setPinMarkerIcon={setPointMarkerIcon}
-                    getAndSetMapMarkers={getAndSetMapMarkers}
+                <NavigationControl />
+
+                {newPointMarker.coordinates && (
+                  <MapPointMarker
+                    post={{
+                      latitude: newPointMarker.coordinates[0],
+                      longitude: newPointMarker.coordinates[1],
+                      pinCategory:
+                        selectedMarkerType === 'pin' && newPointMarker.category
+                          ? newPointMarker.category
+                          : undefined,
+                      pinType:
+                        selectedMarkerType === 'pin' && newPointMarker.type
+                          ? newPointMarker.type
+                          : undefined,
+                      planCategory:
+                        selectedMarkerType === 'plan' && newPointMarker.category
+                          ? newPointMarker.category
+                          : undefined,
+                      planType:
+                        selectedMarkerType === 'plan' && newPointMarker.type
+                          ? newPointMarker.type
+                          : undefined,
+                    }}
                   />
                 )}
-                {selectedMarkerType === 'plan' && (
-                  <PlanPopup
-                    lastClickEvent={newPointMarker.event}
-                    user={user}
-                    setPlanMarkerIcon={setPointMarkerIcon}
-                    getAndSetMapMarkers={getAndSetMapMarkers}
-                  />
-                )}
-                {selectedMarkerType === 'route' && (
-                  <RoutePopup
-                    lastClickEvent={newMultiMarker.event}
-                    setRouteMarkerIcon={setMultiMarkerIcon}
-                    user={user}
-                    getAndSetMapMarkers={getAndSetMapMarkers}
-                  />
-                )}
-                {selectedMarkerType === 'area' && <AreaPopup />}
-                {selectedMarkerType === 'structure' && <StructurePopup />}
-              </div>
-            </div>
+
+                {selectedMarkerType === 'route' &&
+                  newMultiMarker.coordinates.length > 0 && (
+                    <MapRouteMarker
+                      post={{
+                        coordinates: newMultiMarker.coordinates.map(
+                          (coordinate) => coordinate.coords
+                        ),
+                        routeCategory:
+                          selectedMarkerType === 'route' &&
+                          newMultiMarker.category
+                            ? newMultiMarker.category
+                            : undefined,
+                      }}
+                    />
+                  )}
+
+                {markers.pins &&
+                  Object.values(markers.pins).map((pin, index) => {
+                    return (
+                      <MapPointMarker
+                        key={`pin-marker-${index}`}
+                        post={pin}
+                        contentType={'pin'}
+                      />
+                    );
+                  })}
+                {markers.plans &&
+                  Object.values(markers.plans).map((plan, index) => {
+                    return (
+                      <MapPointMarker
+                        key={`plan-marker-${index}`}
+                        post={plan}
+                        contentType={'plan'}
+                      />
+                    );
+                  })}
+
+                {markers.routes &&
+                  Object.values(markers.routes).map((route, index) => {
+                    return (
+                      <MapRouteMarker
+                        key={`route-marker-${index}`}
+                        post={route}
+                      />
+                    );
+                  })}
+              </Map>
+            )}
+          </div>
+
+          {/* <ResizableHandle withHandle className='mx-2' /> */}
+
+          {/* POPUPS */}
+          <div
+            className={
+              'flex flex-col gap-3 items-center justify-center font-light rounded p-3 border bg-neutral-50 tracking-tight w-[400px]'
+            }
+          >
+            {!selectedMarkerType && (
+              <div>Please select a marker type to add</div>
+            )}
+            {selectedMarkerType === 'pin' && (
+              <PinPopup
+                lastClickEvent={newPointMarker.event}
+                user={user}
+                setPinMarkerIcon={setPointMarkerIcon}
+                getAndSetMapMarkers={getAndSetMapMarkers}
+              />
+            )}
+            {selectedMarkerType === 'plan' && (
+              <PlanPopup
+                lastClickEvent={newPointMarker.event}
+                user={user}
+                setPlanMarkerIcon={setPointMarkerIcon}
+                getAndSetMapMarkers={getAndSetMapMarkers}
+              />
+            )}
+            {selectedMarkerType === 'route' && (
+              <RoutePopup
+                lastClickEvent={newMultiMarker.event}
+                setRouteMarkerIcon={setMultiMarkerIcon}
+                user={user}
+                getAndSetMapMarkers={getAndSetMapMarkers}
+              />
+            )}
+            {selectedMarkerType === 'area' && <AreaPopup />}
+            {selectedMarkerType === 'structure' && <StructurePopup />}
           </div>
         </div>
 
-        <MapMarkerTable />
+        {/*
+        <MapMarkerTable /> */}
       </div>
     </div>
   );

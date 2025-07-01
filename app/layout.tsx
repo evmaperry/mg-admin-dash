@@ -85,10 +85,10 @@ export default function RootLayout({
                     {children}
                   </div>
 
-                  {/* <footer className='w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 h-16 z-50 bg-background'>
+                  <footer className='w-full flex items-center justify-center border-t border-b mx-auto text-center text-xs gap-8 h-12 z-50 bg-background'>
                     All Rights Reserved <Copyright /> EMP SOLUTIONS LLC 2025
                     <ThemeSwitcher />
-                  </footer> */}
+                  </footer>
                 </div>
               </main>
             </DashboardConfigStoreProvider>

@@ -26,14 +26,14 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
   return (
     <div
       className={
-        'flex flex-col gap-2 w-full h-[calc(100dvh-64px)] overflow-scroll '
+        'flex flex-col gap-2 h-[calc(100dvh-80px)]'
       }
     >
-      <div className={'flex flex-row w-full justify-between px-6 pt-4 pb-2'}>
-        <div className={'flex gap-2 items-center'}>
-          <SidebarTrigger className='-ml-1' />
-          <Separator orientation='vertical' className='mr-2' />
-        </div>
+      <div className={'flex flex-row w-full justify-end px-6 pt-4 pb-2'}>
+
+          <SidebarTrigger className='' />
+          <Separator orientation='vertical' className='mx-2' />
+
 
         <Button className={'bg-indigo-600 w-48 gap-2'}>
           <Save />
@@ -41,7 +41,7 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
         </Button>
       </div>
       {appId ? (
-        <div className={cn('flex flex-col w-full h-full px-6', selectedStep !== 'markers' && 'mt-6')}>
+        <div className={cn('flex flex-col h-full px-6', selectedStep !== 'markers' && 'mt-6')}>
           {/* THE BASICS */}
           {selectedStep === 'basics' && <Basics />}
 
