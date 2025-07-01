@@ -86,7 +86,7 @@
   }
 
   .create-app-form-container {
-    @apply flex flex-col gap-3  rounded p-4 
+    @apply flex flex-col gap-3 p-4
   }
 
   .create-app-form-subcontainer {

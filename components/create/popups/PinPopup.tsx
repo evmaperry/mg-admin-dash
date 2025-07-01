@@ -427,7 +427,7 @@ const PinPopup: React.FC<{
           }
         >
           <div className={'text-sm'}>
-            <span className={'font-bold text-sky-400'}>Step 1 </span>Click on a
+            <span className={'font-bold text-sky-400'}>Step 1 </span>Click a
             pin to edit it, or click the map to drop a new pin.
           </div>
 
@@ -486,13 +486,13 @@ const PinPopup: React.FC<{
               className={'rounded'}
               alt={'The image associated with the pin being created'}
               src={image}
-              height={100}
-              width={100}
+              height={75}
+              width={75}
             />
           ) : (
             <div
               className={
-                'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[100px] w-[100px] text-sm'
+                'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[75px] w-[75px] text-sm'
               }
             >
               <ImageOff />
