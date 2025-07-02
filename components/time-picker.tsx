@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { ClockIcon } from 'lucide-react';
 import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 dayjs.extend(customParseFormat);
 
 const TimePicker: React.FC<{
@@ -130,7 +131,7 @@ const TimePicker: React.FC<{
 
   return (
     <Select onValueChange={(time: string) => onSelectTime(time)}>
-      <SelectTrigger className={triggerClassName}>
+      <SelectTrigger className={cn(triggerClassName, 'h-8')}>
         <div>
           {timeToDisplay ? (
             <div className={'text-primary'}>

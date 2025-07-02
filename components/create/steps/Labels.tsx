@@ -243,31 +243,7 @@ const Labels: React.FC<{}> = ({}) => {
   );
 
   return (
-    <div className={'flex flex-col gap-3'}>
-      <div className={'flex gap-4 items-center'}>
-        <div className={'create-event-form-title'}>Map Labels</div>
-        {/*  INSTRUCTIONS */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button size={'sm'} variant={'outline'}>
-              <Info className={'mr-1'} /> Instructions
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
-            <div>
-              The map displays different content depending on how zoomed in the
-              view is. When the map is relatively zoomed in, the user sees pins,
-              routes and plans. When the map is relatively zoomed out, the user
-              sees labels, which locate the event within a wider geographic
-              context and help to section off the areas of your event.
-            </div>
-            <div>
-              Click and drag the map to re-center your event in the frame of the
-              phone to best display the boundaries of your event.
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
+    <div className={'create-app-form-container w-full'}>
       <div className={'flex flex-row items-center gap-8 justify-center'}>
         {/* LEFT SIDE: ZOOM TOOLS */}
         <div className={'flex flex-col w-80 gap-6 items-center'}>

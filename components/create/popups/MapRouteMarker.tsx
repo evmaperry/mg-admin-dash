@@ -10,9 +10,18 @@ import { Contentable, Post } from 'mgtypes/types/Content';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { FeatureCollection, Position } from 'geojson';
-import { CircleDot, Dot, X } from 'lucide-react';
+import { CircleDot, Dot, Octagon, Play, X } from 'lucide-react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { cn } from '@/lib/utils';
+
+
+// TODO: create a prop that separates routes from the db versus the route
+// that's being created, so that the route can be updated by dragging
+// Dragging a corner updates state in the store, but the route
+// that's being created doesn't exist in the store (yet), and so
+// can't have its coordinates moved. You could also add the route being
+// created to the store before being saved to the db.
+
 
 const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
   const [routeCoordinates, setRouteCoordinates] = useState<Position[]>([]);
@@ -39,7 +48,16 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
   }, [post]);
 
   const RouteStart: React.FC<{ coordinates: Position }> = ({ coordinates }) => {
-    const startingImageSRC = `/assets/images/route-${post.routeCategory}-start.png`;
+    const [startingImageSRC, setStartingImageSRC] = useState<string>();
+
+    useEffect(() => {
+      if (post.routeCategory) {
+        setStartingImageSRC(
+          `/assets/images/markers/route-${post.routeCategory}-start.png`
+        );
+      }
+    }, [post.routeCategory]);
+
     return (
       <Marker
         longitude={coordinates[0]}
@@ -47,7 +65,7 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
         draggable={'route' === selectedMarkerType}
         onDragEnd={(e: MarkerDragEvent) => handleRouteMarkerDrag(e, 0)}
       >
-        {startingImageSRC && (
+        {startingImageSRC ? (
           <Image
             src={startingImageSRC}
             height={'route' === selectedMarkerType ? 48 : 36}
@@ -58,6 +76,19 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
               'route' === selectedMarkerType ? 'border-2' : ''
             )}
           />
+        ) : (
+          <div
+            style={{
+              height: 'route' === selectedMarkerType ? 48 : 36,
+              width: 'route' === selectedMarkerType ? 48 : 36,
+            }}
+            className={cn(
+              'flex items-center justify-center border border-neutral-500 rounded-full p-[2px] bg-background',
+              'route' === selectedMarkerType ? 'border-2' : ''
+            )}
+          >
+            <Play size={32} className={'text-emerald-500'} />
+          </div>
         )}
       </Marker>
     );
@@ -66,7 +97,17 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
   const RouteFinish: React.FC<{ coordinates: Position }> = ({
     coordinates,
   }) => {
-    const finishImageSRC = `/assets/images/route-${post.routeCategory}-finish.png`;
+    const [finishImageSRC, setFinishImageSRC] = useState<string>();
+
+    useEffect(() => {
+      if (post.routeCategory) {
+        setFinishImageSRC(
+          `/assets/images/markers/route-${post.routeCategory}-finish.png`
+        );
+      }
+    }, [post.routeCategory]);
+
+    console.log('fISRC', finishImageSRC, post.coordinates)
     return (
       <Marker
         longitude={coordinates[0]}
@@ -76,16 +117,31 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
           handleRouteMarkerDrag(e, routeCoordinates.length - 1);
         }}
       >
-        <Image
-          src={finishImageSRC}
-          height={'route' === selectedMarkerType ? 48 : 36}
-          width={'route' === selectedMarkerType ? 48 : 36}
-          alt={'Pin image'}
-          className={cn(
-            'border border-neutral-500 rounded-full p-[2px] bg-background',
-            'route' === selectedMarkerType ? 'border-2' : ''
-          )}
-        />
+        {finishImageSRC ? (
+          <Image
+            src={finishImageSRC}
+            height={'route' === selectedMarkerType ? 48 : 36}
+            width={'route' === selectedMarkerType ? 48 : 36}
+            alt={'Pin image'}
+            className={cn(
+              'border border-neutral-500 rounded-full p-[2px] bg-background',
+              'route' === selectedMarkerType ? 'border-2' : ''
+            )}
+          />
+        ) : (
+          <div
+            style={{
+              height: 'route' === selectedMarkerType ? 48 : 36,
+              width: 'route' === selectedMarkerType ? 48 : 36,
+            }}
+            className={cn(
+              'flex items-center justify-center border border-neutral-500 rounded-full p-[2px] bg-background',
+              'route' === selectedMarkerType ? 'border-2' : ''
+            )}
+          >
+            <Octagon size={32} className={'text-red-500'} />
+          </div>
+        )}
       </Marker>
     );
   };

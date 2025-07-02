@@ -19,7 +19,7 @@ import { Button } from '../ui/button';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { App } from 'mgtypes/types/App';
 import { SidebarGroupLabel } from '../ui/sidebar';
-import { Plus } from 'lucide-react';
+import { Plus, Sparkles } from 'lucide-react';
 
 const CreateAppSwitcher: React.FC<{ user: User }> = ({ user }) => {
   // THE ACTIVE APP WE'RE WORKING ON
@@ -116,8 +116,8 @@ const CreateAppSwitcher: React.FC<{ user: User }> = ({ user }) => {
         </SelectContent>
       </Select>
       <Button className={'bg-sky-400 gap-2'}>
-        <Plus />
-        Create an app draft
+        <Sparkles />
+        Start a new draft
       </Button>
     </div>
   );

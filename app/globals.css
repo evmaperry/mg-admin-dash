@@ -100,4 +100,8 @@
   .create-app-form-subtitle {
     @apply text-base font-mono text-neutral-600;
   }
+
+  .popup-file-input {
+       @apply file:text-primary text-primary bg-background file:bg-background
+  }
 }

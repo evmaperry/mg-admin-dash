@@ -48,6 +48,7 @@ import TimePicker from '@/components/time-picker';
 import { addPinHoursToDb } from '@/actions';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
 dayjs.extend(customParseFormat);
 export interface PinHourInputs {
   startDate: string | undefined;
@@ -416,38 +417,38 @@ const PinPopup: React.FC<{
 
   return (
     <div className={'flex flex-col h-full w-full gap-2'}>
-      <div className={'create-app-form-subtitle'}>PIN</div>
+      <div className={'create-app-form-subtitle'}>MARKER TYPE: <span className={'text-indigo-600 font-bold'}>PIN</span></div>
       <Separator />
+      {/* BODY */}
       <div
         className={'flex w-full flex-col items-between h-full justify-between'}
       >
         {/* COORDINATES */}
-        <div className={'flex flex-row items-center gap-2'}>
           <div
             className={
               'flex flex-col justify-center w-full rounded gap-1 text-sm'
             }
           >
             <div className={'text-sm truncate'}>
-              <span className={'font-bold text-sky-400'}>
+              <Label>
                 Step 1&nbsp;&nbsp;&nbsp;&nbsp;
-              </span>
+              </Label>
               Click a pin to edit it, or the map to drop a new pin.
             </div>
 
             <div className={'flex text-sm flex-row gap-1'}>
-              <div className={'flex gap-2'}>
-                <div className={'font-bold'}>Lat</div>
+              <div className={'flex gap-1'}>
+                <div className={'italic'}>Lat:</div>
                 <div>{`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}</div>
               </div>
 
-              <div className={'flex gap-2'}>
-                <div className={'font-bold'}>Lng</div>
+              <div className={'flex gap-1'}>
+                <div className={'italic'}>Lng:</div>
                 <div>{`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}</div>
               </div>
 
-              <div className={'flex gap-2 truncate'}>
-                <div className={'font-bold'}>Add</div>
+              <div className={'flex gap-1 truncate'}>
+                <div className={'italic'}>Address:</div>
                 <div>
                   {pin.latitude === 0 && pin.longitude === 0
                     ? 'N/A'
@@ -456,24 +457,24 @@ const PinPopup: React.FC<{
               </div>
             </div>
           </div>
-        </div>
+
+
         {/* PIN SELECTOR */}
         <div className={'flex gap-4 justify-start items-center text-sm'}>
-          <div className={'font-bold text-sky-400'}>Step 2</div>
+          <Label>Step 2</Label>
           <PinSelector />
         </div>
+
         {/* IMAGE */}
         <div className={'flex flex-row items-center gap-4'}>
           <div className={'flex flex-col gap-2'}>
             <div className={'text-sm flex gap-4'}>
-              <span className={'font-bold text-sky-400'}>Step 3</span>Select an
+              <Label>Step 3</Label>Select an
               image
             </div>
             <div className={'flex w-60'}>
               <Input
-                className={
-                  'file:text-primary text-primary bg-background file:bg-background'
-                }
+                className={'popup-file-input'}
                 ref={fileInputRef}
                 disabled={isLoading}
                 type='file'
@@ -507,11 +508,12 @@ const PinPopup: React.FC<{
             )}
           </div>
         </div>
+
         {/* TEXT DETAILS */}
         <div className={'flex flex-col gap-1 w-full'}>
           <div className={'flex items-center gap-2 text-sm'}>
             <div className={'flex w-64 gap-4'}>
-              <span className={'text-sky-400 font-bold'}>Step 4</span>Add
+              <Label>Step 4</Label>Add
               details
             </div>
             <Input
@@ -520,22 +522,6 @@ const PinPopup: React.FC<{
               onChange={handleTextInput}
               placeholder='Pin title'
               className={'w-full text-center h-8'}
-            />
-          </div>
-          <div className={'flex flex-row items-center gap-1 w-full'}>
-            <Input
-              placeholder='Phone # (optional)'
-              value={pin.phoneNumber as string}
-              name={'phoneNumber'}
-              onChange={handleTextInput}
-              className={'w-1/2 text-center h-8'}
-            />
-            <Input
-              placeholder='Website link (optional)'
-              value={pin.link as string}
-              name={'link'}
-              onChange={handleTextInput}
-              className={'w-1/2 text-center h-8'}
             />
           </div>
           <div className={'flex flex-row items-center gap-1'}>
@@ -547,17 +533,33 @@ const PinPopup: React.FC<{
               className={'w-full text-center h-8'}
             />
           </div>
+          <div className={'flex flex-row items-center gap-1 w-full'}>
+            <Input
+              placeholder='Phone (optional)'
+              value={pin.phoneNumber as string}
+              name={'phoneNumber'}
+              onChange={handleTextInput}
+              className={'w-1/2 text-center h-8'}
+            />
+            <Input
+              placeholder='Link (optional)'
+              value={pin.link as string}
+              name={'link'}
+              onChange={handleTextInput}
+              className={'w-1/2 text-center h-8'}
+            />
+          </div>
         </div>
         {/* PIN HOURS */}
         <div className={'flex flex-row items-center gap-4 text-sm'}>
           <div className={'flex flex-col items-start'}>
-            <div className={'text-sky-400 font-bold'}>Step 5 </div>
-            <div className={''}>(optional)</div>
+            <Label>Step 5 </Label>
+            <div>(optional)</div>
           </div>
           <Popover>
             <PopoverTrigger asChild>
               <Button className={'h-8 font-light'} variant={'outline'}>
-                Add Pin Hours
+                Add pin hours
               </Button>
             </PopoverTrigger>
             <PopoverContent className={'flex w-[600px] grow'}>
@@ -568,7 +570,7 @@ const PinPopup: React.FC<{
       </div>
       <Separator />
       <Button
-        className={'bg-sky-500 w-48 mx-auto'}
+        className={'bg-indigo-600 w-48 mx-auto'}
         onClick={() => handleCreatePin()}
       >
         Add pin

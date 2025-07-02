@@ -160,7 +160,9 @@ export const Colors: React.FC<{}> = ({}) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={'flex flex-col items-center gap-5 w-[650px] '}
+              side='right'
+              align='center'
+              className={'w-full flex flex-col items-center gap-5 w-[650px]'}
             >
               <div className={'font-mono font-bold'}>{entry[1].name}</div>
               <div className={'leading-[1.1]'}>{entry[1].note}</div>
@@ -186,26 +188,8 @@ export const Colors: React.FC<{}> = ({}) => {
     <div className={'flex flex-row items-center justify-around w-full'}>
       {/* COLOR PANEL */}
       <div className={'create-app-form-container px-8'}>
-        <div className={'flex gap-4 items-center'}>
-          <div className={'create-app-form-title'}>Colors</div>
-          {/*  INSTRUCTIONS */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button size={'sm'} variant={'outline'}>
-                <Info className={'mr-1'} /> Instructions
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
-              <div>Color instructions go here</div>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div
-          className={'flex flex-col justify-around items-center gap-2'}
-        >
+        <div className={'flex flex-col justify-around items-center gap-2'}>
           <div className={'create-app-form-subcontainer'}>
-
             <div className={'create-app-form-subtitle w-full text-center'}>
               Brand Colors
             </div>
@@ -213,9 +197,11 @@ export const Colors: React.FC<{}> = ({}) => {
             <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
           </div>
 
-
-
-          <div className={'create-app-form-subcontainer w-full flex-row items-center'}>
+          <div
+            className={
+              'create-app-form-subcontainer w-full flex-row items-center'
+            }
+          >
             <Label className={'w-1/2'}>Map Theme</Label>
             <Select
               onValueChange={(
@@ -238,9 +224,6 @@ export const Colors: React.FC<{}> = ({}) => {
               </SelectContent>
             </Select>
           </div>
-
-
-
         </div>
       </div>
 
@@ -248,9 +231,7 @@ export const Colors: React.FC<{}> = ({}) => {
       <div className={''}>
         <Carousel
           opts={{ align: 'start', loop: true }}
-          className={
-            'px-12 pb-4 pt-2 w-[420px]'
-          }
+          className={'px-12 pb-4 pt-2 w-[420px]'}
           plugins={[
             Autoplay({
               delay: 10000,

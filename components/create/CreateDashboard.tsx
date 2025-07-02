@@ -13,6 +13,15 @@ import { HelpCircle, HelpingHand, Info, Save } from 'lucide-react';
 import { SidebarTrigger } from '../ui/sidebar';
 import { Separator } from '../ui/separator';
 import { cn } from '@/lib/utils';
+import { capitalize } from 'lodash';
+
+
+const stepInstructions = {
+  basics :'Basics instructions',
+  colors: 'Colors instructions',
+  labels: 'Labels instructions',
+  markers: 'Markers instructions'
+}
 
 const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
   const { appId, setUserId, selectedStep } = useCreateAppStore(
@@ -24,24 +33,41 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
   }, [user]);
 
   return (
-    <div
-      className={
-        'flex flex-col gap-2 h-[calc(100dvh-80px)]'
-      }
-    >
-      <div className={'flex flex-row w-full justify-end px-6 pt-4 pb-2'}>
+    <div className={'flex flex-col h-[calc(100dvh-80px)]'}>
+      <div className={'flex flex-row w-full justify-between px-8 pt-6 pb-2'}>
+        <div className={'flex items-center gap-4'}>
+          <div className={'create-app-form-title'}>
+            {capitalize(selectedStep)}
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button size={'sm'} variant={'outline'}>
+                <Info className={'mr-1'} /> Instructions
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
+              <div>{stepInstructions[selectedStep]}</div>
+            </PopoverContent>
+          </Popover>
+        </div>
 
+        <div className={'flex'}>
           <SidebarTrigger className='' />
           <Separator orientation='vertical' className='mx-2' />
 
-
-        <Button className={'bg-indigo-600 w-48 gap-2'}>
-          <Save />
-          Save draft
-        </Button>
+          <Button className={'bg-indigo-600 w-48 gap-2'}>
+            <Save />
+            Save draft
+          </Button>
+        </div>
       </div>
       {appId ? (
-        <div className={cn('flex flex-col h-full px-6', selectedStep !== 'markers' && 'mt-6')}>
+        <div
+          className={cn(
+            'flex flex-col h-full px-4',
+            selectedStep !== 'markers' && 'mt-2'
+          )}
+        >
           {/* THE BASICS */}
           {selectedStep === 'basics' && <Basics />}
 

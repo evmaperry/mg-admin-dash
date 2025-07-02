@@ -25,12 +25,12 @@ const DatePicker: React.FC<{
       <PopoverTrigger
         className={cn(
           'gap-2',
-          'flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
+          'flex h-8 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
          // isTextMuted && 'text-muted-foreground',
           triggerClassName
         )}
       >
-        <CalendarIcon className='h-8 w-8' />
+        <CalendarIcon className='h-6 w-6' />
         <div className='flex justify-between items-center w-full'>
           {selectedDateString ? (
             dayjs(selectedDateString).format('ddd, MMM D')

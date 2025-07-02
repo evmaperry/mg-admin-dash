@@ -135,7 +135,7 @@ const PlanPopup: React.FC<{
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={'default'}>
+          <Button variant={'outline'} className={'font-light h-8'}>
             {plan.planType && plan.planCategory ? (
               <div className={'flex flex-row items-center gap-2'}>
                 <Image
@@ -147,10 +147,7 @@ const PlanPopup: React.FC<{
                 <div>{capitalize(plan.planType)}</div>
               </div>
             ) : (
-              <div>
-                <span className={'font-bold text-sky-400'}>Step 2 </span>Select
-                a Plan Type
-              </div>
+              <div>Select a plan type</div>
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -212,190 +209,200 @@ const PlanPopup: React.FC<{
   };
 
   return (
-    <div className={'flex w-full flex-col gap-4'}>
-      {/* COORDINATES */}
-      <div className={'flex flex-row items-center gap-2'}>
+    <div className={'flex flex-col w-full h-full gap-2'}>
+      <div className={'create-app-form-subtitle'}>
+        MARKER TYPE: <span className={'font-bold text-sky-400'}>PLAN</span>
+      </div>
+      <Separator />
+      {/* BODY */}
+      <div
+        className={'flex w-full flex-col items-between h-full justify-between'}
+      >
+        {/* COORDINATES */}
         <div
           className={
             'flex flex-col justify-center w-full rounded gap-1 text-sm'
           }
         >
-          <div className={'text-sm'}>
-            <span className={'font-bold text-sky-400'}>Step 1 </span>Click on a
-            plan to edit it, or click the map to create a new plan.
+          <div className={'text-sm truncate'}>
+            <Label>Step 1&nbsp;&nbsp;&nbsp;&nbsp;</Label>
+            Click on a plan to edit it, or the map to create a new plan.
           </div>
 
-          <div className={'flex flex-col'}>
-            <div className={'flex'}>
-              <div className={'flex text-sm w-full gap-2'}>
-                <div className={'font-bold'}>Lat </div>
-                <div>{`${plan.latitude ? Number(plan.latitude).toFixed(3) : 'N/A'}`}</div>
-              </div>
-
-              <div className={'flex text-sm w-full gap-2'}>
-                <div className={'flex font-bold'}>Lng </div>
-                <div>{`${plan.longitude ? Number(plan.longitude).toFixed(3) : 'N/A'}`}</div>
-              </div>
+          <div className={'flex text-sm flex-row gap-1'}>
+            <div className={'flex gap-1'}>
+              <div className={'italic'}>Lat:</div>
+              <div>{`${plan.latitude ? Number(plan.latitude).toFixed(3) : 'N/A'}`}</div>
             </div>
 
-            <div className={'flex flex-row items-center text-sm gap-2'}>
-              <div className='font-bold'>Address </div>
-              <div className={'leading-[1.1] h-8 flex items-center'}>
-                {`${plan.latitude === 0 && plan.longitude === 0 ? 'N/A' : plan.address}`}
+            <div className={'flex gap-1'}>
+              <div className={'italic'}>Lng:</div>
+              <div>{`${plan.longitude ? Number(plan.longitude).toFixed(3) : 'N/A'}`}</div>
+            </div>
+
+            <div className={'flex gap-1 truncate'}>
+              <div className='italic'>Address:</div>
+              <div>
+                {plan.latitude === 0 && plan.longitude === 0
+                  ? 'N/A'
+                  : plan.address}
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <PlanSelector />
-      {/* IMAGE */}
-      <div className={'flex flex-row items-center gap-4'}>
-        <div className={'flex flex-col gap-2'}>
-          <div className={'text-sm '}>
-            <span className={'font-bold text-sky-400'}>Step 3 </span>Select an
-            image
-          </div>
-          <div className={'flex w-60'}>
-            <Input
-              className={
-                'file:text-white text-white bg-primary file:bg-primary'
-              }
-              ref={fileInputRef}
-              disabled={isLoading}
-              type='file'
-              accept='image/*'
-              placeholder=''
-              id='upload-results'
-              onChange={(event) => {
-                handleFileSelection(event);
-              }}
-            />
-          </div>
+        {/* PLAN SELECTOR */}
+        <div className={'flex gap-4 justify-start items-center text-sm'}>
+          <Label>Step 2</Label>
+          <PlanSelector />
         </div>
 
-        <div className={'flex flex-row items-center'}>
-          {image ? (
-            <Image
-              className={'rounded'}
-              alt={'The image associated with the pin being created'}
-              src={image}
-              height={100}
-              width={100}
-            />
-          ) : (
-            <div
-              className={
-                'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[100px] w-[100px] text-sm'
-              }
-            >
-              <ImageOff />
+        {/* IMAGE */}
+        <div className={'flex flex-row items-center gap-4'}>
+          <div className={'flex flex-col gap-2'}>
+            <div className={'text-sm flex gap-4'}>
+              <Label>Step 3 </Label>Select an image
             </div>
-          )}
-        </div>
-      </div>
+            <div className={'flex w-60'}>
+              <Input
+                className={'popup-file-input'}
+                ref={fileInputRef}
+                disabled={isLoading}
+                type='file'
+                accept='image/*'
+                placeholder=''
+                id='upload-results'
+                onChange={(event) => {
+                  handleFileSelection(event);
+                }}
+              />
+            </div>
+          </div>
 
-      <div className={'flex flex-col gap-1 w-full'}>
-        {/* TEXT DETAILS */}
+          <div className={'flex flex-row items-center'}>
+            {image ? (
+              <Image
+                className={'rounded'}
+                alt={'The image associated with the pin being created'}
+                src={image}
+                height={75}
+                width={75}
+              />
+            ) : (
+              <div
+                className={
+                  'flex items-center justify-center rounded text-center border-2 p-2 border-dashed border-neutral-600 bg-neutral-200 h-[75px] w-[75px] text-sm'
+                }
+              >
+                <ImageOff />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* TEXT / TIME */}
         <div className={'flex flex-col gap-1 w-full'}>
-          <div className={'flex items-center gap-2 text-sm'}>
-            <div className={'flex w-64 gap-1'}>
-              <span className={'text-sky-400 font-bold'}>Step 4 </span>Add
-              details
+          {/* TEXT DETAILS */}
+          <div className={'flex flex-col gap-1 w-full'}>
+            <div className={'flex items-center gap-2 text-sm'}>
+              <div className={'flex w-64 gap-4 items-center'}>
+                <Label>Step 4</Label>Add details
+              </div>
+              <Input
+                name={'primaryText'}
+                value={plan.primaryText}
+                onChange={handleTextInput}
+                placeholder='Pin title'
+                className={'w-full text-center h-8'}
+              />
             </div>
-            <Input
-              name={'primaryText'}
-              value={plan.primaryText}
-              onChange={handleTextInput}
-              placeholder='Pin title'
-              className={'w-full text-center'}
-            />
+            <div className={'flex flex-row items-center gap-1'}>
+              <Input
+                placeholder='Description'
+                value={plan.secondaryText}
+                name={'secondaryText'}
+                onChange={handleTextInput}
+                className={'w-full text-center h-8'}
+              />
+            </div>
+            <div className={'flex flex-row items-center gap-1 w-full'}>
+              <Input
+                placeholder='Phone (optional)'
+                value={plan.phoneNumber as string}
+                name={'phoneNumber'}
+                onChange={handleTextInput}
+                className={'w-1/2 text-center h-8'}
+              />
+              <Input
+                placeholder='Link (optional)'
+                value={plan.link as string}
+                name={'link'}
+                onChange={handleTextInput}
+                className={'w-1/2 text-center h-8'}
+              />
+            </div>
           </div>
-          <div className={'flex flex-row items-center gap-1 w-full'}>
-            <Input
-              placeholder='Phone # (optional)'
-              value={plan.phoneNumber as string}
-              name={'phoneNumber'}
-              onChange={handleTextInput}
-              className={'w-1/2 text-center'}
-            />
-            <Input
-              placeholder='Website link (optional)'
-              value={plan.link as string}
-              name={'link'}
-              onChange={handleTextInput}
-              className={'w-1/2 text-center'}
-            />
-          </div>
-          <div className={'flex flex-row items-center gap-1'}>
-            <Input
-              placeholder='Description'
-              value={plan.secondaryText}
-              name={'secondaryText'}
-              onChange={handleTextInput}
-              className={'w-full text-center'}
-            />
-          </div>
-        </div>
 
-        {/* PLAN START & END */}
-        <div className={'flex flex-col gap-1'}>
-          {/* START */}
-          <div className={'flex flex-row items-center justify-between gap-2'}>
-            <Label className={'w-1/5'}>Start</Label>
-            <DatePicker
-              onSelect={(selectedStartDate: Date) => {
-                setDateTimes({
-                  ...dateTimes,
-                  startDate: String(selectedStartDate),
-                });
-              }}
-              selectedDateString={dateTimes.startDate}
-              hint={'Date'}
-               triggerClassName={cn(
-                !dateTimes.startDate && 'text-muted-foreground',
-                'w-2/5'
-              )}
-            />
-            <TimePicker
-              onSelectTime={(time: string) => {
-                setDateTimes({ ...dateTimes, startTime: time });
-              }}
-              timeToDisplay={dateTimes.startTime}
-              hint={'Time'}
-              triggerClassName='w-2/5'
-            />
-          </div>
-          {/* END */}
-          <div className={'flex flex-row items-center justify-between gap-2'}>
-            <Label className={'w-1/5 '}>End</Label>
-            <DatePicker
-              onSelect={(selectedEndDate: Date) => {
-                setDateTimes({
-                  ...dateTimes,
-                  endDate: String(selectedEndDate),
-                });
-              }}
-              selectedDateString={dateTimes.endDate}
-              // isTextMuted={!dateTimes.endDate}
-              hint={'Date'}
-              triggerClassName={cn(
-                !dateTimes.endDate && 'text-muted-foreground',
-                'w-2/5'
-              )}
-            />
-            <TimePicker
-              onSelectTime={(time: string) => {
-                setDateTimes({ ...dateTimes, endTime: time });
-              }}
-              timeToDisplay={dateTimes.endTime}
-              hint='Time'
-              triggerClassName={'w-2/5'}
-            />
+          {/* TIMES */}
+          <div className={'flex flex-col gap-1'}>
+            {/* START */}
+            <div className={'flex flex-row items-center justify-between gap-1'}>
+              <Label className={'w-1/5'}>Start</Label>
+              <DatePicker
+                onSelect={(selectedStartDate: Date) => {
+                  setDateTimes({
+                    ...dateTimes,
+                    startDate: String(selectedStartDate),
+                  });
+                }}
+                selectedDateString={dateTimes.startDate}
+                hint={'Date'}
+                triggerClassName={cn(
+                  !dateTimes.startDate && 'text-muted-foreground',
+                  'w-2/5'
+                )}
+              />
+              <TimePicker
+                onSelectTime={(time: string) => {
+                  setDateTimes({ ...dateTimes, startTime: time });
+                }}
+                timeToDisplay={dateTimes.startTime}
+                hint={'Time'}
+                triggerClassName='w-2/5'
+              />
+            </div>
+            {/* END */}
+            <div className={'flex flex-row items-center justify-between gap-1'}>
+              <Label className={'w-1/5 '}>End</Label>
+              <DatePicker
+                onSelect={(selectedEndDate: Date) => {
+                  setDateTimes({
+                    ...dateTimes,
+                    endDate: String(selectedEndDate),
+                  });
+                }}
+                selectedDateString={dateTimes.endDate}
+                // isTextMuted={!dateTimes.endDate}
+                hint={'Date'}
+                triggerClassName={cn(
+                  !dateTimes.endDate && 'text-muted-foreground',
+                  'w-2/5'
+                )}
+              />
+              <TimePicker
+                onSelectTime={(time: string) => {
+                  setDateTimes({ ...dateTimes, endTime: time });
+                }}
+                timeToDisplay={dateTimes.endTime}
+                hint='Time'
+                triggerClassName={'w-2/5'}
+              />
+            </div>
           </div>
         </div>
       </div>
-      <Separator className={'my-2'} />
+
+      <Separator className={''} />
       <Button
         className={'bg-sky-500 w-48 mx-auto'}
         onClick={() => handleCreatePlan()}

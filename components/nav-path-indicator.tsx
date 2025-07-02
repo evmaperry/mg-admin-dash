@@ -12,7 +12,7 @@ const NavPathIndicator: React.FC<{}> = ({}) => {
 
   return (
     <div className={'font-light'}>
-      {path === 'create' ? 'App Builder' : 'App Dashboard'}
+      {path === 'create' ? 'App builder' : 'App dashboard'}
     </div>
   );
 };

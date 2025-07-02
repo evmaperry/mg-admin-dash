@@ -71,7 +71,7 @@ export function CreateSidebar({
       variant='sidebar'
     >
       <SidebarHeader className={'pt-4'}>
-        <SidebarGroupLabel>Select or create</SidebarGroupLabel>
+        <SidebarGroupLabel>Select or start an app draft</SidebarGroupLabel>
         <CreateAppSwitcher user={props.user} />
       </SidebarHeader>
       <SidebarContent>

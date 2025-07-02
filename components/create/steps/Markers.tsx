@@ -10,24 +10,18 @@ import {
   Source,
 } from 'react-map-gl/mapbox';
 import { useCreateAppStore } from '@/providers/create-app-provider';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '../../ui/select';
-import { type } from 'os';
-import { Button } from '../../ui/button';
-import { Switch } from '../../ui/switch';
 import PinPopup from '../popups/PinPopup';
 import PlanPopup from '../popups/PlanPopup';
 import RoutePopup from '../popups/RoutePopup';
 import AreaPopup from '../popups/AreaPopup';
 import StructurePopup from '../popups/StructurePopup';
-import { Crosshair, Info, Smile, SmileIcon, TreeDeciduous } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowUpLeft,
+  CircleX,
+  Crosshair,
+  Sparkles,
+} from 'lucide-react';
 import { FeatureCollection, Position } from 'geojson';
 import { User } from '@supabase/supabase-js';
 import { getMapMarkersFromDb } from '../createActions';
@@ -43,19 +37,13 @@ import {
   FillLayerSpecification,
   MapLayerMouseEvent,
 } from 'mapbox-gl';
-import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import MapMarkerTable from '../MapMarkerTable';
 import { Label } from '@/components/ui/label';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable';
 import { useSidebar } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 
 const Markers: React.FC<{ user: User }> = ({ user }) => {
-  const { open } = useSidebar();
+  const { open, state } = useSidebar();
 
   const {
     mapTheme,
@@ -69,10 +57,10 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
 
   const MarkerTypeInstructions = {
     pin: 'Pins indicate the location of services and points of interest: bathrooms, vendors, emergency services, and so on. A pin can have hours of operations.',
-    plan: 'Plans indicate the location of an event that start and end at fixed times. Your guests can RSVP to plans and share them with their friends.',
+    plan: 'Plans indicate the location of an event that start and end at fixed times. Your guests can RSVP to plans and share them with their connections in the app.',
     route:
-      'Routes illustrate a path that will be traveled by event guests, like a parade or footrace. Routes have start and end times.',
-    area: 'Areas divide your event footprint into colored zones on the map.',
+      'Routes include parades and races and illustrate a path that will be traveled by event guests, competitors, or the like. Routes have start and end times.',
+    area: 'Areas subdivide your event footprint into colored zones on the map. They can represent anything: pavilions and expos, athletic fields and courts, food and beverage services, camp sites, performance or VIP areas, and so on.',
     structure:
       'Structures display as three-dimensional shapes on your map. They can represent tents, stages, vendor booths, and so on.',
   };
@@ -106,22 +94,35 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
 
   // represents a new multi-coordinate marker being drawn
   // eg, route, area or structure
+  // has to have all the properties of these marker types
+  // to be able to pass properties to both the map
+  // and the panel
   const [newMultiMarker, setNewMultiMarker] = useState<{
-    category: string | null;
-    coordinates: { coords: Position; address: string }[];
+    category: string | undefined;
+    coordinates: Position[]; // all have coordinates
     event: null | MapMouseEvent;
+    color: string | undefined;
+    primaryText: string | undefined;
+    secondaryText: string | undefined;
+    link: string | undefined;
+    phoneNumber: string | undefined;
   }>({
-    category: null,
+    category: undefined,
     coordinates: [],
     event: null,
+    color: '#123123',
+    primaryText: undefined,
+    secondaryText: undefined,
+    link: undefined,
+    phoneNumber: undefined,
   });
 
-  const setMultiMarkerIcon = (category: string) => {
-    setNewMultiMarker({
-      ...newMultiMarker,
-      category,
-    });
-  };
+  // const setMultiMarkerIcon = (category: string) => {
+  //   setNewMultiMarker({
+  //     ...newMultiMarker,
+  //     category,
+  //   });
+  // };
 
   /**
    * Used to refresh markers after something has been added.
@@ -140,6 +141,7 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
     // console.log('singleClickEvent', event, event.features);
 
     if (selectedMarkerType === 'route') {
+      console.log('hittin');
       const coordinate: Position = [event.lngLat.lng, event.lngLat.lat];
 
       // add a turn to a pre-existing route
@@ -160,9 +162,7 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
         setNewMultiMarker({
           ...newMultiMarker,
           event,
-          coordinates: newMultiMarker.coordinates.concat([
-            { coords: coordinate, address: '1234' },
-          ]),
+          coordinates: newMultiMarker.coordinates.concat([coordinate]),
         });
       }
     }
@@ -192,23 +192,15 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
     []
   );
 
-  // console.log(
-  //   'iRids',
-  //   interactiveRouteIds,
-  //   'MaRkErS:',
-  //   markers,
-  //   'selected marker type',
-  //   selectedMarkerType
-  // );
+  console.log('reRendering Markers. newMultiMarker', newMultiMarker);
 
   return (
     <div>
       <div className={'create-app-form-container'}>
         {/* TITLE / INSTRUCTIONS */}
         <div className={'flex gap-4 items-center'}>
-          <div className={'flex flex-col items-center gap-2 w-72'}>
-            <div className={'create-app-form-title'}>Map Content</div>
-            {/*  INSTRUCTIONS */}
+          {/* <div className={'flex flex-col items-center gap-2 w-72'}>
+            <div className={'create-app-form-title'}>Map Markers</div>
             <Popover>
               <PopoverTrigger asChild>
                 <Button size={'sm'} variant={'outline'}>
@@ -230,68 +222,112 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
                 </div>
               </PopoverContent>
             </Popover>
-          </div>
+          </div> */}
 
-          <div className={'flex flex-row items-center gap-3 w-full'}>
-            <div className={'create-app-form-subcontainer flex-row w-full'}>
-              <div className={'flex flex-col gap-3'}>
-                <Label className='text-center'>
-                  Select a marker type to add to your map
-                </Label>
-                <ToggleGroup
-                  variant={'outline'}
-                  type={'single'}
-                  onValueChange={(value: string) => {
-                    setSelectedMarkerType(
-                      value as
-                        | 'pin'
-                        | 'plan'
-                        | 'route'
-                        | 'area'
-                        | 'structure'
-                        | 'null'
-                    );
-                  }}
-                  className={'font-mono'}
-                  value={
-                    selectedMarkerType === null ? undefined : selectedMarkerType
-                  }
-                >
-                  <ToggleGroupItem value={'pin'}>Pin</ToggleGroupItem>
-                  <ToggleGroupItem value={'plan'}>Plan</ToggleGroupItem>
-                  <ToggleGroupItem value={'route'}>Route</ToggleGroupItem>
-                  <ToggleGroupItem value={'area'}>Area</ToggleGroupItem>
-                  <ToggleGroupItem value={'structure'}>
-                    Structure
-                  </ToggleGroupItem>
-                  {/* <ToggleGroupItem value={'null'}>Null</ToggleGroupItem> */}
-                </ToggleGroup>
-              </div>
-              <div
-                className={
-                  'text-xs leading-[1.1] flex shrink items-center justify-center w-full font-mono'
+          <div className={'create-app-form-subcontainer flex-row w-full gap-8'}>
+            <div className={'flex flex-col gap-3 pt-1'}>
+              <Label className='text-center'>
+                Select a marker type to add to your map
+              </Label>
+              <ToggleGroup
+                variant={'marker'}
+                type={'single'}
+                onValueChange={(value: string) => {
+                  setSelectedMarkerType(
+                    value as
+                      | 'pin'
+                      | 'plan'
+                      | 'route'
+                      | 'area'
+                      | 'structure'
+                      | 'null'
+                  );
+                }}
+                className={'font-mono'}
+                value={
+                  selectedMarkerType === null ? undefined : selectedMarkerType
                 }
               >
-                {selectedMarkerType ? (
-                  <div className={'text-ellipsis overflow-hidden line-clamp-3'}>
-                    {MarkerTypeInstructions[selectedMarkerType]}
-                  </div>
-                ) : (
-                  'Please select a marker type to add.'
-                )}
-              </div>
+                <ToggleGroupItem
+                  value={'pin'}
+                  className={
+                    'data-[state=on]:bg-indigo-600 data-[state=off]:text-indigo-600 data-[state=off]:border-indigo-600'
+                  }
+                >
+                  Pin
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value={'plan'}
+                  className={
+                    'data-[state=on]:bg-sky-400 data-[state=off]:text-sky-400 data-[state=off]:border-sky-400'
+                  }
+                >
+                  Plan
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value={'route'}
+                  className={
+                    'data-[state=on]:bg-teal-400 data-[state=off]:text-teal-400 data-[state=off]:border-teal-400'
+                  }
+                >
+                  Route
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value={'area'}
+                  className={
+                    'data-[state=on]:bg-red-400 data-[state=off]:text-red-400 data-[state=off]:border-red-400'
+                  }
+                >
+                  Area
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value={'structure'}
+                  className={
+                    'data-[state=on]:bg-fuchsia-400 data-[state=off]:text-fuchsia-400 data-[state=off]:border-fuchsia-400'
+                  }
+                >
+                  Structure
+                </ToggleGroupItem>
+                {/* <ToggleGroupItem value={'null'}>Null</ToggleGroupItem> */}
+              </ToggleGroup>
+            </div>
+            <div
+              className={
+                'text-xs leading-[1.1] flex shrink items-center justify-center w-full font-mono'
+              }
+            >
+              {selectedMarkerType ? (
+                <div
+                  className={
+                    'text-ellipsis overflow-hidden line-clamp-3 max-w-[650px]'
+                  }
+                >
+                  {MarkerTypeInstructions[selectedMarkerType]}
+                </div>
+              ) : (
+                <div className={'flex items-center gap-2'}>
+                  {' '}
+                  <ArrowLeft size={32} />
+                  <div>
+                    Select a marker type to add to the map. You'll see helpful
+                    hints display here when you pick one.
+                  </div>{' '}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* EVERYTHING ELSE */}
 
+        {/* TODO: figure out how to get map to refresh on sidebar toggle */}
+
         <div className={'flex flex-row gap-2'} style={{}}>
           {/* MAP */}
           <div
             className={cn(
-              'flex h-[500px] rounded-xl overflow-hidden',
-              open ? 'w-[calc(100dvw-750px)] border-4' : 'w-full'
+              'flex h-[500px] overflow-auto',
+              state === 'expanded' ? 'w-[calc(100dvw-763px)]' : 'w-full'
             )}
           >
             {appDetails['Event latitude'] && appDetails['Event longitude'] && (
@@ -300,7 +336,7 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
                   'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
                 }
                 mapStyle={convertMapThemeToStyleURL(mapTheme)}
-                style={{ width: 2000, height: 500, objectFit: 'cover' }}
+                style={{ width: 2000, height: 501 }}
                 initialViewState={{
                   longitude: appDetails['Event longitude'],
                   latitude: appDetails['Event latitude'],
@@ -313,43 +349,44 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
               >
                 <NavigationControl />
 
-                {newPointMarker.coordinates && (
-                  <MapPointMarker
-                    post={{
-                      latitude: newPointMarker.coordinates[0],
-                      longitude: newPointMarker.coordinates[1],
-                      pinCategory:
-                        selectedMarkerType === 'pin' && newPointMarker.category
-                          ? newPointMarker.category
-                          : undefined,
-                      pinType:
-                        selectedMarkerType === 'pin' && newPointMarker.type
-                          ? newPointMarker.type
-                          : undefined,
-                      planCategory:
-                        selectedMarkerType === 'plan' && newPointMarker.category
-                          ? newPointMarker.category
-                          : undefined,
-                      planType:
-                        selectedMarkerType === 'plan' && newPointMarker.type
-                          ? newPointMarker.type
-                          : undefined,
-                    }}
-                  />
-                )}
+                {newPointMarker.coordinates &&
+                  (selectedMarkerType === 'pin' ||
+                    selectedMarkerType === 'plan') && (
+                    <MapPointMarker
+                      post={{
+                        latitude: newPointMarker.coordinates[0],
+                        longitude: newPointMarker.coordinates[1],
+                        pinCategory:
+                          selectedMarkerType === 'pin' &&
+                          newPointMarker.category
+                            ? newPointMarker.category
+                            : undefined,
+                        pinType:
+                          selectedMarkerType === 'pin' && newPointMarker.type
+                            ? newPointMarker.type
+                            : undefined,
+                        planCategory:
+                          selectedMarkerType === 'plan' &&
+                          newPointMarker.category
+                            ? newPointMarker.category
+                            : undefined,
+                        planType:
+                          selectedMarkerType === 'plan' && newPointMarker.type
+                            ? newPointMarker.type
+                            : undefined,
+                      }}
+                    />
+                  )}
 
                 {selectedMarkerType === 'route' &&
                   newMultiMarker.coordinates.length > 0 && (
                     <MapRouteMarker
                       post={{
-                        coordinates: newMultiMarker.coordinates.map(
-                          (coordinate) => coordinate.coords
-                        ),
-                        routeCategory:
-                          selectedMarkerType === 'route' &&
-                          newMultiMarker.category
-                            ? newMultiMarker.category
-                            : undefined,
+                        coordinates: newMultiMarker.coordinates,
+                        routeCategory: newMultiMarker.category
+                          ? newMultiMarker.category
+                          : undefined,
+                        color: newMultiMarker.color as string,
                       }}
                     />
                   )}
@@ -375,7 +412,7 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
                     );
                   })}
 
-                {markers.routes &&
+                {/* {markers.routes &&
                   Object.values(markers.routes).map((route, index) => {
                     return (
                       <MapRouteMarker
@@ -383,21 +420,34 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
                         post={route}
                       />
                     );
-                  })}
+                  })} */}
               </Map>
             )}
           </div>
 
-          {/* <ResizableHandle withHandle className='mx-2' /> */}
-
           {/* POPUPS */}
           <div
             className={
-              'flex flex-col gap-3 items-center justify-center font-light rounded p-3 border bg-neutral-50 tracking-tight w-[400px]'
+              'flex flex-col gap-3 items-center justify-center font-light rounded p-3 border bg-neutral-50 tracking-tight w-[435px]'
             }
           >
             {!selectedMarkerType && (
-              <div>Please select a marker type to add</div>
+              <div className={'flex flex-col h-full w-full'}>
+                <div className={'create-app-form-subtitle'}>
+                  MARKER TYPE:{' '}
+                  <span className={'text-red-600 font-bold'}>NOT SELECTED</span>
+                </div>
+                <Separator />
+                <div
+                  className={'flex gap-4 h-full items-center justify-center'}
+                >
+                  <ArrowUpLeft size={64} />
+                  <div className={'w-64'}>
+                    Select a marker type to add to the map. You'll see an input
+                    form display here after selecting one.
+                  </div>
+                </div>
+              </div>
             )}
             {selectedMarkerType === 'pin' && (
               <PinPopup
@@ -418,7 +468,7 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
             {selectedMarkerType === 'route' && (
               <RoutePopup
                 lastClickEvent={newMultiMarker.event}
-                setRouteMarkerIcon={setMultiMarkerIcon}
+                multiMarkerBundle={{ setNewMultiMarker, newMultiMarker }} // needed for changing color of new route
                 user={user}
                 getAndSetMapMarkers={getAndSetMapMarkers}
               />
