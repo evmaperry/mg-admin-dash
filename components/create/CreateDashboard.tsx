@@ -65,7 +65,7 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
         <div
           className={cn(
             'flex flex-col h-full px-4',
-            selectedStep !== 'markers' && 'mt-2'
+            (selectedStep !== 'markers' && selectedStep !== 'labels') && 'mt-2'
           )}
         >
           {/* THE BASICS */}

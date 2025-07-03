@@ -185,13 +185,68 @@ export const Colors: React.FC<{}> = ({}) => {
   );
 
   return (
-    <div className={'flex flex-row items-center justify-around w-full'}>
+    <div
+      className={
+        'flex flex-row items-center justify-around w-full xl:px-20 2xl:px-36'
+      }
+    >
+      {/* PAGES CAROUSEL */}
+      <div className={'border p-2 rounded shadow'}>
+        <Carousel
+          opts={{ align: 'start', loop: true }}
+          className={'px-12 pb-4 pt-2 w-[420px]'}
+          plugins={[
+            Autoplay({
+              delay: 10000,
+            }),
+          ]}
+        >
+          <CarouselContent className={''}>
+            <CarouselItem className={'flex flex-col items-center gap-3'}>
+              <div className={'create-app-form-subtitle'}>Feed page</div>
+              <FeedPage
+                colors={{
+                  primary: configurableColors.primary.hex,
+                  primaryContainer: configurableColors.primaryContainer.hex,
+                  onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+                  onPrimaryContainerUnselected:
+                    configurableColors.onPrimaryContainerUnselected.hex,
+                  inversePrimary: configurableColors.inversePrimary.hex,
+                  secondary: configurableColors.secondary.hex,
+                  outline: configurableColors.outline.hex,
+                  surfaceVariant: configurableColors.surfaceVariant.hex,
+                }}
+              />
+            </CarouselItem>
+            <CarouselItem className={'flex flex-col items-center gap-3'}>
+              <div className={'create-app-form-subtitle'}>Map page</div>
+              <MapPage
+                colors={{
+                  primary: configurableColors.primary.hex,
+                  primaryContainer: configurableColors.primaryContainer.hex,
+                  onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
+                  onPrimaryContainerUnselected:
+                    configurableColors.onPrimaryContainerUnselected.hex,
+
+                  inversePrimary: configurableColors.inversePrimary.hex,
+                  secondary: configurableColors.secondary.hex,
+                  outline: configurableColors.outline.hex,
+                  surfaceVariant: configurableColors.surfaceVariant.hex,
+                }}
+              />
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious className={'ml-16'} />
+          <CarouselNext className={'mr-16'} />
+        </Carousel>
+      </div>
+
       {/* COLOR PANEL */}
       <div className={'create-app-form-container px-8'}>
         <div className={'flex flex-col justify-around items-center gap-2'}>
-          <div className={'create-app-form-subcontainer'}>
+          <div className={'create-app-form-subcontainer px-8'}>
             <div className={'create-app-form-subtitle w-full text-center'}>
-              Brand Colors
+              Brand colors
             </div>
 
             <div className={'flex flex-col gap-3'}>{ColorPopovers}</div>
@@ -199,10 +254,10 @@ export const Colors: React.FC<{}> = ({}) => {
 
           <div
             className={
-              'create-app-form-subcontainer w-full flex-row items-center'
+              'create-app-form-subcontainer w-full flex-row items-center px-8'
             }
           >
-            <Label className={'w-1/2'}>Map Theme</Label>
+            <Label className={'w-1/2'}>Map theme</Label>
             <Select
               onValueChange={(
                 value: 'light' | 'streets' | 'dark' | 'outdoors'
@@ -225,57 +280,6 @@ export const Colors: React.FC<{}> = ({}) => {
             </Select>
           </div>
         </div>
-      </div>
-
-      {/* PAGES CAROUSEL */}
-      <div className={''}>
-        <Carousel
-          opts={{ align: 'start', loop: true }}
-          className={'px-12 pb-4 pt-2 w-[420px]'}
-          plugins={[
-            Autoplay({
-              delay: 10000,
-            }),
-          ]}
-        >
-          <CarouselContent className={''}>
-            <CarouselItem className={'flex flex-col items-center gap-3'}>
-              <div className={'create-app-form-subtitle'}>Feed Page</div>
-              <FeedPage
-                colors={{
-                  primary: configurableColors.primary.hex,
-                  primaryContainer: configurableColors.primaryContainer.hex,
-                  onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
-                  onPrimaryContainerUnselected:
-                    configurableColors.onPrimaryContainerUnselected.hex,
-                  inversePrimary: configurableColors.inversePrimary.hex,
-                  secondary: configurableColors.secondary.hex,
-                  outline: configurableColors.outline.hex,
-                  surfaceVariant: configurableColors.surfaceVariant.hex,
-                }}
-              />
-            </CarouselItem>
-            <CarouselItem className={'flex flex-col items-center gap-3'}>
-              <div className={'create-app-form-subtitle'}>Map Page</div>
-              <MapPage
-                colors={{
-                  primary: configurableColors.primary.hex,
-                  primaryContainer: configurableColors.primaryContainer.hex,
-                  onPrimaryContainer: configurableColors.onPrimaryContainer.hex,
-                  onPrimaryContainerUnselected:
-                    configurableColors.onPrimaryContainerUnselected.hex,
-
-                  inversePrimary: configurableColors.inversePrimary.hex,
-                  secondary: configurableColors.secondary.hex,
-                  outline: configurableColors.outline.hex,
-                  surfaceVariant: configurableColors.surfaceVariant.hex,
-                }}
-              />
-            </CarouselItem>
-          </CarouselContent>
-          <CarouselPrevious className={'ml-16'} />
-          <CarouselNext className={'mr-16'} />
-        </Carousel>{' '}
       </div>
     </div>
   );

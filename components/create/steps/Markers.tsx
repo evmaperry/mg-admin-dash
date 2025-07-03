@@ -428,7 +428,7 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
           {/* POPUPS */}
           <div
             className={
-              'flex flex-col gap-3 items-center justify-center font-light rounded p-3 border bg-neutral-50 tracking-tight w-[435px]'
+              ' create-app-form-subcontainer items-center justify-center font-light tracking-tight w-[435px]'
             }
           >
             {!selectedMarkerType && (
