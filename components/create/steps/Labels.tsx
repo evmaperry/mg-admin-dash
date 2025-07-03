@@ -38,6 +38,7 @@ import {
 } from '../../ui/dropdown-menu';
 import { mdiHome, mdiMagnifyPlus, mdiCancel, mdiClose } from '@mdi/js';
 import { convertMapThemeToStyleURL } from '@/utils/mapbox/utils';
+import { Separator } from '@/components/ui/separator';
 
 const LabelMarker: React.FC<{ label: Partial<MapLabel> }> = ({ label }) => {
   const { appColors } = useCreateAppStore((state) => state);
@@ -243,46 +244,21 @@ const Labels: React.FC<{}> = ({}) => {
   );
 
   return (
-    <div className={'create-app-form-container w-full'}>
-      <div className={'flex flex-row items-center gap-8 justify-center'}>
-        {/* LEFT SIDE: ZOOM TOOLS */}
-        <div className={'flex flex-col w-80 gap-6 items-center'}>
-          {/* MAP CENTER */}
-          <div
-            className={
-              'flex w-full flex-col border bg-neutral-100 px-2 py-1 rounded'
-            }
-          >
-            <div
-              className={
-                'flex flex-row items-center gap-2 font-mono justify-center w-full font-bold'
-              }
-            >
-              <Target size={20} color={'orange'} />
-              <div>Map center</div>
-            </div>
-
-            <div className={'flex flex-row justify-between w-full'}>
-              <div className={'flex flex-row'}>
-                <span className={'font-bold'}>Lat:&nbsp;</span>
-                {appDetails['Event latitude'] &&
-                  appDetails['Event latitude'].toFixed(4)}
-              </div>
-              <div className={'flex flex-row'}>
-                <span className={'font-bold'}>Lng:&nbsp;</span>
-                {appDetails['Event longitude'] &&
-                  appDetails['Event longitude'].toFixed(4)}
-              </div>
-            </div>
+    <div
+      className={'create-app-form-container w-full flex-row justify-around'}
+    >
+      {/* LEFT SIDE: ZOOM TOOLS */}
+      <div className={'flex flex-col gap-4 w-full max-w-[300px]'}>
+        {/* ZOOM HEIGHTS PROFILE */}
+        <div className={'create-app-form-subcontainer gap-2'}>
+          <div className={'create-app-form-subtitle text-center'}>
+            Zoom thresholds
           </div>
-          {/* ZOOM HEIGHTS PROFILE */}
-          <div
-            className={'flex flex-row gap-2 items-center justify-center w-full'}
-          >
+          <div className={'flex flex-row h-[300px] gap-1'}>
             {/* PANELS */}
             <div
               className={
-                'relative flex flex-col items-end justify-end border-2 w-full h-[360px]'
+                'relative flex flex-col items-end justify-end border-2 w-full h-full'
               }
             >
               {defaultPanelSizes && (
@@ -291,57 +267,43 @@ const Labels: React.FC<{}> = ({}) => {
                   onLayout={(sizes) => {
                     setThresholdsFromLayout(sizes);
                   }}
-                  className={'w-full'}
+                  className={'w-full tracking-tighter'}
                 >
                   <ResizablePanel
                     id={'event'}
                     className={
-                      'flex flex-col justify-end items-center bg-neutral-600'
+                      'flex flex-col justify-end items-center bg-neutral-700'
                     }
                     defaultSize={defaultPanelSizes.event}
-                  >
-                    <div
-                      className={
-                        'flex text-white justify-between px-4 text-sm font-mono w-full'
-                      }
-                    >
-                      <div>Event signs</div>
-                      <div>{mapLabels.zoomThresholds[1].toFixed(2)}</div>
-                    </div>
-                  </ResizablePanel>
-                  <ResizableHandle withHandle />
+                  />
+                  <ResizableHandle
+                    withHandle
+                    className={'border-2 border-fuchsia-400'}
+                  />
                   <ResizablePanel
                     id={'area'}
                     className={
-                      'flex flex-col justify-end items-center bg-neutral-400 text-white'
+                      'flex flex-col justify-end items-center bg-neutral-500 text-white'
                     }
                     defaultSize={defaultPanelSizes.area}
-                  >
-                    <div
-                      className={
-                        'flex justify-between px-4 text-sm font-mono w-full'
-                      }
-                    >
-                      <div>Area signs</div>
-                      <div>{mapLabels.zoomThresholds[0].toFixed(2)}</div>
-                    </div>
-                  </ResizablePanel>
-                  <ResizableHandle withHandle />
+                  />
+                  <ResizableHandle
+                    withHandle
+                    className={'border-2 border-teal-400'}
+                  />
                   <ResizablePanel
                     className={
-                      'flex font-mono text-sm flex-col justify-end items-center bg-neutral-200'
+                      'flex text-sm flex-col justify-end items-center bg-neutral-300 font-mono'
                     }
                     id={'ground'}
                     defaultSize={defaultPanelSizes.ground}
-                  >
-                    Pins, Plans & Routes
-                  </ResizablePanel>
+                  />
                 </ResizablePanelGroup>
               )}
             </div>
 
             {/* SLIDER */}
-            <div className={'flex flex-col h-[360px] '}>
+            <div className={'flex flex-col h-full '}>
               <Slider
                 orientation='vertical'
                 value={[displayedMapViewState?.zoom as number]}
@@ -360,17 +322,18 @@ const Labels: React.FC<{}> = ({}) => {
             </div>
 
             {/* SCALE */}
-            <div className={'flex flex-col text-right py-[1px] h-[360px] '}>
+            <div className={'flex flex-col text-right py-[1px] h-full'}>
               {range(23).map((number) => (
                 <div
                   key={`zoom-graph-y-axis-${number}`}
-                  className={'text-xs font-mono leading-[1.3]'}
+                  className={'text-xs font-mono leading-[1.08]'}
                 >
                   {number}
                 </div>
               ))}
             </div>
           </div>
+
           {/* ZOOM */}
           <div className={'flex justify-end w-full font-mono'}>
             <div className={'flex flex-row'}>
@@ -378,219 +341,294 @@ const Labels: React.FC<{}> = ({}) => {
               {displayedMapViewState.zoom}
             </div>
           </div>
-        </div>
-        {/* MAP */}
-        <div className='flex flex-col items-center justify-center overflow-hidden border-4 border-neutral-800 shadow-lg rounded-[38px] w-[276px] h-[572px]'>
-          {/* FAKE TOP BAR */}
-          <MockupTopBar />
 
-          {/* MAP CONTAINER */}
-          <div className={'flex grow relative'}>
-            <MockupMapSearchContainer colors={appColors} />
+          {/* KEY */}
+          <div className={'text-sm text-center'}>
+            <Label>KEY</Label>
+
             <div
-              className={
-                'flex absolute z-50 bottom-1 border bg-neutral-50 py-1 px-2 rounded left-1 font-mono'
-              }
+              className={'w-full flex items-center justify-around gap-2  p-1'}
             >
-              Zoom level:
-              {displayedMapViewState.zoom < mapLabels.zoomThresholds[1]
-                ? 'Event'
-                : displayedMapViewState.zoom > mapLabels.zoomThresholds[0]
-                  ? 'Ground'
-                  : 'Area'}
+              <div className={'bg-neutral-700 rounded  h-4 w-4 '} />
+              <div className={'flex w-full justify-start'}>
+                Upper: regional signs
+              </div>
             </div>
 
-            {displayedMapViewState?.latitude &&
-              displayedMapViewState.longitude && (
-                <Map
-                  id={'centerMap'}
-                  mapboxAccessToken={
-                    'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
-                  }
-                  mapStyle={convertMapThemeToStyleURL(mapTheme)}
-                  initialViewState={{
-                    longitude: -100,
-                    latitude: 40,
-                    zoom: 13,
-                  }}
-                  style={{ width: 268, height: 460 }}
-                  onDrag={handleDrag}
-                  {...displayedMapViewState}
-                  onClick={initAddLabel}
-                >
-                  {/* MAP CENTER */}
-                  <Marker
-                    longitude={appDetails['Event longitude'] as number}
-                    latitude={appDetails['Event latitude'] as number}
-                  >
-                    <Target size={20} color={'orange'} />
-                  </Marker>
+            <div className={'flex w-full items-center gap-2 p-1'}>
+              <div className={'bg-neutral-500 rounded  h-4 w-4 '} />
+              <div className={'flex w-full justify-start'}>
+                Middle: local signs
+              </div>
+            </div>
+            <div className={'flex items-center gap-2 rounded-b p-1'}>
+              <div className={'bg-neutral-300 rounded  h-4 w-4 '} />
+              <div className={'flex w-full justify-start'}>
+                Ground: pins, plans & routes
+              </div>
+            </div>
+            <Separator />
+            <div className={'flex items-center w-full justify-around py-1'}>
+              <Label>Thresholds</Label>
+              <div className={'flex items-center gap-1 bg-teal-400 p-1'}>
+                <span className={'italic'}>Lower</span>
+                <span className={''}>
+                  {mapLabels.zoomThresholds[0].toFixed(2)}
+                </span>
+              </div>
+              <div className={'flex items-center gap-1 bg-fuchsia-400 p-1'}>
+                <span className={'italic'}>Upper</span>
+                <span className={''}>
+                  {mapLabels.zoomThresholds[1].toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                  {/* NEW LABEL */}
-                  {isInAddLabelMode && <LabelMarker label={label} />}
+      {/* PHONE */}
+      <div className='flex flex-col items-center justify-center overflow-hidden border-4 border-neutral-800 shadow-lg rounded-[38px] w-[276px] h-[572px]'>
+        {/* FAKE TOP BAR */}
+        <MockupTopBar />
 
-                  {/* EVENT LABEL(S) */}
-                  {displayedMapViewState.zoom < mapLabels.zoomThresholds[1] &&
-                    mapLabels.labels[1].map(
-                      (eventLabel: MapLabel, index: number) => {
-                        return (
-                          <LabelMarker
-                            key={`sat-label-marker-${index}`}
-                            label={eventLabel}
-                          />
-                        );
-                      }
-                    )}
-
-                  {/* AREA LABELS */}
-                  {displayedMapViewState.zoom > mapLabels.zoomThresholds[1] &&
-                    displayedMapViewState.zoom < mapLabels.zoomThresholds[0] &&
-                    mapLabels.labels[0].map(
-                      (areaLabel: MapLabel, index: number) => {
-                        return (
-                          <LabelMarker
-                            key={`area-label-marker-${index}`}
-                            label={areaLabel}
-                          />
-                        );
-                      }
-                    )}
-                </Map>
-              )}
+        {/* MAP CONTAINER */}
+        <div className={'flex grow relative'}>
+          <MockupMapSearchContainer colors={appColors} />
+          <div
+            className={
+              'flex absolute z-50 bottom-1 border bg-neutral-50 py-1 px-2 rounded left-1 font-mono'
+            }
+          >
+            Zoom level:
+            {displayedMapViewState.zoom < mapLabels.zoomThresholds[1]
+              ? 'Upper'
+              : displayedMapViewState.zoom > mapLabels.zoomThresholds[0]
+                ? 'Ground'
+                : 'Middle'}
           </div>
 
-          {/* BOTTOM NAV */}
-          <MockupBottomNav colors={appColors} page={'map'} />
+          {displayedMapViewState?.latitude &&
+            displayedMapViewState.longitude && (
+              <Map
+                id={'centerMap'}
+                mapboxAccessToken={
+                  'pk.eyJ1IjoiZXZtYXBlcnJ5IiwiYSI6ImNtYWZrdGh0ZzAzdDQya29peGt6bnYzNHoifQ.6tScEewTDMdUvwV6_Bbdiw'
+                }
+                mapStyle={convertMapThemeToStyleURL(mapTheme)}
+                initialViewState={{
+                  longitude: -100,
+                  latitude: 40,
+                  zoom: 13,
+                }}
+                style={{ width: 268, height: 460 }}
+                onDrag={handleDrag}
+                {...displayedMapViewState}
+                onClick={initAddLabel}
+              >
+                {/* MAP CENTER */}
+                <Marker
+                  longitude={appDetails['Event longitude'] as number}
+                  latitude={appDetails['Event latitude'] as number}
+                >
+                  <Target size={20} className={'text-red-400'} />
+                </Marker>
+
+                {/* NEW LABEL */}
+                {isInAddLabelMode && <LabelMarker label={label} />}
+
+                {/* EVENT LABEL(S) */}
+                {displayedMapViewState.zoom < mapLabels.zoomThresholds[1] &&
+                  mapLabels.labels[1].map(
+                    (eventLabel: MapLabel, index: number) => {
+                      return (
+                        <LabelMarker
+                          key={`sat-label-marker-${index}`}
+                          label={eventLabel}
+                        />
+                      );
+                    }
+                  )}
+
+                {/* AREA LABELS */}
+                {displayedMapViewState.zoom > mapLabels.zoomThresholds[1] &&
+                  displayedMapViewState.zoom < mapLabels.zoomThresholds[0] &&
+                  mapLabels.labels[0].map(
+                    (areaLabel: MapLabel, index: number) => {
+                      return (
+                        <LabelMarker
+                          key={`area-label-marker-${index}`}
+                          label={areaLabel}
+                        />
+                      );
+                    }
+                  )}
+              </Map>
+            )}
         </div>
-        {/* RIGHT SIDE: CREATE LABEL FORM */}
-        <div className={'flex max-w-64 border bg-neutral-100 px-2 py-1'}>
-          <div className={'flex flex-col gap-2'}>
+
+        {/* BOTTOM NAV */}
+        <MockupBottomNav colors={appColors} page={'map'} />
+      </div>
+
+      {/* RIGHT SIDE  */}
+      <div className={'flex flex-col justify-center gap-4 max-w-[340px]'}>
+        {/* MAP CENTER */}
+        <div className={'create-app-form-subcontainer gap-2'}>
+          <div
+            className={'flex flex-row items-center gap-2 justify-center w-full'}
+          >
+            <Target size={16} className={'text-red-400'} />
+            <div className={'create-app-form-subtitle'}>Map center</div>
+          </div>
+          <div className={'text-xs '}>
+            Drag the map to set it's center. When the map loads in the app, the map is zoomed in just below the <span className={'p-[2px] bg-teal-400'}>lower threshold</span> to display pins, plans, and routes.
+          </div>
+          <div className={'flex flex-row justify-around w-full text-sm'}>
+            <div className={'flex flex-row'}>
+              <span className={'italic'}>Lat:&nbsp;</span>
+              {appDetails['Event latitude'] &&
+                appDetails['Event latitude'].toFixed(3)}
+            </div>
+            <div className={'flex flex-row'}>
+              <span className={'italic'}>Lng:&nbsp;</span>
+              {appDetails['Event longitude'] &&
+                appDetails['Event longitude'].toFixed(3)}
+            </div>
+          </div>
+        </div>
+        {/* CREATE LABEL FORM */}
+        <div className={'create-app-form-subcontainer gap-2'}>
+          <div className={'create-app-form-subtitle text-center'}>
+            Create sign
+          </div>
+
+          <div className={'flex items-center gap-4 text-sm leading-[1.1]'}>
+            <Label className={'w-16'}>Step 1&nbsp;</Label>
+            <div>Click the map where you'd like to add a label.</div>
+          </div>
+
+          {/* {!isInAddLabelMode && (
             <div
-              className={
-                'flex items-center gap-2 font-mono font-bold w-full justify-center'
+              className={'leading-[1.2] text-sm border bg-red-100 rounded p-1'}
+            ></div>
+          )} */}
+
+          <div className={'text-xs '}>
+            {displayedMapViewState.zoom < mapLabels.zoomThresholds[1]
+              ? 'This label will be added to the map at the Upper level. To add it to the Middle level, use the zoom slider in the left panel to zoom into the Middle level.'
+              : displayedMapViewState.zoom > mapLabels.zoomThresholds[0]
+                ? "Hold up! You can't add signs to the Ground level. Use the zoom slider in the left panel to zoom into the Upper or Middle level before adding a sign."
+                : 'This label will be added to the map at the Middle level. To add it to the Upper level, use the zoom slider in the left panel to zoom into the Upper level.'}
+          </div>
+
+          <div className={'flex justify-around items-center text-sm'}>
+            <div className={'flex gap-1'}>
+              <span className={'italic'}>Lat: </span>
+              {label.latitude?.toFixed(3) ?? 'N/A'}
+            </div>
+            <div className={'flex gap-1'}>
+              <span className={'italic'}>Lng: </span>
+              {label.longitude?.toFixed(3) ?? 'N/A'}
+            </div>
+          </div>
+
+          <div className={'flex gap-2 items-center text-sm'}>
+            <Label className={'w-24'}>Step 2</Label>
+            <div className='w-40'>Add details</div>
+            <Input
+              name={'title'}
+              onChange={handleTitleInput}
+              disabled={!isInAddLabelMode}
+              placeholder={'Sign text'}
+              value={label.title}
+              className='h-8 font-light text-center'
+            />
+          </div>
+          <div className={'flex gap-2'}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={'w-full h-8'}
+                  disabled={!isInAddLabelMode}
+                >
+                  {label.iconName && label.iconRaw ? (
+                    <div className={'flex items-center gap-2'}>
+                      <Icon
+                        path={label.iconRaw}
+                        className={'h-6 w-6'}
+                        color={label.iconColor ?? 'black'}
+                      />
+                      {label.iconName}
+                    </div>
+                  ) : (
+                    'Icon'
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup>{labelDropdownMenuGroup}</DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={'w-full h-8'}
+                  disabled={!isInAddLabelMode}
+                >
+                  {label.iconColor ? (
+                    <div className={'flex items-center gap-2'}>
+                      <div
+                        className={'w-6 h-6 rounded'}
+                        style={{ backgroundColor: label.iconColor as string }}
+                      />
+                      {label.iconColor}
+                    </div>
+                  ) : (
+                    <div>Color</div>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className={'flex w-[650px]'}
+                align='center'
+                side='left'
+              >
+                <ColorPicker
+                  onChangeComplete={(colorResult, event) => {
+                    setLabel({ ...label, iconColor: colorResult.hex });
+                  }}
+                  initialColor='#7e22ce'
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <Separator />
+          <div className={'flex gap-2 w-full'}>
+            <Button
+              className={'w-full'}
+              disabled={
+                !isInAddLabelMode ||
+                !label.icon ||
+                !label.iconColor ||
+                label.title?.length === 0
               }
             >
-              New label
-            </div>
-            {!isInAddLabelMode && (
-              <div
-                className={
-                  'leading-[1.2] text-sm border bg-red-100 rounded p-1'
-                }
-              >
-                Click the map where you'd like to add a label.
-              </div>
-            )}
-            <div>
-              <span className={'font-bold'}>{`Zoom level: `}</span>
-              {displayedMapViewState.zoom < mapLabels.zoomThresholds[1]
-                ? 'Event'
-                : displayedMapViewState.zoom > mapLabels.zoomThresholds[0]
-                  ? 'Ground'
-                  : 'Area'}
-            </div>
-            <div className={'flex justify-around items-center'}>
-              <div>
-                <span className={'font-bold'}>Lat: </span>
-                {label.latitude?.toFixed(3) ?? 'N/A'}
-              </div>
-              <div>
-                <span className={'font-bold'}>Lng: </span>
-                {label.longitude?.toFixed(3) ?? 'N/A'}
-              </div>
-            </div>
-            <div className={'flex gap-2 items-center'}>
-              <span className={'font-bold'}>Text:</span>
-              <Input
-                name={'title'}
-                onChange={handleTitleInput}
-                disabled={!isInAddLabelMode}
-                placeholder={'N/A'}
-                value={label.title}
-              />
-            </div>
-            <div className={'flex gap-2'}>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    className={'w-full'}
-                    disabled={!isInAddLabelMode}
-                  >
-                    {label.iconName && label.iconRaw ? (
-                      <div className={'flex items-center gap-2'}>
-                        <Icon
-                          path={label.iconRaw}
-                          className={'h-6 w-6'}
-                          color={label.iconColor ?? 'black'}
-                        />
-                        {label.iconName}
-                      </div>
-                    ) : (
-                      'Icon'
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuGroup>
-                    {labelDropdownMenuGroup}
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    className={'w-full'}
-                    disabled={!isInAddLabelMode}
-                  >
-                    {label.iconColor ? (
-                      <div className={'flex items-center gap-2'}>
-                        <div
-                          className={'w-6 h-6 rounded'}
-                          style={{ backgroundColor: label.iconColor as string }}
-                        />
-                        {label.iconColor}
-                      </div>
-                    ) : (
-                      <div>Color</div>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className={'flex w-[650px]'} align='end'>
-                  <ColorPicker
-                    onChangeComplete={(colorResult, event) => {
-                      setLabel({ ...label, iconColor: colorResult.hex });
-                    }}
-                    initialColor='#7e22ce'
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className={'flex gap-2 w-full'}>
-              <Button
-                className={'w-full'}
-                disabled={
-                  !isInAddLabelMode ||
-                  !label.icon ||
-                  !label.iconColor ||
-                  label.title?.length === 0
-                }
-              >
-                Add label
-              </Button>
-              <Button
-                className={'w-full'}
-                variant={'destructive'}
-                onClick={() => {
-                  setLabel({ title: '' });
-                  setIsInAddLabelMode(false);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
+              Add label
+            </Button>
+            <Button
+              className={'w-full'}
+              variant={'destructive'}
+              onClick={() => {
+                setLabel({ title: '' });
+                setIsInAddLabelMode(false);
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       </div>

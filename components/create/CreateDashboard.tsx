@@ -19,7 +19,7 @@ import { capitalize } from 'lodash';
 const stepInstructions = {
   basics :'Basics instructions',
   colors: 'Colors instructions',
-  labels: 'Labels instructions',
+  labels: 'The map features three zoom levels: different markers are visible at different levels. The "most-zoomed-in" level displays the pin, plan, and route markers. The "middle" level displays labels that indicate relatively small areas. The "most-zoomed-out" level displays labels that indicate relatively large areas. The elevations at which the middle and zoomed-out levels kick in is up to you, and should depend on the geography of your event. You can set those zoom thresholds with the resizable panels labeled "Event signs", "Area signs" and "Pin, Plans & Routes". In the app, the map opens to display the pins, plans, and routes just below the low threshold.',
   markers: 'Markers instructions'
 }
 
