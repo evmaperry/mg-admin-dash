@@ -33,8 +33,9 @@ import {
   mdiThumbDown,
 } from '@mdi/js';
 import MockupBottomNav from './BottomNav';
-import { AppColors } from 'mgtypes/types/App'
+import { AppColors } from 'mgtypes/types/App';
 import MockupTopBar from './TopBar';
+import { useCreateAppStore } from '@/providers/create-app-provider';
 
 const FeedPage: React.FC<{
   colors: AppColors;
@@ -50,6 +51,8 @@ const FeedPage: React.FC<{
     surfaceVariant,
   } = colors;
 
+  const { appDetails } = useCreateAppStore((state) => state);
+
   return (
     <div className='flex flex-col items-center justify-start overflow-hidden border-4 border-neutral-800 shadow-lg rounded-[38px] w-[276px] h-[572px]'>
       {/* FAKE TOP BAR */}
@@ -61,7 +64,7 @@ const FeedPage: React.FC<{
             'absolute top-1 left-1 font-bold text-base text-neutral-50'
           }
         >
-          EventName+
+          {appDetails['App name']}
         </div>
         <Image
           style={{ objectFit: 'cover' }}

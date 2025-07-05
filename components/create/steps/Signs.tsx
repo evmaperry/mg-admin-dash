@@ -360,7 +360,7 @@ const Signs: React.FC<{}> = ({}) => {
       {/* CONTROL PANEL */}
       <div
         className={
-          'flex items-center my-auto gap-2 border bg-neutral-200 p-3 rounded shadow max-w-[570px]'
+          'flex items-center my-auto gap-2 border bg-neutral-200 p-3 rounded shadow'
         }
       >
         {/* ZOOM SETTINGS */}
@@ -611,7 +611,7 @@ const Signs: React.FC<{}> = ({}) => {
 
         {/* CENTER & CREATE */}
         <div
-          className={'flex flex-col gap-2 w-full shrink justify-between h-full'}
+          className={'flex flex-col gap-2 min-w-72 justify-between h-full'}
         >
           {/* MAP CENTER */}
           <div className={'create-app-form-subcontainer shadow-none gap-2'}>
@@ -620,12 +620,10 @@ const Signs: React.FC<{}> = ({}) => {
                 'flex flex-row items-center gap-2 justify-center w-full'
               }
             >
-              <Target size={24} className={'text-red-400'} />{' '}
               <div className={'create-app-form-subtitle text-center'}>
                 Map center
               </div>
-
-            </div> <Popover>
+<Popover>
                 <PopoverTrigger asChild>
                   <Button className={'mx-auto'} size={'sm'} variant={'instructions'}>
                     <Info />
@@ -642,17 +640,18 @@ const Signs: React.FC<{}> = ({}) => {
                   </div>
                 </PopoverContent>
               </Popover>
+            </div>
             <div
               className={
-                'flex flex-row justify-center items-center gap-5 w-full text-sm font-light'
+                'flex flex-row justify-around items-center gap-5 w-full text-sm font-light'
               }
-            >
-              <div className={'flex flex-row'}>
+            ><Target size={24} className={'text-red-400'} />
+              <div className={'flex flex-row w-24'}>
                 <span className={'italic'}>Lat:&nbsp;</span>
                 {appDetails['Event latitude'] &&
                   appDetails['Event latitude'].toFixed(3)}
               </div>
-              <div className={'flex flex-row'}>
+              <div className={'flex flex-row w-24'}>
                 <span className={'italic'}>Lng:&nbsp;</span>
                 {appDetails['Event longitude'] &&
                   appDetails['Event longitude'].toFixed(3)}
@@ -666,8 +665,8 @@ const Signs: React.FC<{}> = ({}) => {
               'create-app-form-subcontainer gap-2 justify-between shadow-none'
             }
           >
-            <div className={'flex items-center'}>
-              <div className={'create-app-form-subtitle text-center'}>
+            <div className={'flex items-center justify-around'}>
+              <div className={'create-app-form-subtitle text-center w-1/3'}>
                 Create sign
               </div>
               <Popover>
@@ -770,7 +769,7 @@ const Signs: React.FC<{}> = ({}) => {
               value={label.title}
               className='h-8 font-light text-center'
             />
-            <div className={'flex flex-col gap-2'}>
+            <div className={'flex flex-row gap-1'}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
