@@ -610,22 +610,20 @@ const Signs: React.FC<{}> = ({}) => {
         </div>
 
         {/* CENTER & CREATE */}
-        <div
-          className={'flex flex-col gap-2 min-w-72 justify-between h-full'}
-        >
+        <div className={'flex flex-col gap-2 min-w-72 justify-between h-full'}>
           {/* MAP CENTER */}
           <div className={'create-app-form-subcontainer shadow-none gap-2'}>
-            <div
-              className={
-                'flex flex-row items-center gap-2 justify-center w-full'
-              }
-            >
+            <div className={'flex flex-row items-center gap-2 w-full'}>
               <div className={'create-app-form-subtitle text-center'}>
                 Map center
               </div>
-<Popover>
+              <Popover>
                 <PopoverTrigger asChild>
-                  <Button className={'mx-auto'} size={'sm'} variant={'instructions'}>
+                  <Button
+                    className={'mx-auto'}
+                    size={'sm'}
+                    variant={'instructions'}
+                  >
                     <Info />
                     Instructions
                   </Button>
@@ -645,7 +643,8 @@ const Signs: React.FC<{}> = ({}) => {
               className={
                 'flex flex-row justify-around items-center gap-5 w-full text-sm font-light'
               }
-            ><Target size={24} className={'text-red-400'} />
+            >
+              <Target size={24} className={'text-red-400'} />
               <div className={'flex flex-row w-24'}>
                 <span className={'italic'}>Lat:&nbsp;</span>
                 {appDetails['Event latitude'] &&
@@ -665,8 +664,8 @@ const Signs: React.FC<{}> = ({}) => {
               'create-app-form-subcontainer gap-2 justify-between shadow-none'
             }
           >
-            <div className={'flex items-center justify-around'}>
-              <div className={'create-app-form-subtitle text-center w-1/3'}>
+            <div className={'flex items-center justify-around gap-2'}>
+              <div className={'create-app-form-subtitle text-center'}>
                 Create sign
               </div>
               <Popover>
