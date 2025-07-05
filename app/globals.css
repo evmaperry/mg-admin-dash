@@ -9,7 +9,7 @@
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     /* --popover: 0 0% 80%; */
-    --popover: 0 0% 83%;
+    --popover: 0 0% 98%;
     --popover-foreground: 0 0% 3.9%;
     --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
@@ -95,11 +95,11 @@
   }
 
   .create-app-form-title {
-    @apply text-3xl font-mono text-sky-400;
+    @apply text-5xl font-mono text-sky-400;
   }
 
   .create-app-form-subtitle {
-    @apply text-base font-mono text-neutral-600;
+    @apply text-xl font-mono text-neutral-600;
   }
 
   .popup-file-input {

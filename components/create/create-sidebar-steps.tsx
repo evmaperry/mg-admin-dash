@@ -33,7 +33,7 @@ export function CreateSidebarSteps() {
     { value: 'basics', icon: Pencil },
     { value: 'colors', icon: Palette },
     { value: 'markers', icon: MapPin },
-    { value: 'labels', icon: Milestone },
+    { value: 'signs', icon: Milestone },
   ];
 
   return (
@@ -48,7 +48,7 @@ export function CreateSidebarSteps() {
                 className={cn(selectedStep === step.value && 'bg-sidebar-accent')}
                 onClick={() => {
                   setSelectedStep(
-                    step.value as 'basics' | 'colors' | 'labels' | 'markers'
+                    step.value as 'basics' | 'colors' | 'signs' | 'markers'
                   );
                 }}
               >
@@ -59,7 +59,7 @@ export function CreateSidebarSteps() {
                     className={cn(
                       'text-xs font-bold',
                       stepCompletions[
-                        step.value as 'basics' | 'colors' | 'labels' | 'markers'
+                        step.value as 'basics' | 'colors' | 'signs' | 'markers'
                       ] === 'complete'
                         ? 'text-emerald-500'
                         : 'text-red-500'
@@ -67,7 +67,7 @@ export function CreateSidebarSteps() {
                   >
                     {toUpper(
                       stepCompletions[
-                        step.value as 'basics' | 'colors' | 'labels' | 'markers'
+                        step.value as 'basics' | 'colors' | 'signs' | 'markers'
                       ]
                     )}
                   </span>

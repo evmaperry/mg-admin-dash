@@ -24,9 +24,9 @@ interface MapMarkers {
 
 export type CreateAppState = {
   stepCompletions : {'basics': 'complete'|'incomplete'
-    , 'colors': 'complete'|'incomplete','labels': 'complete'|'incomplete','markers': 'complete'|'incomplete'
+    , 'colors': 'complete'|'incomplete','signs': 'complete'|'incomplete','markers': 'complete'|'incomplete'
   };
-  selectedStep: 'basics' | 'colors' | 'labels' | 'markers';
+  selectedStep: 'basics' | 'colors' | 'signs' | 'markers';
   userId: string;
   canSave: boolean; // indicates a saveable change has been made
   appId: number | undefined;
@@ -34,12 +34,12 @@ export type CreateAppState = {
   appColors: AppColors;
   mapTheme: 'light' | 'streets' | 'dark' | 'outdoors';
   markers: MapMarkers;
-  mapLabels: MapLabels;
+  mapSigns: MapLabels; // TODO: change name of type from MapLabels to MapSigns
   selectedMarkerType: 'pin' | 'plan' | 'route' | 'area' | 'structure' | null;
 };
 
 export type CreateAppActions = {
-  setSelectedStep: (step: 'basics' | 'colors' | 'labels' | 'markers') => void;
+  setSelectedStep: (step: 'basics' | 'colors' | 'signs' | 'markers') => void;
   setUserId: (userId: string) => void;
   setAppId: (appId: number) => void;
   setAppDetails: (AppDetailsPartialObj: Partial<AppDetails>) => void;
@@ -73,7 +73,7 @@ export const defaultInitState: CreateAppState = {
   stepCompletions: {
     basics: 'incomplete',
     colors: 'incomplete',
-    labels: 'incomplete',
+    signs: 'incomplete',
     markers: 'incomplete'
   },
   selectedStep: 'basics',
@@ -108,7 +108,7 @@ export const defaultInitState: CreateAppState = {
     structures: [],
     areas: [],
   },
-  mapLabels: {
+  mapSigns: {
     zoomThresholds: [16.25, 15],
     labels: [
       [
@@ -186,7 +186,7 @@ export const createCreateAppStore = (
   return createStore<CreateAppStore>()((set) => ({
     ...initState,
     setSelectedStep: (
-      selectedStep: 'basics' | 'colors' | 'labels' | 'markers'
+      selectedStep: 'basics' | 'colors' | 'signs' | 'markers'
     ) => {
       set((state) => {
         return {
@@ -286,19 +286,19 @@ export const createCreateAppStore = (
       set((state) => {
         return {
           ...state,
-          mapLabels: { ...state.mapLabels, zoomThresholds },
+          mapLabels: { ...state.mapSigns, zoomThresholds },
         };
       });
     },
     addMapLabel: (mapLabel: MapLabel, zoomElevation: number) => {
       set((state) => {
-        const newLabelsArrays = [...state.mapLabels.labels];
+        const newLabelsArrays = [...state.mapSigns.labels];
 
         newLabelsArrays[zoomElevation].push(mapLabel);
         return {
           ...state,
           mapLabels: {
-            ...state.mapLabels,
+            ...state.mapSigns,
             labels: newLabelsArrays,
           },
         };

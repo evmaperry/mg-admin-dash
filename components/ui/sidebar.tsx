@@ -279,12 +279,12 @@ const SidebarTrigger = React.forwardRef<
     <Button
       ref={ref}
       data-sidebar="trigger"
-      className={cn(className, 'gap-1')}
+      className={cn(className, 'gap-1 bg-neutral-500')}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
       }}
-      variant={'outline'}
+      variant={'default'}
       {...props}
     >
       <PanelLeft />

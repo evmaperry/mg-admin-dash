@@ -29,7 +29,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { CalendarIcon, ImageOff } from 'lucide-react';
+import {
+  CalendarIcon,
+  ImageOff,
+  Info,
+  Route as RouteIcon,
+  X,
+} from 'lucide-react';
 import dayjs from 'dayjs';
 import { Calendar } from '@/components/ui/calendar';
 import { useCreateAppStore } from '@/providers/create-app-provider';
@@ -52,17 +58,16 @@ const RoutePopup: React.FC<{
   const { setNewMultiMarker: setRoute, newMultiMarker: route } =
     multiMarkerBundle;
 
-  // const [route, setRoute] = useState<Partial<Route>>({
-  //   routeCategory: '',
-  //   primaryText: '',
-  //   secondaryText: '',
-  //   photoURL: '',
-  //   color: '#7e22ce',
-  //   //startDateTime: '',
-  //   //endDateTime: '',
-  //   link: '',
-  //   phoneNumber: '',
-  // });
+  const defaultRouteState = {
+    category: undefined,
+    coordinates: [],
+    event: null,
+    color: '#123123',
+    primaryText: undefined,
+    secondaryText: undefined,
+    link: undefined,
+    phoneNumber: undefined,
+  };
 
   const [dateTimes, setDateTimes] = useState<{
     startDate: string | undefined;
@@ -170,21 +175,26 @@ const RoutePopup: React.FC<{
             side='left'
           >
             <div className={'font-mono font-bold'}>{'Route color'}</div>
-              <div className={'leading-[1.1]'}>{'Select a color that contrasts with your chosen map theme or plays on your branding.'}</div>
+            <div className={'leading-[1.1]'}>
+              {
+                'Select a color that contrasts with your chosen map theme or plays on your branding.'
+              }
+            </div>
             <div>
-            <ColorPicker
-              onChangeComplete={(
-                colorResult: ColorResult,
-                event: React.ChangeEvent
-              ) => {
-                console.log('colorRes', colorResult);
-                setRoute({
-                  ...route,
-                  color: colorResult.hex,
-                });
-              }}
-              initialColor={route.color as string}
-            /></div>
+              <ColorPicker
+                onChangeComplete={(
+                  colorResult: ColorResult,
+                  event: React.ChangeEvent
+                ) => {
+                  console.log('colorRes', colorResult);
+                  setRoute({
+                    ...route,
+                    color: colorResult.hex,
+                  });
+                }}
+                initialColor={route.color as string}
+              />
+            </div>
           </PopoverContent>
         </Popover>
       </div>
@@ -242,8 +252,38 @@ const RoutePopup: React.FC<{
   console.log('reRendering route popup');
   return (
     <div className={'flex flex-col h-full w-full gap-2'}>
-      <div className={'create-app-form-subtitle'}>
-        MARKER TYPE: <span className={'text-teal-400 font-bold'}>ROUTE</span>
+      <div className={'flex items-center justify-between w-full'}>
+        <div className={'flex items-center gap-2'}>
+          <div className={'create-app-form-subtitle'}>MARKER TYPE:</div>
+          <div className={'create-app-form-subtitle text-teal-400 font-bold'}>
+            ROUTE
+          </div>
+          <RouteIcon className={'text-teal-400'} />
+        </div>
+
+        <Popover>
+          <PopoverContent className={'instructions-container'}>
+            <Label>Step 1</Label>
+            <div>
+              Click the map to start a new route, then continue clicking to add
+              turns to your route. You can also click on an existing route to
+              add an turn to it. You can click and drag on the route's start,
+              end, or any turn to relocate them.
+            </div>
+            <Label>Step 2</Label>
+            <div>Select the route type and path color.</div>
+            <Label>Step 3</Label>
+            <div>Select an image for the pin.</div>
+            <Label>Step 4</Label>
+            <div>Add details and the route's start and end times.</div>
+          </PopoverContent>
+          <PopoverTrigger>
+            <Button variant={'instructions'} size={'sm'}>
+              <Info />
+              Instructions
+            </Button>
+          </PopoverTrigger>
+        </Popover>
       </div>
       <Separator />
 
@@ -252,21 +292,16 @@ const RoutePopup: React.FC<{
         className={'flex w-full flex-col items-between h-full justify-between'}
       >
         {/* COORDINATES */}
-        <div
-          className={
-            'flex flex-col justify-center w-full rounded gap-1 text-sm'
-          }
-        >
-          <div className={'text-sm truncate'}>
-            <Label>Step 1&nbsp;&nbsp;&nbsp;&nbsp;</Label>
-            Click a route to add a turn, click and drag a turn to move it, or
-            click the map to start a new route
-          </div>
+        <div className={'flex items-center w-full rounded gap-4 text-sm'}>
+          <Label>Turns</Label>
+          <div>{route.coordinates.length}</div>
+          <Label>Distance</Label>
+          <div>TODO</div>
         </div>
 
         {/* ROUTE SELECTOR */}
         <div className={'flex gap-4 justify-start items-center text-sm'}>
-          <Label>Step 2</Label>
+          <Label>Type & color</Label>
           <RouteSelector />
           {/* COLOR SELECTOR */}
           <RouteColorPicker />
@@ -275,9 +310,8 @@ const RoutePopup: React.FC<{
         {/* IMAGE */}
         <div className={'flex flex-row items-center gap-4'}>
           <div className={'flex flex-col gap-2'}>
-            <div className={'text-sm flex items-center gap-4'}>
-              <Label>Step 3 </Label>Select an image
-            </div>
+            <Label>Image</Label>
+
             <div className={'flex w-60'}>
               <Input
                 className={'popup-file-input'}
@@ -348,8 +382,8 @@ const RoutePopup: React.FC<{
         {/* TEXT DETAILS */}
         <div className={'flex flex-col gap-1 w-full'}>
           <div className={'flex items-center gap-2 text-sm'}>
-            <div className={'flex w-64 gap-4 items-center'}>
-              <Label>Step 4</Label>Add details
+            <div className={'flex w-40 gap-4'}>
+              <Label>Details</Label>
             </div>
             <Input
               name={'primaryText'}
@@ -436,12 +470,23 @@ const RoutePopup: React.FC<{
         </div>
       </div>
       <Separator />
-      <Button
-        className={'bg-teal-400 w-48 mx-auto'}
-        onClick={() => handleCreateRoute()}
-      >
-        Add route
-      </Button>
+      <div className={'flex items-center gap-2 w-full'}>
+        <Button
+          className={'bg-teal-400 w-full items-center gap-2'}
+          onClick={() => handleCreateRoute()}
+        >
+          <RouteIcon /> Add route
+        </Button>
+        <Button
+          className={'w-full gap-2'}
+          variant={'destructive'}
+          onClick={() => {
+            setRoute(defaultRouteState);
+          }}
+        >
+          <X /> Cancel
+        </Button>
+      </div>
     </div>
   );
 };

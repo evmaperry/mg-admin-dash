@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import Basics from './steps/Basics';
-import MapLabelsMaker from './steps/Labels';
+import Signs from './steps/Signs';
 import { Colors } from './steps/Colors';
 import Markers from './steps/Markers';
 import MapMarkerTable from './MapMarkerTable';
@@ -35,7 +35,7 @@ const zoomPanelColors = {
 const stepInstructions = {
   basics: 'Basics instructions',
   colors: 'Colors instructions',
-  labels: (
+  signs: (
     <>
       <Label>Intro</Label>
       <div>
@@ -121,14 +121,15 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
 
   return (
     <div className={'flex flex-col h-[calc(100dvh-80px)]'}>
-      <div className={'flex flex-row w-full justify-between px-8 pt-6 pb-2'}>
+      <div className={'flex flex-row w-full items-center justify-between px-8 pt-6 pb-2'}>
+        <SidebarTrigger className='' />{' '}
         <div className={'flex items-center gap-4'}>
           <div className={'create-app-form-title'}>
             {capitalize(selectedStep)}
           </div>
           <Popover>
             <PopoverTrigger asChild>
-              <Button size={'sm'} variant={'instructions'}>
+              <Button variant={'instructions'}>
                 <Info className={'instructions-button'} />
                 Instructions
               </Button>
@@ -138,12 +139,8 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
             </PopoverContent>
           </Popover>
         </div>
-
         <div className={'flex'}>
-          <SidebarTrigger className='' />
-          <Separator orientation='vertical' className='mx-2' />
-
-          <Button className={'bg-indigo-600 w-48 gap-2'}>
+          <Button className={'bg-purple-700 w-40 gap-1'}>
             <Save />
             Save draft
           </Button>
@@ -153,7 +150,7 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
         <div
           className={cn(
             'flex flex-col h-full px-4',
-            selectedStep !== 'markers' && selectedStep !== 'labels' && 'mt-2'
+            selectedStep !== 'markers' && selectedStep !== 'signs' && 'mt-2'
           )}
         >
           {/* THE BASICS */}
@@ -166,7 +163,7 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
           {selectedStep === 'markers' && <Markers user={user} />}
 
           {/* LABELS */}
-          {selectedStep === 'labels' && <MapLabelsMaker />}
+          {selectedStep === 'signs' && <Signs />}
         </div>
       ) : (
         <div>Please select an existing app or create a new one.</div>

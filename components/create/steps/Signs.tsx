@@ -59,7 +59,7 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
-const LabelMarker: React.FC<{ label: Partial<MapLabel> }> = ({ label }) => {
+const SignMarker: React.FC<{ label: Partial<MapLabel> }> = ({ label }) => {
   const { appColors } = useCreateAppStore((state) => state);
 
   return (
@@ -112,11 +112,11 @@ const LabelMarker: React.FC<{ label: Partial<MapLabel> }> = ({ label }) => {
   );
 };
 
-const Labels: React.FC<{}> = ({}) => {
+const Signs: React.FC<{}> = ({}) => {
   const {
     appDetails,
     setAppDetails,
-    mapLabels,
+    mapSigns,
     addMapLabel,
     setZoomThresholds,
     appColors,
@@ -180,9 +180,8 @@ const Labels: React.FC<{}> = ({}) => {
    * zoomThreshold[1] = event labels
    */
 
-
   const setDefaultSizesFromThresholds = () => {
-    const [areaThresh, satThresh] = mapLabels.zoomThresholds;
+    const [areaThresh, satThresh] = mapSigns.zoomThresholds;
     const event = 100 * (satThresh / 23);
     const ground = 100 * ((23 - areaThresh) / 23);
     const area = 100 - event - ground;
@@ -321,14 +320,14 @@ const Labels: React.FC<{}> = ({}) => {
                   </Marker>
 
                   {/* NEW LABEL */}
-                  {isInAddLabelMode && <LabelMarker label={label} />}
+                  {isInAddLabelMode && <SignMarker label={label} />}
 
                   {/* EVENT LABEL(S) */}
-                  {displayedMapViewState.zoom < mapLabels.zoomThresholds[1] &&
-                    mapLabels.labels[1].map(
+                  {displayedMapViewState.zoom < mapSigns.zoomThresholds[1] &&
+                    mapSigns.labels[1].map(
                       (eventLabel: MapLabel, index: number) => {
                         return (
-                          <LabelMarker
+                          <SignMarker
                             key={`sat-label-marker-${index}`}
                             label={eventLabel}
                           />
@@ -337,12 +336,12 @@ const Labels: React.FC<{}> = ({}) => {
                     )}
 
                   {/* AREA LABELS */}
-                  {displayedMapViewState.zoom > mapLabels.zoomThresholds[1] &&
-                    displayedMapViewState.zoom < mapLabels.zoomThresholds[0] &&
-                    mapLabels.labels[0].map(
+                  {displayedMapViewState.zoom > mapSigns.zoomThresholds[1] &&
+                    displayedMapViewState.zoom < mapSigns.zoomThresholds[0] &&
+                    mapSigns.labels[0].map(
                       (areaLabel: MapLabel, index: number) => {
                         return (
-                          <LabelMarker
+                          <SignMarker
                             key={`area-label-marker-${index}`}
                             label={areaLabel}
                           />
@@ -361,7 +360,7 @@ const Labels: React.FC<{}> = ({}) => {
       {/* CONTROL PANEL */}
       <div
         className={
-          'flex items-center my-auto gap-2 border bg-neutral-300 p-3 rounded shadow max-w-[560px]'
+          'flex items-center my-auto gap-2 border bg-neutral-200 p-3 rounded shadow max-w-[570px]'
         }
       >
         {/* ZOOM SETTINGS */}
@@ -390,7 +389,7 @@ const Labels: React.FC<{}> = ({}) => {
                   between 0 (most zoomed-out) and 22 (most zoomed-in).
                 </div> */}
 
-{/*
+                {/*
                 <Table className={'border font-sans'}>
                   <TableHeader>
                     <TableRow>
@@ -512,7 +511,7 @@ const Labels: React.FC<{}> = ({}) => {
                     <ResizablePanel
                       id={'event'}
                       className={
-                        'text-sm flex flex-col justify-between font-mono text-neutral-50 items-center pb-2 px-2'
+                        'text-xs flex flex-col justify-between font-mono text-neutral-50 items-center pb-2 px-2'
                       }
                       defaultSize={defaultPanelSizes.event}
                       style={{ backgroundColor: zoomPanelColors.upperLevel }}
@@ -535,7 +534,7 @@ const Labels: React.FC<{}> = ({}) => {
                     <ResizablePanel
                       id={'area'}
                       className={
-                        'flex flex-col justify-center text-neutral-50 items-center text-sm font-mono px-4'
+                        'flex flex-col justify-center text-neutral-50 items-center text-xs font-mono px-4'
                       }
                       style={{ backgroundColor: zoomPanelColors.middleLevel }}
                       defaultSize={defaultPanelSizes.area}
@@ -548,7 +547,7 @@ const Labels: React.FC<{}> = ({}) => {
                     />
                     <ResizablePanel
                       className={cn(
-                        'flex text-sm font-mono flex-col justify-between items-center pt-2 px-2 text-neutral-50'
+                        'flex text-xs font-mono flex-col justify-between items-center pt-2 px-2 text-neutral-50'
                       )}
                       style={{ backgroundColor: zoomPanelColors.lowerLevel }}
                       id={'ground'}
@@ -592,7 +591,7 @@ const Labels: React.FC<{}> = ({}) => {
                 Upper:
               </span>
               <span className={'w-10'}>
-                {mapLabels.zoomThresholds[1].toFixed(2)}
+                {mapSigns.zoomThresholds[1].toFixed(2)}
               </span>
             </div>
             <div className={'flex items-center gap-1 font-light'}>
@@ -604,7 +603,7 @@ const Labels: React.FC<{}> = ({}) => {
                 Lower:
               </span>
               <span className={'w-10'}>
-                {mapLabels.zoomThresholds[0].toFixed(2)}
+                {mapSigns.zoomThresholds[0].toFixed(2)}
               </span>
             </div>
           </div>
@@ -621,12 +620,14 @@ const Labels: React.FC<{}> = ({}) => {
                 'flex flex-row items-center gap-2 justify-center w-full'
               }
             >
+              <Target size={24} className={'text-red-400'} />{' '}
               <div className={'create-app-form-subtitle text-center'}>
                 Map center
               </div>
-              <Popover>
+
+            </div> <Popover>
                 <PopoverTrigger asChild>
-                  <Button size={'sm'}  variant={'instructions'}>
+                  <Button className={'mx-auto'} size={'sm'} variant={'instructions'}>
                     <Info />
                     Instructions
                   </Button>
@@ -641,13 +642,11 @@ const Labels: React.FC<{}> = ({}) => {
                   </div>
                 </PopoverContent>
               </Popover>
-            </div>
             <div
               className={
                 'flex flex-row justify-center items-center gap-5 w-full text-sm font-light'
               }
             >
-              <Target size={24} className={'text-red-400'} />{' '}
               <div className={'flex flex-row'}>
                 <span className={'italic'}>Lat:&nbsp;</span>
                 {appDetails['Event latitude'] &&
@@ -691,7 +690,8 @@ const Labels: React.FC<{}> = ({}) => {
               </Popover>
             </div>
 
-            <div className={'flex gap-4 justify-center text-sm font-light'}>
+            <Label>Location</Label>
+            <div className={'flex gap-4 items-center text-sm font-light'}>
               <div className={'flex gap-1'}>
                 <span className={'italic'}>Lat: </span>
                 {label.latitude?.toFixed(3) ?? 'N/A'}
@@ -704,33 +704,31 @@ const Labels: React.FC<{}> = ({}) => {
 
             <div
               className={
-                'flex flex-col text-xs justify-center w-full items-center h-12 border gap-1 bg-neutral-700 text-neutral-50'
+                'flex flex-col text-xs tracking-tighter justify-center w-full items-center h-12 gap-1'
               }
             >
-              {displayedMapViewState.zoom < mapLabels.zoomThresholds[1] ? (
-                <>
+              {displayedMapViewState.zoom < mapSigns.zoomThresholds[1] ? (
+                <div
+                  className={
+                    'py-[1px] px-[2px] font-mono w-full text-neutral-50 flex flex-col items-center'
+                  }
+                  style={{
+                    backgroundColor: zoomPanelColors.upperLevel,
+                  }}
+                >
                   <div>This label will be added to the</div>
-                  <div
-                    className={'py-[1px] px-[2px] font-mono mx-auto text-neutral-50'}
-                    style={{
-                      backgroundColor: zoomPanelColors.upperLevel,
-                    }}
-                  >
-                    Upper level
-                  </div>
-                </>
-              ) : displayedMapViewState.zoom > mapLabels.zoomThresholds[0] ? (
-                <>
-                  <div>
-                    ❌{' '}No signs in the{' '}
-                    <span
-                      className={'py-[1px] px-[2px] font-mono text-neutral-50'}
-                      style={{ backgroundColor: zoomPanelColors.lowerLevel }}
-                    >
-                      Lower
-                    </span>{' '}
-                    level.
-                  </div>
+                  <div>Upper level</div>
+                </div>
+              ) : displayedMapViewState.zoom > mapSigns.zoomThresholds[0] ? (
+                <div
+                  style={{
+                    backgroundColor: zoomPanelColors.lowerLevel,
+                  }}
+                  className={
+                    'py-[1px] px-[2px] font-mono w-full text-neutral-50 flex flex-col items-center'
+                  }
+                >
+                  <div>❌ No signs in the Lower level.</div>
                   <div>
                     Zoom to{' '}
                     <span
@@ -748,27 +746,27 @@ const Labels: React.FC<{}> = ({}) => {
                     </span>{' '}
                     level.
                   </div>
-                </>
+                </div>
               ) : (
-                <>
+                <div
+                  className={
+                    'py-[1px] px-[2px] font-mono w-full text-neutral-50 flex flex-col items-center'
+                  }
+                  style={{
+                    backgroundColor: zoomPanelColors.middleLevel,
+                  }}
+                >
                   <div>This label will be added to the</div>
-                  <div
-                    className={'py-[1px] px-[2px]  font-mono mx-auto text-neutral-50'}
-                    style={{
-                      backgroundColor: zoomPanelColors.middleLevel,
-                    }}
-                  >
-                    Middle level
-                  </div>
-                </>
+                  <div>Middle level</div>
+                </div>
               )}
             </div>
-
+            <Label>Details</Label>
             <Input
               name={'title'}
               onChange={handleTitleInput}
               // disabled={!isInAddLabelMode}
-              placeholder={'✏️ Add sign text'}
+              placeholder={'Sign text'}
               value={label.title}
               className='h-8 font-light text-center'
             />
@@ -847,14 +845,14 @@ const Labels: React.FC<{}> = ({}) => {
                 Add label
               </Button>
               <Button
-                className={'w-full'}
+                className={'w-full gap-1'}
                 variant={'destructive'}
                 onClick={() => {
                   setLabel({ title: '' });
                   setIsInAddLabelMode(false);
                 }}
               >
-                Cancel
+                <X /> Cancel
               </Button>
             </div>
           </div>
@@ -864,4 +862,4 @@ const Labels: React.FC<{}> = ({}) => {
   );
 };
 
-export default Labels;
+export default Signs;

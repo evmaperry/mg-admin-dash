@@ -42,7 +42,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { CalendarIcon, ImageOff } from 'lucide-react';
+import { CalendarIcon, ImageOff, Info, MapPin, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import TimePicker from '@/components/time-picker';
 import { addPinHoursToDb } from '@/actions';
@@ -65,7 +65,7 @@ const PinPopup: React.FC<{
 }> = ({ lastClickEvent, user, setPinMarkerIcon, getAndSetMapMarkers }) => {
   const { appDetails, setCanSave, appId } = useCreateAppStore((state) => state);
 
-  const [pin, setPin] = useState<Partial<Pin>>({
+  const defaultPinState = {
     longitude: null,
     latitude: null,
     address: '',
@@ -75,7 +75,9 @@ const PinPopup: React.FC<{
     secondaryText: '',
     pinCategory: '',
     pinType: '',
-  });
+  };
+
+  const [pin, setPin] = useState<Partial<Pin>>(defaultPinState);
 
   const [imageFile, setImageFile] = useState<File>();
   const [image, setImage] = useState<string>();
@@ -154,7 +156,7 @@ const PinPopup: React.FC<{
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={'outline'} className={'font-light h-8'}>
+          <Button variant={'outline'} className={'font-light h-8 w-48 mx-auto'}>
             {pin.pinType && pin.pinCategory ? (
               <div className={'flex flex-row items-center gap-2'}>
                 <Image
@@ -400,78 +402,101 @@ const PinPopup: React.FC<{
     );
 
     await addPinHoursToDb(pinHours, pinId);
-    setPin({
-      longitude: null,
-      latitude: null,
-      address: '',
-      phoneNumber: '',
-      link: '',
-      primaryText: '',
-      secondaryText: '',
-      pinCategory: '',
-      pinType: '',
-    });
+    setPin(defaultPinState);
     getAndSetMapMarkers();
     setIsLoading(false);
   };
 
   return (
     <div className={'flex flex-col h-full w-full gap-2'}>
-      <div className={'create-app-form-subtitle'}>MARKER TYPE: <span className={'text-indigo-600 font-bold'}>PIN</span></div>
+      <div className={'flex items-center justify-between w-full'}>
+        <div className={'flex items-center gap-2'}>
+          <div className={'create-app-form-subtitle'}>MARKER TYPE:</div>
+          <div className={'create-app-form-subtitle text-indigo-600 font-bold'}>
+            PIN
+          </div>
+          <MapPin className={'text-indigo-600'} />
+        </div>
+
+        <Popover>
+          <PopoverContent className={'instructions-container'}>
+            <Label>Step 1</Label>
+            <div>
+              Click the map to drop a new pin. The coordinates and address (if
+              available) will display in the panel. You can also click on an
+              existing pin to edit it.
+            </div>
+            <Label>Step 2</Label>
+            <div>Select the pin type.</div>
+            <Label>Step 3</Label>
+            <div>Select an image for the pin.</div>
+            <Label>Step 4</Label>
+            <div>Add details.</div>
+            <Label>Step 5</Label>
+            <div>
+              Add pins hours. Pin hours are optional and allow a pin to indicate
+              hours of operation should they differ from the event's hours.
+            </div>
+          </PopoverContent>
+          <PopoverTrigger>
+            <Button variant={'instructions'} size={'sm'}>
+              <Info />
+              Instructions
+            </Button>
+          </PopoverTrigger>
+        </Popover>
+      </div>
       <Separator />
       {/* BODY */}
       <div
         className={'flex w-full flex-col items-between h-full justify-between'}
       >
         {/* COORDINATES */}
-          <div
-            className={
-              'flex flex-col justify-center w-full rounded gap-1 text-sm'
-            }
-          >
-            <div className={'text-sm truncate'}>
-              <Label>
-                Step 1&nbsp;&nbsp;&nbsp;&nbsp;
-              </Label>
-              Click a pin to edit it, or the map to drop a new pin.
+        <div
+          className={
+            'flex flex-col justify-center w-full rounded gap-1 text-sm'
+          }
+        >
+          <div className={'flex text-sm flex-row justify-between items-center'}>
+            <Label>Location</Label>
+            <div className={'flex'}>
+              <div className={'italic w-8'}>Lat:</div>
+              <div
+                className={'w-16'}
+              >{`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}</div>
             </div>
 
-            <div className={'flex text-sm flex-row gap-1'}>
-              <div className={'flex gap-1'}>
-                <div className={'italic'}>Lat:</div>
-                <div>{`${pin.latitude ? Number(pin.latitude).toFixed(3) : 'N/A'}`}</div>
-              </div>
-
-              <div className={'flex gap-1'}>
-                <div className={'italic'}>Lng:</div>
-                <div>{`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}</div>
-              </div>
-
-              <div className={'flex gap-1 truncate'}>
-                <div className={'italic'}>Address:</div>
-                <div>
-                  {pin.latitude === 0 && pin.longitude === 0
-                    ? 'N/A'
-                    : pin.address}
-                </div>
-              </div>
+            <div className={'flex'}>
+              <div className={'italic w-8'}>Lng:</div>
+              <div
+                className={'w-16'}
+              >{`${pin.longitude ? Number(pin.longitude).toFixed(3) : 'N/A'}`}</div>
             </div>
           </div>
 
+          <div className={'flex gap-1'}>
+            <div className={'flex gap-1 truncate'}>
+              <div className={'italic w-16'}>Address:</div>
+              <div className={''}>
+                {pin.latitude === 0 && pin.longitude === 0
+                  ? 'N/A'
+                  : pin.address}
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* PIN SELECTOR */}
-        <div className={'flex gap-4 justify-start items-center text-sm'}>
-          <Label>Step 2</Label>
-          <PinSelector />
+
+        <div className={'flex items-center'}>
+          <Label>Type</Label> <PinSelector />
         </div>
 
         {/* IMAGE */}
         <div className={'flex flex-row items-center gap-4'}>
           <div className={'flex flex-col gap-2'}>
-            <div className={'text-sm flex gap-4'}>
-              <Label>Step 3</Label>Select an
-              image
-            </div>
+            <Label>Image</Label>
+
             <div className={'flex w-60'}>
               <Input
                 className={'popup-file-input'}
@@ -512,9 +537,8 @@ const PinPopup: React.FC<{
         {/* TEXT DETAILS */}
         <div className={'flex flex-col gap-1 w-full'}>
           <div className={'flex items-center gap-2 text-sm'}>
-            <div className={'flex w-64 gap-4'}>
-              <Label>Step 4</Label>Add
-              details
+            <div className={'flex w-40 gap-4'}>
+              <Label>Details</Label>
             </div>
             <Input
               name={'primaryText'}
@@ -552,29 +576,42 @@ const PinPopup: React.FC<{
         </div>
         {/* PIN HOURS */}
         <div className={'flex flex-row items-center gap-4 text-sm'}>
-          <div className={'flex flex-col items-start'}>
-            <Label>Step 5 </Label>
+          <div className={'flex items-center'}>
+            <Label className={'w-16'}>Pin hours </Label>
             <div>(optional)</div>
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button className={'h-8 font-light'} variant={'outline'}>
-                Add pin hours
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className={'flex w-[600px] grow'}>
-              <PinHours />
-            </PopoverContent>
-          </Popover>
+          <div className={'flex w-full justify-center'}>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button className={'h-8 font-light'} variant={'outline'}>
+                  Add pin hours
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className={'flex w-[600px] grow'}>
+                <PinHours />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
       <Separator />
-      <Button
-        className={'bg-indigo-600 w-48 mx-auto'}
-        onClick={() => handleCreatePin()}
-      >
-        Add pin
-      </Button>
+      <div className={'flex items-center w-full gap-2'}>
+        <Button
+          className={'bg-indigo-600 w-full items-center gap-2'}
+          onClick={() => handleCreatePin()}
+        >
+          <MapPin /> Add pin
+        </Button>
+        <Button
+          className={'w-full gap-2'}
+          variant={'destructive'}
+          onClick={() => {
+            setPin(defaultPinState);
+          }}
+        >
+       <X/>   Cancel
+        </Button>
+      </div>
     </div>
   );
 };

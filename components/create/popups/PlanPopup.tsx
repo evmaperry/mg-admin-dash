@@ -20,7 +20,14 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { Input } from '@/components/ui/input';
-import { ArrowDown, CalendarIcon, ChevronDown, ImageOff } from 'lucide-react';
+import {
+  ArrowDown,
+  CalendarIcon,
+  ChevronDown,
+  ImageOff,
+  Info,
+  X,
+} from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -43,7 +50,7 @@ const PlanPopup: React.FC<{
 }> = ({ lastClickEvent, user, setPlanMarkerIcon, getAndSetMapMarkers }) => {
   const { appDetails, setCanSave, appId } = useCreateAppStore((state) => state);
 
-  const [plan, setPlan] = useState<Partial<Plan>>({
+  const defaultPlanState = {
     longitude: null,
     latitude: null,
     address: '',
@@ -53,7 +60,9 @@ const PlanPopup: React.FC<{
     secondaryText: '',
     planCategory: '',
     planType: '',
-  });
+  };
+
+  const [plan, setPlan] = useState<Partial<Plan>>(defaultPlanState);
 
   const [dateTimes, setDateTimes] = useState<{
     startDate: string | undefined;
@@ -135,7 +144,7 @@ const PlanPopup: React.FC<{
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={'outline'} className={'font-light h-8'}>
+          <Button variant={'outline'} className={'font-light h-8 w-48 mx-auto'}>
             {plan.planType && plan.planCategory ? (
               <div className={'flex flex-row items-center gap-2'}>
                 <Image
@@ -187,17 +196,7 @@ const PlanPopup: React.FC<{
     );
 
     // await addPinHoursToDb(pinHours, pinId);
-    setPlan({
-      longitude: null,
-      latitude: null,
-      address: '',
-      phoneNumber: '',
-      link: '',
-      primaryText: '',
-      secondaryText: '',
-      planCategory: '',
-      planType: '',
-    });
+    setPlan(defaultPlanState);
     setDateTimes({
       startDate: undefined,
       startTime: undefined,
@@ -210,9 +209,38 @@ const PlanPopup: React.FC<{
 
   return (
     <div className={'flex flex-col w-full h-full gap-2'}>
-      <div className={'create-app-form-subtitle'}>
-        MARKER TYPE: <span className={'font-bold text-sky-400'}>PLAN</span>
+      <div className={'flex items-center justify-between w-full'}>
+        <div className={'flex items-center gap-2'}>
+          <div className={'create-app-form-subtitle'}>MARKER TYPE:</div>
+          <div className={'create-app-form-subtitle text-sky-400 font-bold'}>
+            PLAN
+          </div>
+          <CalendarIcon className={'text-sky-400'} />
+        </div>
+        <Popover>
+          <PopoverContent className={'instructions-container'}>
+            <Label>Step 1</Label>
+            <div>
+              Click the map to create a new plan. The coordinates and address
+              (if available) will display in the panel. You can also click on an
+              existing plan to edit it.
+            </div>
+            <Label>Step 2</Label>
+            <div>Select the plan type.</div>
+            <Label>Step 3</Label>
+            <div>Select an image for the plan.</div>
+            <Label>Step 4</Label>
+            <div>Add details and the plan's start and end times.</div>
+          </PopoverContent>
+          <PopoverTrigger>
+            <Button variant={'instructions'} size={'sm'}>
+              <Info />
+              Instructions
+            </Button>
+          </PopoverTrigger>
+        </Popover>
       </div>
+
       <Separator />
       {/* BODY */}
       <div
@@ -224,25 +252,26 @@ const PlanPopup: React.FC<{
             'flex flex-col justify-center w-full rounded gap-1 text-sm'
           }
         >
-          <div className={'text-sm truncate'}>
-            <Label>Step 1&nbsp;&nbsp;&nbsp;&nbsp;</Label>
-            Click on a plan to edit it, or the map to create a new plan.
+          <div className={'flex text-sm flex-row justify-between items-center'}>
+            <Label>Location</Label>
+            <div className={'flex'}>
+              <div className={'italic w-8'}>Lat:</div>
+              <div
+                className={'w-16'}
+              >{`${plan.latitude ? Number(plan.latitude).toFixed(3) : 'N/A'}`}</div>
+            </div>
+
+            <div className={'flex'}>
+              <div className={'italic w-8'}>Lng:</div>
+              <div
+                className={'w-16'}
+              >{`${plan.longitude ? Number(plan.longitude).toFixed(3) : 'N/A'}`}</div>
+            </div>
           </div>
-
-          <div className={'flex text-sm flex-row gap-1'}>
-            <div className={'flex gap-1'}>
-              <div className={'italic'}>Lat:</div>
-              <div>{`${plan.latitude ? Number(plan.latitude).toFixed(3) : 'N/A'}`}</div>
-            </div>
-
-            <div className={'flex gap-1'}>
-              <div className={'italic'}>Lng:</div>
-              <div>{`${plan.longitude ? Number(plan.longitude).toFixed(3) : 'N/A'}`}</div>
-            </div>
-
+          <div className={'flex gap-1'}>
             <div className={'flex gap-1 truncate'}>
-              <div className='italic'>Address:</div>
-              <div>
+              <div className={'italic w-16'}>Address:</div>
+              <div className={''}>
                 {plan.latitude === 0 && plan.longitude === 0
                   ? 'N/A'
                   : plan.address}
@@ -252,17 +281,15 @@ const PlanPopup: React.FC<{
         </div>
 
         {/* PLAN SELECTOR */}
-        <div className={'flex gap-4 justify-start items-center text-sm'}>
-          <Label>Step 2</Label>
-          <PlanSelector />
+        <div className={'flex items-center'}>
+          <Label>Type</Label> <PlanSelector />
         </div>
 
         {/* IMAGE */}
         <div className={'flex flex-row items-center gap-4'}>
           <div className={'flex flex-col gap-2'}>
-            <div className={'text-sm flex gap-4'}>
-              <Label>Step 3 </Label>Select an image
-            </div>
+            <Label>Image</Label>
+
             <div className={'flex w-60'}>
               <Input
                 className={'popup-file-input'}
@@ -305,8 +332,8 @@ const PlanPopup: React.FC<{
           {/* TEXT DETAILS */}
           <div className={'flex flex-col gap-1 w-full'}>
             <div className={'flex items-center gap-2 text-sm'}>
-              <div className={'flex w-64 gap-4 items-center'}>
-                <Label>Step 4</Label>Add details
+              <div className={'flex w-40 gap-4 items-center'}>
+                <Label>Details</Label>
               </div>
               <Input
                 name={'primaryText'}
@@ -402,13 +429,24 @@ const PlanPopup: React.FC<{
         </div>
       </div>
 
-      <Separator className={''} />
-      <Button
-        className={'bg-sky-500 w-48 mx-auto'}
-        onClick={() => handleCreatePlan()}
-      >
-        Add pin
-      </Button>
+      <Separator />
+      <div className={'flex items-center w-full gap-2'}>
+        <Button
+          className={'bg-sky-500 w-full items-center gap-2'}
+          onClick={() => handleCreatePlan()}
+        >
+          <CalendarIcon /> Add plan
+        </Button>
+        <Button
+          className={'w-full gap-2'}
+          variant={'destructive'}
+          onClick={() => {
+            setPlan(defaultPlanState);
+          }}
+        >
+          <X /> Cancel
+        </Button>
+      </div>
     </div>
   );
 };
