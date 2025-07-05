@@ -14,14 +14,101 @@ import { SidebarTrigger } from '../ui/sidebar';
 import { Separator } from '../ui/separator';
 import { cn } from '@/lib/utils';
 import { capitalize } from 'lodash';
+import {
+  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableBody,
+  TableCell,
+} from '../ui/table';
+import { Label } from '../ui/label';
 
+const zoomPanelColors = {
+  upperLevel: '#60a5fa', // blue-400
+  middleLevel: '#d97706', // amber-400
+  lowerLevel: '#0d9488', // emerald-400
+  upperThreshold: '#9333ea', // purple-600
+  lowerThreshold: '#047857', // emerald-700
+};
 
 const stepInstructions = {
-  basics :'Basics instructions',
+  basics: 'Basics instructions',
   colors: 'Colors instructions',
-  labels: 'The map features three zoom levels: different markers are visible at different levels. The "most-zoomed-in" level displays the pin, plan, and route markers. The "middle" level displays labels that indicate relatively small areas. The "most-zoomed-out" level displays labels that indicate relatively large areas. The elevations at which the middle and zoomed-out levels kick in is up to you, and should depend on the geography of your event. You can set those zoom thresholds with the resizable panels labeled "Event signs", "Area signs" and "Pin, Plans & Routes". In the app, the map opens to display the pins, plans, and routes just below the low threshold.',
-  markers: 'Markers instructions'
-}
+  labels: (
+    <>
+      <Label>Intro</Label>
+      <div>
+        The app's map is divided into three zoom levels. Different content is
+        displayed on the map depending on the map's zoom.
+      </div>
+      <Table className={'font-mono text-xs tracking-tight'}>
+        <TableHeader>
+          <TableRow className={'bg-neutral-700 text-neutral-50'}>
+            <TableHead className={'w-24 text-neutral-50'}>Zoom level</TableHead>
+            <TableHead className={'text-neutral-50'}>Displays</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow
+            style={{ backgroundColor: zoomPanelColors.upperLevel }}
+            className={'text-neutral-50'}
+          >
+            <TableCell>Upper</TableCell>
+            <TableCell>
+              Regional signs (for event locales, towns, etc.)
+            </TableCell>
+          </TableRow>
+          <TableRow
+            style={{ backgroundColor: zoomPanelColors.middleLevel }}
+            className={'text-neutral-50'}
+          >
+            <TableCell>Middle</TableCell>
+            <TableCell>
+              Event signs (for map areas, parking, fields, etc.)
+            </TableCell>
+          </TableRow>
+          <TableRow
+            style={{ backgroundColor: zoomPanelColors.lowerLevel }}
+            className={'text-neutral-50'}
+          >
+            <TableCell>Lower</TableCell>
+            <TableCell>Pins, plans & routes</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+      <div>
+        So, in general, the more zoomed in, the more specific the content, and
+        the more zoomed out, the more general the content.
+      </div>
+      <Label>Your task</Label>
+      <div>On this page, you'll do three things:</div>{' '}
+      <ol className={'list-decimal ml-10'}>
+        <li>
+          Set the elevations at which the zoom levels are demarcated. You'll use
+          the tools in the Zoom settings panel to do this.
+        </li>
+        <li>Set the map center coordinates in the Map center panel.</li>
+        <li>
+          Add signs to the upper and middle levels as needed the Create sign
+          panel.
+        </li>
+      </ol>
+      <div>
+        There are instructions for each task in their respective panels.
+      </div>
+      <div>Please note that the Zoom slider changes two things:</div>
+      <ol className={'list-decimal ml-10'}>
+        <li>Adjusts the map's zoom in the Map page panel</li>
+        <li>
+          Sets the layer at which a sign will be added to the map from the
+          Create sign panel.
+        </li>
+      </ol>
+    </>
+  ),
+  markers: 'Markers instructions',
+};
 
 const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
   const { appId, setUserId, selectedStep } = useCreateAppStore(
@@ -41,12 +128,13 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
           </div>
           <Popover>
             <PopoverTrigger asChild>
-              <Button size={'sm'} variant={'outline'}>
-                <Info className={'mr-1'} /> Instructions
+              <Button size={'sm'} variant={'instructions'}>
+                <Info className={'instructions-button'} />
+                Instructions
               </Button>
             </PopoverTrigger>
-            <PopoverContent className={'leading-[1.2] font-light w-[600px]'}>
-              <div>{stepInstructions[selectedStep]}</div>
+            <PopoverContent className={'instructions-container'}>
+              {stepInstructions[selectedStep]}
             </PopoverContent>
           </Popover>
         </div>
@@ -65,7 +153,7 @@ const CreateDashboard: React.FC<{ user: User }> = ({ user }) => {
         <div
           className={cn(
             'flex flex-col h-full px-4',
-            (selectedStep !== 'markers' && selectedStep !== 'labels') && 'mt-2'
+            selectedStep !== 'markers' && selectedStep !== 'labels' && 'mt-2'
           )}
         >
           {/* THE BASICS */}

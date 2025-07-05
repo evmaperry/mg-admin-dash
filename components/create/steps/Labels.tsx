@@ -2,7 +2,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { Button } from '../../ui/button';
-import { ArrowUp, ArrowUpLeft, Circle, Info, Target, X } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpLeft,
+  Circle,
+  Info,
+  Target,
+  X,
+} from 'lucide-react';
 import { Map, ViewStateChangeEvent, Marker } from 'react-map-gl/mapbox';
 import { Input } from '../../ui/input';
 import { Slider } from '@/components/ui/slider';
@@ -49,6 +57,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 const LabelMarker: React.FC<{ label: Partial<MapLabel> }> = ({ label }) => {
   const { appColors } = useCreateAppStore((state) => state);
@@ -114,6 +123,14 @@ const Labels: React.FC<{}> = ({}) => {
     mapTheme,
   } = useCreateAppStore((state) => state);
 
+  const zoomPanelColors = {
+    upperLevel: '#60a5fa', // blue-400
+    middleLevel: '#d97706', // amber-400
+    lowerLevel: '#0d9488', // emerald-400
+    upperThreshold: '#9333ea', // purple-600
+    lowerThreshold: '#047857', // emerald-700
+  };
+
   const [displayedMapViewState, setDisplayedMapViewState] = useState<{
     latitude: number | undefined;
     longitude: number | undefined;
@@ -162,6 +179,8 @@ const Labels: React.FC<{}> = ({}) => {
    * zoomThreshold[0] = area labels
    * zoomThreshold[1] = event labels
    */
+
+
   const setDefaultSizesFromThresholds = () => {
     const [areaThresh, satThresh] = mapLabels.zoomThresholds;
     const event = 100 * (satThresh / 23);
@@ -254,11 +273,15 @@ const Labels: React.FC<{}> = ({}) => {
   );
 
   return (
-    <div className={'create-app-form-container w-full flex-row justify-around'}>
+    <div
+      className={
+        'create-app-form-container w-full flex-row justify-around xl:px-6 2xl:px-18'
+      }
+    >
       {/* PHONE CONTAINER */}
       <div
         className={
-          'flex flex-col items-center justify-center h-full md:mr-8 lg:mr-12 xl:mr-18 border pt-4 pb-6 gap-3 px-12 rounded shadow'
+          'flex flex-col items-center justify-center h-full border pt-4 pb-6 gap-3 px-8 rounded shadow'
         }
       >
         <div className={'create-app-form-subtitle'}>Map page</div>
@@ -337,257 +360,260 @@ const Labels: React.FC<{}> = ({}) => {
 
       {/* CONTROL PANEL */}
       <div
-        className={'flex items-center my-auto w-full gap-2 border bg-neutral-300 p-3 rounded shadow'}
+        className={
+          'flex items-center my-auto gap-2 border bg-neutral-300 p-3 rounded shadow max-w-[560px]'
+        }
       >
-        {/* ZOOM TOOLS */}
-        <div className={'flex flex-col gap-4 w-full'}>
-          {/* ZOOM HEIGHTS PROFILE */}
-          <div
-            className={
-              'create-app-form-subcontainer shadow-none gap-8 justify-between'
-            }
-          >
-            <div className={'flex w-full justify-center items-center gap-2'}>
-              <div className={'create-app-form-subtitle text-center'}>
-                Zoom settings
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button className={'h-9'} variant={'outline'}>
-                    <Info className={'mr-1'} />
-                    Instructions
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className={'instructions-container'}>
-                  <div>
-                    The map features three zoom levels. Different content is
-                    displayed on the map depending on the zoom, which ranges
-                    between 0 (most zoomed-out) and 22 (most zoomed-in).
-                  </div>
-                  <Table className={'border font-sans'}>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className={'w-24'}>Zoom level</TableHead>
-                        <TableHead>Displays</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow className={'bg-neutral-700 text-neutral-50'}>
-                        <TableCell>Upper</TableCell>
-                        <TableCell>
-                          Regional signs (for event locales, towns, etc.)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className={'bg-neutral-500 text-neutral-50'}>
-                        <TableCell>Middle</TableCell>
-                        <TableCell>
-                          Event signs (for map areas, parking, fields, etc.)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className={'bg-neutral-300'}>
-                        <TableCell>Lower</TableCell>
-                        <TableCell>Pins, plans & routes</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                  <div>These three levels are separated by two thresholds:</div>
-                  <ol className={'list-disc ml-12 my-2'}>
-                    <li
-                      className={
-                        'underline decoration-fuchsia-400 decoration-wavy'
-                      }
-                    >
-                      upper threshold
-                    </li>
-                    <li
-                      className={
-                        'underline decoration-teal-400 decoration-wavy'
-                      }
-                    >
-                      lower threshold
-                    </li>
-                  </ol>
-                  <div>
-                    The map loads just below the{' '}
-                    <span
-                      className={
-                        'p-[2px] underline decoration-teal-400 decoration-wavy'
-                      }
-                    >
-                      lower threshold
-                    </span>{' '}
-                    to display pins, plans, and routes. Use the diagram to
-                    adjust the zoom thresholds according to the geography of
-                    your event. Click the grey handles in the zoom diagram and
-                    drag them to adjust the zoom thresholds.
-                  </div>
-                  <div>
-                    You can also change the zoom on the map to see the results
-                    of changing the zoom threshold. The zoom is changed with the
-                    vertical slider on the left edge of the zoom diagram.
-                  </div>
-                </PopoverContent>
-              </Popover>
+        {/* ZOOM SETTINGS */}
+        <div
+          className={
+            'create-app-form-subcontainer shadow-none gap-4 justify-between'
+          }
+        >
+          {/* TITLE / INSTRUCTIONS */}
+          <div className={'flex w-full justify-center items-center gap-2'}>
+            <div className={'create-app-form-subtitle text-center'}>
+              Zoom settings
             </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button size={'sm'} variant={'instructions'}>
+                  <Info />
+                  Instructions
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className={'instructions-container'}>
+                {/* <Label>Intro</Label>
+                <div>
+                  The map features three zoom levels. Different content is
+                  displayed on the map depending on the zoom, which ranges
+                  between 0 (most zoomed-out) and 22 (most zoomed-in).
+                </div> */}
 
-            {/* ZOOM PANELS & ZOOM */}
-            <div className={'flex flex-col gap-1'}>
-              {/* ZOOM PANELS */}
-              <div className={'flex flex-row h-[300px] gap-5 pl-3'}>
-                {/* SLIDER */}
-                <div className={'flex flex-col h-full '}>
-                  <Slider
-                    orientation='vertical'
-                    value={[displayedMapViewState?.zoom as number]}
-                    onValueChange={(e) => {
-                      setDisplayedMapViewState({
-                        ...displayedMapViewState,
-                        zoom: Math.round(e[0] * 4) / 4, // rounds to nearest 1/4
-                      });
+{/*
+                <Table className={'border font-sans'}>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className={'w-24'}>Zoom level</TableHead>
+                      <TableHead>Displays</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow className={'bg-neutral-700 text-neutral-50'}>
+                      <TableCell>Upper</TableCell>
+                      <TableCell>
+                        Regional signs (for event locales, towns, etc.)
+                      </TableCell>
+                    </TableRow>
+                    <TableRow className={'bg-neutral-500 text-neutral-50'}>
+                      <TableCell>Middle</TableCell>
+                      <TableCell>
+                        Event signs (for map areas, parking, fields, etc.)
+                      </TableCell>
+                    </TableRow>
+                    <TableRow className={'bg-neutral-300'}>
+                      <TableCell>Lower</TableCell>
+                      <TableCell>Pins, plans & routes</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table> */}
+                <div>These three levels are separated by two thresholds:</div>
+                <ol className={'list-disc ml-12 my-2'}>
+                  <li
+                    className={'underline decoration-solid decoration-2'}
+                    style={{
+                      textDecorationColor: zoomPanelColors.upperThreshold,
                     }}
-                    min={0}
-                    max={22}
-                    step={0.25}
-                    inverted={true}
-                    disabled={isInAddLabelMode}
-                  />
+                  >
+                    upper threshold
+                  </li>
+                  <li
+                    className={'underline decoration-solid decoration-2'}
+                    style={{
+                      textDecorationColor: zoomPanelColors.lowerThreshold,
+                    }}
+                  >
+                    lower threshold
+                  </li>
+                </ol>
+                <div>
+                  The map loads just below the{' '}
+                  <span
+                    className={
+                      'p-[2px] underline decoration-red-400 decoration-solid decoration-2'
+                    }
+                  >
+                    lower threshold
+                  </span>{' '}
+                  to display pins, plans, and routes. Use the diagram to adjust
+                  the zoom thresholds according to the geography of your event.
+                  Click the grey handles in the zoom diagram and drag them to
+                  adjust the zoom thresholds.
                 </div>
-                {/* SCALE */}
-                <div className={'flex flex-col text-right py-[1px] h-full'}>
-                  {range(23).map((number) => (
-                    <div
-                      key={`zoom-graph-y-axis-${number}`}
-                      className={'text-xs font-mono leading-[1.08]'}
-                    >
-                      {number}
-                    </div>
-                  ))}
+                <div>
+                  You can also change the zoom on the map to see the results of
+                  changing the zoom threshold. The zoom is changed with the
+                  vertical slider on the left edge of the zoom diagram.
                 </div>
+              </PopoverContent>
+            </Popover>
+          </div>
 
-                {/* PANELS */}
-                <div
-                  className={
-                    'relative flex flex-col items-end justify-end border-2 w-full h-full'
-                  }
-                >
-                  {defaultPanelSizes && (
-                    <ResizablePanelGroup
-                      direction='vertical'
-                      onLayout={(sizes) => {
-                        setThresholdsFromLayout(sizes);
-                      }}
-                      className={
-                        'w-full tracking-tight text-center text-pretty'
-                      }
-                    >
-                      <ResizablePanel
-                        id={'event'}
-                        className={
-                          'text-xs flex flex-col justify-between font-mono text-neutral-50 items-center bg-neutral-700 pb-2'
-                        }
-                        defaultSize={defaultPanelSizes.event}
-                      >
-                        <div className=''>🛩️ 10,000 feet ☁️</div>
-                        <div>
-                          <div className={'leading-[1.1]  text-center'}>
-                            Click & drag to adjust the upper threshold
-                          </div>
-                          <div className={'font-lg'}>👇&nbsp;&nbsp;</div>
-                        </div>
-                      </ResizablePanel>
-                      <ResizableHandle
-                        withHandle
-                        className={'border-2 border-fuchsia-400'}
-                      />
-                      <ResizablePanel
-                        id={'area'}
-                        className={
-                          'flex flex-col justify-end items-center bg-neutral-500'
-                        }
-                        defaultSize={defaultPanelSizes.area}
-                      />
-                      <ResizableHandle
-                        withHandle
-                        className={'border-2 border-teal-400'}
-                      />
-                      <ResizablePanel
-                        className={
-                          'flex text-xs font-mono flex-col justify-between items-center bg-neutral-200 pt-2'
-                        }
-                        id={'ground'}
-                        defaultSize={defaultPanelSizes.ground}
-                      >
-                        <div>
-                          <div className={'font-lg'}>☝️&nbsp;&nbsp;</div>
-                          <div
-                            className={
-                              'w-full leading-[1.1] text-pretty text-center'
-                            }
-                          >
-                            Click & drag to adjust the lower threshold
-                          </div>
-                        </div>
-                        <div className={'text-xs'}>🌳 Ground level 🏡</div>
-                      </ResizablePanel>
-                    </ResizablePanelGroup>
-                  )}
-                </div>
+          {/* ZOOM PANELS & ZOOM */}
+          <div className={'flex flex-col gap-2 w-full'}>
+            {/* ZOOM PANELS */}
+            <div className={'flex flex-row h-[300px] pl-2'}>
+              {/* SLIDER */}
+              <div className={'flex flex-col h-full'}>
+                <Slider
+                  orientation='vertical'
+                  value={[displayedMapViewState?.zoom as number]}
+                  onValueChange={(e) => {
+                    setDisplayedMapViewState({
+                      ...displayedMapViewState,
+                      zoom: Math.round(e[0] * 4) / 4, // rounds to nearest 1/4
+                    });
+                  }}
+                  min={0}
+                  max={22}
+                  step={0.25}
+                  inverted={true}
+                  disabled={isInAddLabelMode}
+                />
+              </div>
+              {/* SCALE */}
+              <div
+                className={'flex flex-col text-right py-[1px] h-full ml-4 mr-1'}
+              >
+                {range(23).map((number) => (
+                  <div
+                    key={`zoom-graph-y-axis-${number}`}
+                    className={'text-xs font-mono leading-[1.08]'}
+                  >
+                    {number}
+                  </div>
+                ))}
               </div>
 
-              {/* ZOOM */}
+              {/* PANELS */}
               <div
                 className={
-                  'flex text-sm flex-row items-center gap-2 font-light'
+                  'relative flex flex-col items-end justify-end w-full h-full'
                 }
               >
-                <div className={'italic'}>Zoom</div>
-                <div className={'w-16'}> {displayedMapViewState.zoom}</div>
+                {defaultPanelSizes && (
+                  <ResizablePanelGroup
+                    direction='vertical'
+                    onLayout={(sizes) => {
+                      setThresholdsFromLayout(sizes);
+                    }}
+                    className={'w-full tracking-tight text-center text-pretty'}
+                  >
+                    <ResizablePanel
+                      id={'event'}
+                      className={
+                        'text-sm flex flex-col justify-between font-mono text-neutral-50 items-center pb-2 px-2'
+                      }
+                      defaultSize={defaultPanelSizes.event}
+                      style={{ backgroundColor: zoomPanelColors.upperLevel }}
+                    >
+                      <div className=''>🛩️ Upper level ☁️</div>
+                      <div
+                        className={
+                          'flex flex-col w-full leading-[1.1] text-center'
+                        }
+                      >
+                        <div>Upper threshold</div>
 
-                <div
-                  className={'flex w-full justify-center items-center gap-1'}
-                >
-                  <ArrowUpLeft />{' '}
-                  <div className={'font-mono leading-[1.1] text-xs'}>
-                    Adjust zoom with slider
-                  </div>
-                </div>
+                        <ArrowDown className={'mx-auto'} />
+                      </div>
+                    </ResizablePanel>
+                    <ResizableHandle
+                      withHandle
+                      className={'border-2 border-purple-600'}
+                    />
+                    <ResizablePanel
+                      id={'area'}
+                      className={
+                        'flex flex-col justify-center text-neutral-50 items-center text-sm font-mono px-4'
+                      }
+                      style={{ backgroundColor: zoomPanelColors.middleLevel }}
+                      defaultSize={defaultPanelSizes.area}
+                    >
+                      Middle level
+                    </ResizablePanel>
+                    <ResizableHandle
+                      withHandle
+                      className={'border-2 border-red-400'}
+                    />
+                    <ResizablePanel
+                      className={cn(
+                        'flex text-sm font-mono flex-col justify-between items-center pt-2 px-2 text-neutral-50'
+                      )}
+                      style={{ backgroundColor: zoomPanelColors.lowerLevel }}
+                      id={'ground'}
+                      defaultSize={defaultPanelSizes.ground}
+                    >
+                      <div
+                        className={
+                          'flex flex-col w-full leading-[1.1] text-center'
+                        }
+                      >
+                        <ArrowUp className={'mx-auto'} />
+                        Lower threshold
+                      </div>
+                      <div>🌱 Ground level 🐜</div>
+                    </ResizablePanel>
+                  </ResizablePanelGroup>
+                )}
               </div>
-              {/* ZOOM INSTRUCTIONS */}
             </div>
-            {/* KEY */}
-            <div className={'text-sm items-center flex justify-around'}>
-              <Label>Thresholds</Label>
 
-              <div className={'flex items-center gap-1 font-light'}>
-                <span
-                  className={
-                    'underline decoration-wavy decoration-fuchsia-400 italic'
-                  }
-                >
-                  Upper:
-                </span>
-                <span className={''}>
-                  {mapLabels.zoomThresholds[1].toFixed(2)}
-                </span>
+            {/* ZOOM */}
+            <div className={'flex text-sm flex-row items-center font-light'}>
+              <div className={'italic w-[44px]'}>Zoom</div>
+              <div className={'w-16 font-bold'}>
+                {displayedMapViewState.zoom}
               </div>
-              <div className={'flex items-center gap-1 font-light'}>
-                <span
-                  className={
-                    'underline decoration-teal-400 decoration-wavy italic'
-                  }
-                >
-                  Lower:
-                </span>
-                <span className={''}>
-                  {mapLabels.zoomThresholds[0].toFixed(2)}
-                </span>
-              </div>
+            </div>
+            {/* ZOOM INSTRUCTIONS */}
+          </div>
+          {/* KEY */}
+          {/* THIS IS THE WIDEST SUBCOMPONENT AND SETS THE WIDTH */}
+          <div className={'text-sm items-center flex gap-2'}>
+            <Label>Thresholds</Label>
+
+            <div className={'flex items-center gap-1 font-light'}>
+              <span
+                className={
+                  'underline decoration-solid decoration-2 decoration-purple-600 italic'
+                }
+              >
+                Upper:
+              </span>
+              <span className={'w-10'}>
+                {mapLabels.zoomThresholds[1].toFixed(2)}
+              </span>
+            </div>
+            <div className={'flex items-center gap-1 font-light'}>
+              <span
+                className={
+                  'underline decoration-red-400  decoration-2 decoration-soliditalic'
+                }
+              >
+                Lower:
+              </span>
+              <span className={'w-10'}>
+                {mapLabels.zoomThresholds[0].toFixed(2)}
+              </span>
             </div>
           </div>
         </div>
 
         {/* CENTER & CREATE */}
-        <div className={'flex flex-col gap-2 w-full'}>
+        <div
+          className={'flex flex-col gap-2 w-full shrink justify-between h-full'}
+        >
           {/* MAP CENTER */}
           <div className={'create-app-form-subcontainer shadow-none gap-2'}>
             <div
@@ -595,13 +621,26 @@ const Labels: React.FC<{}> = ({}) => {
                 'flex flex-row items-center gap-2 justify-center w-full'
               }
             >
-              <div className={'create-app-form-subtitle'}>Map center</div>
-            </div>
-            <div className={'text-xs font-mono leading-[1.1]'}>
-              Click and drag the map to set its center. If a user opts to share
-              their location, then the map will load centered on their location.
-              But if the user opts out, then the map loads centered over these
-              coordinates.
+              <div className={'create-app-form-subtitle text-center'}>
+                Map center
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size={'sm'}  variant={'instructions'}>
+                    <Info />
+                    Instructions
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className={'instructions-container'}>
+                  <Label>Step 1</Label>
+                  <div>
+                    Click and drag the map in the Map page panel to set the
+                    map's center coordinates. If a user opts out of sharing
+                    their location, then the map will load centered over these
+                    coordinates.
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
             <div
               className={
@@ -628,16 +667,31 @@ const Labels: React.FC<{}> = ({}) => {
               'create-app-form-subcontainer gap-2 justify-between shadow-none'
             }
           >
-            <div className={'create-app-form-subtitle text-center'}>
-              Create sign
+            <div className={'flex items-center'}>
+              <div className={'create-app-form-subtitle text-center'}>
+                Create sign
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size={'sm'} variant={'instructions'}>
+                    <Info />
+                    Instructions
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className={'instructions-container'}>
+                  <Label className={'w-20'}>Step 1&nbsp;</Label>
+                  <div>Click the map where you'd like to add a label.</div>
+
+                  <Label className={'w-20'}>Step 2</Label>
+                  <div className={'text-xs leading-[1.2]'}>
+                    Use the vertical slider in the Zoom settings to change the
+                    target zoom level.
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
-            <div className={'flex items-center gap-4 text-sm leading-[1.1]'}>
-              <Label className={'w-16'}>Step 1&nbsp;</Label>
-              <div>Click the map where you'd like to add a label.</div>
-            </div>
-
-            <div className={'flex gap-4 items-start text-sm font-light'}>
+            <div className={'flex gap-4 justify-center text-sm font-light'}>
               <div className={'flex gap-1'}>
                 <span className={'italic'}>Lat: </span>
                 {label.latitude?.toFixed(3) ?? 'N/A'}
@@ -648,39 +702,83 @@ const Labels: React.FC<{}> = ({}) => {
               </div>
             </div>
 
-            <div className={'text-xs font-mono leading-[1.1]'}>
-              This label will be added to the map's&nbsp;
+            <div
+              className={
+                'flex flex-col text-xs justify-center w-full items-center h-12 border gap-1 bg-neutral-700 text-neutral-50'
+              }
+            >
               {displayedMapViewState.zoom < mapLabels.zoomThresholds[1] ? (
-                <div>
-                  <span>upper</span> level
-                </div>
+                <>
+                  <div>This label will be added to the</div>
+                  <div
+                    className={'py-[1px] px-[2px] font-mono mx-auto text-neutral-50'}
+                    style={{
+                      backgroundColor: zoomPanelColors.upperLevel,
+                    }}
+                  >
+                    Upper level
+                  </div>
+                </>
               ) : displayedMapViewState.zoom > mapLabels.zoomThresholds[0] ? (
-                "Hold up! You can't add signs to the Ground level. Use the vertical zoom slider in the center panel to zoom into the Upper or Middle level before adding a sign."
+                <>
+                  <div>
+                    ❌{' '}No signs in the{' '}
+                    <span
+                      className={'py-[1px] px-[2px] font-mono text-neutral-50'}
+                      style={{ backgroundColor: zoomPanelColors.lowerLevel }}
+                    >
+                      Lower
+                    </span>{' '}
+                    level.
+                  </div>
+                  <div>
+                    Zoom to{' '}
+                    <span
+                      className={'py-[1px] px-[2px] font-mono text-neutral-50'}
+                      style={{ backgroundColor: zoomPanelColors.upperLevel }}
+                    >
+                      Upper
+                    </span>{' '}
+                    or{' '}
+                    <span
+                      className={'py-[1px] px-[2px] font-mono text-neutral-50'}
+                      style={{ backgroundColor: zoomPanelColors.middleLevel }}
+                    >
+                      Middle
+                    </span>{' '}
+                    level.
+                  </div>
+                </>
               ) : (
-                'middle level'
+                <>
+                  <div>This label will be added to the</div>
+                  <div
+                    className={'py-[1px] px-[2px]  font-mono mx-auto text-neutral-50'}
+                    style={{
+                      backgroundColor: zoomPanelColors.middleLevel,
+                    }}
+                  >
+                    Middle level
+                  </div>
+                </>
               )}
-              . Use the vertical slider to change to zoom level.
             </div>
 
-            <div className={'flex gap-4 items-center text-sm'}>
-              <Label className={''}>Step 2</Label>
-              <div className=''>Add details</div>
-            </div>
             <Input
               name={'title'}
               onChange={handleTitleInput}
-              disabled={!isInAddLabelMode}
-              placeholder={'Sign text'}
+              // disabled={!isInAddLabelMode}
+              placeholder={'✏️ Add sign text'}
               value={label.title}
               className='h-8 font-light text-center'
             />
-            <div className={'flex gap-2'}>
+            <div className={'flex flex-col gap-2'}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant={'outline'}
                     className={'w-full h-8'}
-                    disabled={!isInAddLabelMode}
+                    // disabled={!isInAddLabelMode}
                   >
                     {label.iconName && label.iconRaw ? (
                       <div className={'flex items-center gap-2'}>
@@ -692,7 +790,7 @@ const Labels: React.FC<{}> = ({}) => {
                         {label.iconName}
                       </div>
                     ) : (
-                      'Icon'
+                      'Select icon'
                     )}
                   </Button>
                 </DropdownMenuTrigger>
@@ -708,7 +806,7 @@ const Labels: React.FC<{}> = ({}) => {
                   <Button
                     variant={'outline'}
                     className={'w-full h-8'}
-                    disabled={!isInAddLabelMode}
+                    // disabled={!isInAddLabelMode}
                   >
                     {label.iconColor ? (
                       <div className={'flex items-center gap-2'}>
@@ -719,7 +817,7 @@ const Labels: React.FC<{}> = ({}) => {
                         {label.iconColor}
                       </div>
                     ) : (
-                      <div>Color</div>
+                      <div>Select color</div>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -742,10 +840,8 @@ const Labels: React.FC<{}> = ({}) => {
               <Button
                 className={'w-full'}
                 disabled={
-                  !isInAddLabelMode ||
-                  !label.icon ||
-                  !label.iconColor ||
-                  label.title?.length === 0
+                  //     !isInAddLabelMode ||
+                  !label.icon || !label.iconColor || label.title?.length === 0
                 }
               >
                 Add label
