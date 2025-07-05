@@ -61,7 +61,7 @@ const FeedPage: React.FC<{
       <div className={'flex h-1/4 relative'}>
         <div
           className={
-            'absolute top-1 left-1 font-bold text-base text-neutral-50'
+            'absolute top-1 left-1 font-bold text-2xl text-neutral-50'
           }
         >
           {appDetails['App name']}
