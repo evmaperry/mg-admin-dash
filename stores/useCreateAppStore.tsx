@@ -58,6 +58,7 @@ export type CreateAppActions = {
   ) => void;
   moveCoordinate: (
     markerType: 'route' | 'structure' | 'area',
+
     markerId: number,
     index: number,
     coordinate: Position
@@ -333,7 +334,7 @@ export const createCreateAppStore = (
     },
     moveCoordinate: (
       markerType: 'route' | 'structure' | 'area',
-      markerId: number,
+      markerId: string|number,
       index: number,
       coordinate: Position
     ) => {

@@ -107,7 +107,7 @@
   }
 
   .instructions-container {
-    @apply flex flex-col gap-3 min-w-96 leading-[1.1] font-mono text-xs
+    @apply flex flex-col gap-3 min-w-96 leading-[1.1] font-mono text-xs mx-12
   }
 
 }

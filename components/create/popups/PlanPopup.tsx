@@ -232,7 +232,7 @@ const PlanPopup: React.FC<{
             <Label>Step 4</Label>
             <div>Add details and the plan's start and end times.</div>
           </PopoverContent>
-          <PopoverTrigger>
+          <PopoverTrigger asChild>
             <Button variant={'instructions'} size={'sm'}>
               <Info />
               Instructions

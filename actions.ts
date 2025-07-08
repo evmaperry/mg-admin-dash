@@ -9,7 +9,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { createClient } from '@/utils/supabase/server';
 import { Contentable, Post } from 'mgtypes/types/Content';
-import { PinHourInputs } from './components/create/popups/PinPopup';
+import { HourInputs } from './components/hours-picker';
 import dayjs from 'dayjs';
 
 const s3Client = new S3Client({
@@ -88,13 +88,13 @@ export const addPostToDb = async (
  * @param pinId pin we're associating the hours with
  */
 export const addPinHoursToDb = async (
-  pinHourInputs: PinHourInputs[],
+  pinHourInputs: HourInputs[],
   pinId: number
 ) => {
   const supabaseClient = await createClient();
 
   const parsedPinHours = pinHourInputs.map(
-    (pinHourInput: PinHourInputs, index: number) => {
+    (pinHourInput: HourInputs, index: number) => {
       return {
         startDateTime: `${dayjs(pinHourInput.startDate).format('YYYY-MM-DD')}T${pinHourInput.startTime}`,
         endDateTime: `${dayjs(pinHourInput.startDate).format('YYYY-MM-DD')}T${pinHourInput.startTime}`,

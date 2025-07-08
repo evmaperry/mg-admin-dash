@@ -41,9 +41,10 @@ import MapMarkerTable from '../MapMarkerTable';
 import { Label } from '@/components/ui/label';
 import { useSidebar } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import MapGeometryMarker from '../popups/MapGeometryMarker';
 
 const Markers: React.FC<{ user: User }> = ({ user }) => {
-  const { open, state } = useSidebar();
+  const { state } = useSidebar();
 
   const {
     mapTheme,
@@ -140,12 +141,15 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
   const handleMapClick = (event: MapMouseEvent) => {
     // console.log('singleClickEvent', event, event.features);
 
+    const coordinate: Position = [event.lngLat.lng, event.lngLat.lat];
+
     if (selectedMarkerType === 'route') {
       console.log('hittin');
-      const coordinate: Position = [event.lngLat.lng, event.lngLat.lat];
 
       // add a turn to a pre-existing route
+      // by clicking a feature (ie, layer) on the map
       if (event.features && event.features.length > 0) {
+        console.log('option 1');
         const [markerType, id, shape, index] =
           event.features?.[0].layer?.id.split('-') as string[];
 
@@ -158,7 +162,9 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
       }
 
       // create a new route
+      // or add turn to existing route
       else {
+        console.log('option 2');
         setNewMultiMarker({
           ...newMultiMarker,
           event,
@@ -170,9 +176,17 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
     if (selectedMarkerType === 'pin' || selectedMarkerType === 'plan') {
       setNewPointMarker({
         ...newPointMarker,
-        coordinates: [event.lngLat.lat, event.lngLat.lng],
+        coordinates: coordinate,
         isVisible: true,
         event,
+      });
+    }
+
+    if (selectedMarkerType === 'area') {
+      setNewMultiMarker({
+        ...newMultiMarker,
+        event,
+        coordinates: newMultiMarker.coordinates.concat([coordinate]),
       });
     }
   };
@@ -192,7 +206,12 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
     []
   );
 
-  console.log('reRendering Markers. newMultiMarker', newMultiMarker);
+  console.log(
+    'reRendering Markers. newMultiMarker:',
+    newMultiMarker,
+    'marker.routes:',
+    markers.routes
+  );
 
   return (
     <div>
@@ -275,7 +294,7 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
                 <ToggleGroupItem
                   value={'area'}
                   className={
-                    'data-[state=on]:bg-red-400 data-[state=off]:text-red-400 data-[state=off]:border-red-400'
+                    'data-[state=on]:bg-amber-400 data-[state=off]:text-amber-400 data-[state=off]:border-amber-400'
                   }
                 >
                   Area
@@ -388,9 +407,35 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
                           : undefined,
                         color: newMultiMarker.color as string,
                       }}
+                      isNew={true}
+                      multiMarkerBundle={{ setNewMultiMarker, newMultiMarker }} // needed for changing color, coords, symbol of new route
                     />
                   )}
 
+                {selectedMarkerType === 'area' &&
+                  newMultiMarker.coordinates.length > 0 && (
+                    <MapGeometryMarker
+                      isNew={true}
+                      multiMarkerBundle={{ setNewMultiMarker, newMultiMarker }}
+                      markerType='area'
+                      geometry={{
+                        coordinates: newMultiMarker.coordinates,
+                        color: newMultiMarker.color as string,
+                      }}
+                    />
+                  )}
+
+                {selectedMarkerType === 'structure' &&
+                  newMultiMarker.coordinates.length > 0 && (
+                    <MapGeometryMarker
+                      isNew={true}
+                      multiMarkerBundle={{ setNewMultiMarker, newMultiMarker }}
+                      markerType='structure'
+                      geometry={{}}
+                    />
+                  )}
+
+                {/* FROM DB */}
                 {markers.pins &&
                   Object.values(markers.pins).map((pin, index) => {
                     return (
@@ -411,16 +456,48 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
                       />
                     );
                   })}
-
-                {/* {markers.routes &&
+                {markers.routes &&
                   Object.values(markers.routes).map((route, index) => {
                     return (
                       <MapRouteMarker
                         key={`route-marker-${index}`}
                         post={route}
+                        multiMarkerBundle={{
+                          setNewMultiMarker,
+                          newMultiMarker,
+                        }}
+                        isNew={false}
                       />
                     );
-                  })} */}
+                  })}
+                {markers.areas &&
+                  Object.values(markers.areas).map((area, index) => {
+                    return (
+                      <MapGeometryMarker
+                        isNew={false}
+                        markerType={'area'}
+                        multiMarkerBundle={{
+                          newMultiMarker,
+                          setNewMultiMarker,
+                        }}
+                        geometry={area}
+                      />
+                    );
+                  })}
+                {markers.structures &&
+                  Object.values(markers.structures).map((structure, index) => {
+                    return (
+                      <MapGeometryMarker
+                        isNew={false}
+                        markerType={'structure'}
+                        multiMarkerBundle={{
+                          newMultiMarker,
+                          setNewMultiMarker,
+                        }}
+                        geometry={structure}
+                      />
+                    );
+                  })}
               </Map>
             )}
           </div>
@@ -468,13 +545,27 @@ const Markers: React.FC<{ user: User }> = ({ user }) => {
             {selectedMarkerType === 'route' && (
               <RoutePopup
                 lastClickEvent={newMultiMarker.event}
-                multiMarkerBundle={{ setNewMultiMarker, newMultiMarker }} // needed for changing color of new route
+                multiMarkerBundle={{ setNewMultiMarker, newMultiMarker }} // needed for changing color, coords, symbol of new route
                 user={user}
                 getAndSetMapMarkers={getAndSetMapMarkers}
               />
             )}
-            {selectedMarkerType === 'area' && <AreaPopup />}
-            {selectedMarkerType === 'structure' && <StructurePopup />}
+            {selectedMarkerType === 'area' && (
+              <AreaPopup
+                lastClickEvent={newMultiMarker.event}
+                multiMarkerBundle={{ setNewMultiMarker, newMultiMarker }} // needed for changing color, coords, symbol of new route
+                user={user}
+                getAndSetMapMarkers={getAndSetMapMarkers}
+              />
+            )}
+            {selectedMarkerType === 'structure' && (
+              <StructurePopup
+                lastClickEvent={newMultiMarker.event}
+                multiMarkerBundle={{ setNewMultiMarker, newMultiMarker }} // needed for changing color, coords, symbol of new route
+                user={user}
+                getAndSetMapMarkers={getAndSetMapMarkers}
+              />
+            )}
           </div>
         </div>
 

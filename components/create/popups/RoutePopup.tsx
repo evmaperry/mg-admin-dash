@@ -55,6 +55,7 @@ const RoutePopup: React.FC<{
   getAndSetMapMarkers: () => void;
 }> = ({ lastClickEvent, multiMarkerBundle, user, getAndSetMapMarkers }) => {
   const { appDetails, setCanSave, appId } = useCreateAppStore((state) => state);
+
   const { setNewMultiMarker: setRoute, newMultiMarker: route } =
     multiMarkerBundle;
 
@@ -159,7 +160,6 @@ const RoutePopup: React.FC<{
             <Button variant={'outline'} className={'h-8 font-light'}>
               {route.color ? (
                 <div className={'flex gap-2 items-center'}>
-                  <div>Color</div>
                   <div
                     className={cn('h-5 w-5 rounded')}
                     style={{ backgroundColor: route.color }}
@@ -228,17 +228,7 @@ const RoutePopup: React.FC<{
     );
 
     // await addPinHoursToDb(pinHours, pinId);
-    setRoute({
-      // longitude: null,
-      // latitude: null,
-      // address: '',
-      phoneNumber: '',
-      link: '',
-      primaryText: '',
-      secondaryText: '',
-      routeCategory: '',
-      color: '#7e22ce',
-    });
+    setRoute(defaultRouteState);
     setDateTimes({
       startDate: undefined,
       startTime: undefined,
@@ -249,7 +239,6 @@ const RoutePopup: React.FC<{
     setIsLoading(false);
   };
 
-  console.log('reRendering route popup');
   return (
     <div className={'flex flex-col h-full w-full gap-2'}>
       <div className={'flex items-center justify-between w-full'}>
@@ -277,7 +266,7 @@ const RoutePopup: React.FC<{
             <Label>Step 4</Label>
             <div>Add details and the route's start and end times.</div>
           </PopoverContent>
-          <PopoverTrigger>
+          <PopoverTrigger asChild>
             <Button variant={'instructions'} size={'sm'}>
               <Info />
               Instructions

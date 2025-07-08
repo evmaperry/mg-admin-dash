@@ -49,13 +49,9 @@ import { addPinHoursToDb } from '@/actions';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
+import HoursPicker, { HourInputs } from '@/components/hours-picker';
+
 dayjs.extend(customParseFormat);
-export interface PinHourInputs {
-  startDate: string | undefined;
-  startTime: string | undefined;
-  endDate: string | undefined;
-  endTime: string | undefined;
-}
 
 const PinPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
@@ -193,202 +189,203 @@ const PinPopup: React.FC<{
     setPin({ ...pin, [name]: value });
   };
 
-  const [pinHours, setPinHours] = useState<PinHourInputs[]>([]);
+  // send thru to hours-picker
+  const [pinHours, setPinHours] = useState<HourInputs[]>([]);
 
-  const [pinHour, setPinHour] = useState<PinHourInputs>({
-    startDate: undefined,
-    startTime: undefined,
-    endDate: undefined,
-    endTime: undefined,
-  });
+  // const [pinHour, setPinHour] = useState<PinHourInputs>({
+  //   startDate: undefined,
+  //   startTime: undefined,
+  //   endDate: undefined,
+  //   endTime: undefined,
+  // });
 
-  const handleAddPinHour = () => {
-    // TODO: add form validation
-    setPinHours([...pinHours, pinHour]);
-    setPinHour({
-      startDate: undefined,
-      startTime: undefined,
-      endDate: undefined,
-      endTime: undefined,
-    });
-    setImage(undefined);
-    setImageFile(undefined);
-  };
+  // const handleAddPinHour = () => {
+  //   // TODO: add form validation
+  //   setPinHours([...pinHours, pinHour]);
+  //   setPinHour({
+  //     startDate: undefined,
+  //     startTime: undefined,
+  //     endDate: undefined,
+  //     endTime: undefined,
+  //   });
+  //   setImage(undefined);
+  //   setImageFile(undefined);
+  // };
 
-  const PinHours: React.FC<{}> = ({}) => {
-    return (
-      <div className={'flex flex-col items-center w-full gap-4'}>
-        <div
-          className={'flex flex-row items-center gap-4 w-full justify-around'}
-        >
-          <div className={'flex flex-col gap-1'}>
-            <div
-              className={
-                'flex flex-row items-center w-full justify-start gap-6'
-              }
-            >
-              <div className={'w-12 create-event-form-label'}>Opens</div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    className={cn(
-                      'w-[160px] justify-start text-left font-normal',
-                      !pinHour['startDate'] && 'text-muted-foreground'
-                    )}
-                  >
-                    <CalendarIcon className={'mr-2'} />
-                    {pinHour['startDate'] ? (
-                      dayjs(pinHour['startDate']).format('ddd, MMM D')
-                    ) : (
-                      <span>Select a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className='w-auto p-0' align='start'>
-                  <Calendar
-                    mode='single'
-                    selected={
-                      pinHour['startDate']
-                        ? new Date(pinHour['startDate'])
-                        : undefined
-                    }
-                    onSelect={(value) => {
-                      setPinHour({ ...pinHour, startDate: String(value) });
-                    }}
-                    initialFocus
-                    disabled={
-                      appDetails['Start date'] && appDetails['End date']
-                        ? {
-                            before: new Date(appDetails['Start date']),
-                            after: new Date(appDetails['End date']),
-                          }
-                        : undefined
-                    }
-                  />
-                </PopoverContent>
-              </Popover>
-              <TimePicker
-                onSelectTime={(time: string) => {
-                  setPinHour({ ...pinHour, startTime: time });
-                }}
-                timeToDisplay={pinHour.startTime}
-                hint={'Time'}
-                triggerClassName=''
-              />
-            </div>
-            <div
-              className={
-                'flex flex-row w-full items-center justify-start gap-6'
-              }
-            >
-              <div className={'w-12 create-event-form-label'}>Closes</div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    className={cn(
-                      'w-[160px] justify-start text-left font-normal',
-                      !pinHour['endDate'] && 'text-muted-foreground'
-                    )}
-                  >
-                    <CalendarIcon className={'mr-2'} />
-                    {pinHour['endDate'] ? (
-                      dayjs(pinHour['endDate']).format('ddd, MMM D')
-                    ) : (
-                      <span>Select a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className='w-auto p-0' align='start'>
-                  <Calendar
-                    mode='single'
-                    selected={
-                      pinHour['endDate']
-                        ? new Date(pinHour['endDate'])
-                        : undefined
-                    }
-                    onSelect={(value) => {
-                      setPinHour({ ...pinHour, endDate: String(value) });
-                    }}
-                    initialFocus
-                    disabled={
-                      appDetails['Start date'] && appDetails['End date']
-                        ? {
-                            before: new Date(appDetails['Start date']),
-                            after: new Date(appDetails['End date']),
-                          }
-                        : undefined
-                    }
-                  />
-                </PopoverContent>
-              </Popover>
-              <TimePicker
-                onSelectTime={(time: string) => {
-                  setPinHour({ ...pinHour, endTime: time });
-                }}
-                timeToDisplay={pinHour.endTime}
-                hint='Time'
-                triggerClassName=''
-              />
-            </div>
-          </div>
-          <Button className={''} onClick={handleAddPinHour}>
-            Add hours
-          </Button>
-        </div>
-        {pinHours.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Opens at</TableHead>
-                <TableHead className={'text-center'}>Closes at</TableHead>
-                <TableHead className={'text-end'}>Remove</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pinHours.map((pinHour: PinHourInputs, index: number) => {
-                return (
-                  <TableRow key={`pin-hour-table-row-${index}`}>
-                    <TableCell>
-                      {dayjs(pinHour.startDate).format('ddd, MMM D')}
-                      {` @ `}
-                      {dayjs(pinHour.startTime, 'HH:mm:ss').format('h:mm a')}
-                    </TableCell>
-                    <TableCell className={'text-center'}>
-                      {dayjs(pinHour.endDate).format('ddd, MMM D')}
-                      {` @ `}
-                      {dayjs(pinHour.endTime, 'HH:mm:ss').format('h:mm a')}
-                    </TableCell>
-                    <TableCell className={'text-end'}>
-                      <Button
-                        variant={'destructive'}
-                        onClick={() => {
-                          const pinHoursCopy = [...pinHours];
-                          pinHoursCopy.splice(index, 1);
-                          setPinHours(pinHoursCopy);
-                        }}
-                      >
-                        X
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        ) : (
-          <div
-            className={
-              'p-2 border w-full mx-6 text-center bg-red-100 text-sm font-mono'
-            }
-          >
-            This pin does not have any hours yet.
-          </div>
-        )}
-      </div>
-    );
-  };
+  // const PinHours: React.FC<{}> = ({}) => {
+  //   return (
+  //     <div className={'flex flex-col items-center w-full gap-4'}>
+  //       <div
+  //         className={'flex flex-row items-center gap-4 w-full justify-around'}
+  //       >
+  //         <div className={'flex flex-col gap-1'}>
+  //           <div
+  //             className={
+  //               'flex flex-row items-center w-full justify-start gap-6'
+  //             }
+  //           >
+  //             <div className={'w-12 create-event-form-label'}>Opens</div>
+  //             <Popover>
+  //               <PopoverTrigger asChild>
+  //                 <Button
+  //                   variant={'outline'}
+  //                   className={cn(
+  //                     'w-[160px] justify-start text-left font-normal',
+  //                     !pinHour['startDate'] && 'text-muted-foreground'
+  //                   )}
+  //                 >
+  //                   <CalendarIcon className={'mr-2'} />
+  //                   {pinHour['startDate'] ? (
+  //                     dayjs(pinHour['startDate']).format('ddd, MMM D')
+  //                   ) : (
+  //                     <span>Select a date</span>
+  //                   )}
+  //                 </Button>
+  //               </PopoverTrigger>
+  //               <PopoverContent className='w-auto p-0' align='start'>
+  //                 <Calendar
+  //                   mode='single'
+  //                   selected={
+  //                     pinHour['startDate']
+  //                       ? new Date(pinHour['startDate'])
+  //                       : undefined
+  //                   }
+  //                   onSelect={(value) => {
+  //                     setPinHour({ ...pinHour, startDate: String(value) });
+  //                   }}
+  //                   initialFocus
+  //                   disabled={
+  //                     appDetails['Start date'] && appDetails['End date']
+  //                       ? {
+  //                           before: new Date(appDetails['Start date']),
+  //                           after: new Date(appDetails['End date']),
+  //                         }
+  //                       : undefined
+  //                   }
+  //                 />
+  //               </PopoverContent>
+  //             </Popover>
+  //             <TimePicker
+  //               onSelectTime={(time: string) => {
+  //                 setPinHour({ ...pinHour, startTime: time });
+  //               }}
+  //               timeToDisplay={pinHour.startTime}
+  //               hint={'Time'}
+  //               triggerClassName=''
+  //             />
+  //           </div>
+  //           <div
+  //             className={
+  //               'flex flex-row w-full items-center justify-start gap-6'
+  //             }
+  //           >
+  //             <div className={'w-12 create-event-form-label'}>Closes</div>
+  //             <Popover>
+  //               <PopoverTrigger asChild>
+  //                 <Button
+  //                   variant={'outline'}
+  //                   className={cn(
+  //                     'w-[160px] justify-start text-left font-normal',
+  //                     !pinHour['endDate'] && 'text-muted-foreground'
+  //                   )}
+  //                 >
+  //                   <CalendarIcon className={'mr-2'} />
+  //                   {pinHour['endDate'] ? (
+  //                     dayjs(pinHour['endDate']).format('ddd, MMM D')
+  //                   ) : (
+  //                     <span>Select a date</span>
+  //                   )}
+  //                 </Button>
+  //               </PopoverTrigger>
+  //               <PopoverContent className='w-auto p-0' align='start'>
+  //                 <Calendar
+  //                   mode='single'
+  //                   selected={
+  //                     pinHour['endDate']
+  //                       ? new Date(pinHour['endDate'])
+  //                       : undefined
+  //                   }
+  //                   onSelect={(value) => {
+  //                     setPinHour({ ...pinHour, endDate: String(value) });
+  //                   }}
+  //                   initialFocus
+  //                   disabled={
+  //                     appDetails['Start date'] && appDetails['End date']
+  //                       ? {
+  //                           before: new Date(appDetails['Start date']),
+  //                           after: new Date(appDetails['End date']),
+  //                         }
+  //                       : undefined
+  //                   }
+  //                 />
+  //               </PopoverContent>
+  //             </Popover>
+  //             <TimePicker
+  //               onSelectTime={(time: string) => {
+  //                 setPinHour({ ...pinHour, endTime: time });
+  //               }}
+  //               timeToDisplay={pinHour.endTime}
+  //               hint='Time'
+  //               triggerClassName=''
+  //             />
+  //           </div>
+  //         </div>
+  //         <Button className={''} onClick={handleAddPinHour}>
+  //           Add hours
+  //         </Button>
+  //       </div>
+  //       {pinHours.length > 0 ? (
+  //         <Table>
+  //           <TableHeader>
+  //             <TableRow>
+  //               <TableHead>Opens at</TableHead>
+  //               <TableHead className={'text-center'}>Closes at</TableHead>
+  //               <TableHead className={'text-end'}>Remove</TableHead>
+  //             </TableRow>
+  //           </TableHeader>
+  //           <TableBody>
+  //             {pinHours.map((pinHour: PinHourInputs, index: number) => {
+  //               return (
+  //                 <TableRow key={`pin-hour-table-row-${index}`}>
+  //                   <TableCell>
+  //                     {dayjs(pinHour.startDate).format('ddd, MMM D')}
+  //                     {` @ `}
+  //                     {dayjs(pinHour.startTime, 'HH:mm:ss').format('h:mm a')}
+  //                   </TableCell>
+  //                   <TableCell className={'text-center'}>
+  //                     {dayjs(pinHour.endDate).format('ddd, MMM D')}
+  //                     {` @ `}
+  //                     {dayjs(pinHour.endTime, 'HH:mm:ss').format('h:mm a')}
+  //                   </TableCell>
+  //                   <TableCell className={'text-end'}>
+  //                     <Button
+  //                       variant={'destructive'}
+  //                       onClick={() => {
+  //                         const pinHoursCopy = [...pinHours];
+  //                         pinHoursCopy.splice(index, 1);
+  //                         setPinHours(pinHoursCopy);
+  //                       }}
+  //                     >
+  //                       X
+  //                     </Button>
+  //                   </TableCell>
+  //                 </TableRow>
+  //               );
+  //             })}
+  //           </TableBody>
+  //         </Table>
+  //       ) : (
+  //         <div
+  //           className={
+  //             'p-2 border w-full mx-6 text-center bg-red-100 text-sm font-mono'
+  //           }
+  //         >
+  //           This pin does not have any hours yet.
+  //         </div>
+  //       )}
+  //     </div>
+  //   );
+  // };
 
   const handleCreatePin = async () => {
     setIsLoading(true);
@@ -434,11 +431,11 @@ const PinPopup: React.FC<{
             <div>Add details.</div>
             <Label>Step 5</Label>
             <div>
-              Add pins hours. Pin hours are optional and allow a pin to indicate
+              Add hours of operation to the pins. Pin hours are optional and allow a pin to indicate
               hours of operation should they differ from the event's hours.
             </div>
           </PopoverContent>
-          <PopoverTrigger>
+          <PopoverTrigger asChild>
             <Button variant={'instructions'} size={'sm'}>
               <Info />
               Instructions
@@ -576,22 +573,14 @@ const PinPopup: React.FC<{
         </div>
         {/* PIN HOURS */}
         <div className={'flex flex-row items-center gap-4 text-sm'}>
-          <div className={'flex items-center'}>
-            <Label className={'w-16'}>Pin hours </Label>
+          <div className={'flex items-center gap-1'}>
+            <Label>Hours </Label>
             <div>(optional)</div>
           </div>
-          <div className={'flex w-full justify-center'}>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button className={'h-8 font-light'} variant={'outline'}>
-                  Add pin hours
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className={'flex w-[600px] grow'}>
-                <PinHours />
-              </PopoverContent>
-            </Popover>
-          </div>
+
+          <HoursPicker
+            hoursBundle={{ hours: pinHours, setHours: setPinHours }}
+          />
         </div>
       </div>
       <Separator />
@@ -609,7 +598,7 @@ const PinPopup: React.FC<{
             setPin(defaultPinState);
           }}
         >
-       <X/>   Cancel
+          <X /> Cancel
         </Button>
       </div>
     </div>

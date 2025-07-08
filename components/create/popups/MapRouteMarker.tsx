@@ -14,7 +14,6 @@ import { CircleDot, Dot, Octagon, Play, X } from 'lucide-react';
 import { useCreateAppStore } from '@/providers/create-app-provider';
 import { cn } from '@/lib/utils';
 
-
 // TODO: create a prop that separates routes from the db versus the route
 // that's being created, so that the route can be updated by dragging
 // Dragging a corner updates state in the store, but the route
@@ -22,15 +21,20 @@ import { cn } from '@/lib/utils';
 // can't have its coordinates moved. You could also add the route being
 // created to the store before being saved to the db.
 
+const MapRouteMarker: React.FC<{
+  post: Partial<Contentable>;
+  isNew: boolean;
+  multiMarkerBundle: { setNewMultiMarker: any; newMultiMarker: any }; // TODO: type this?
+}> = ({ post, isNew, multiMarkerBundle }) => {
+  const { newMultiMarker, setNewMultiMarker } = multiMarkerBundle;
 
-const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
   const [routeCoordinates, setRouteCoordinates] = useState<Position[]>([]);
 
   const { moveCoordinate, selectedMarkerType } = useCreateAppStore(
     (state) => state
   );
 
-  const handleRouteMarkerDrag = (e: MarkerDragEvent, index: number) => {
+  const handleDBRouteMarkerDrag = (e: MarkerDragEvent, index: number) => {
     console.log('moving event', e, 'index', index);
 
     const coords = [e.lngLat.lng, e.lngLat.lat];
@@ -40,6 +44,19 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
       // update coordinate it in store
       moveCoordinate('route', post.id, index, coords);
     }
+  };
+
+  const handleNewRouteMarkerDrag = (e: MarkerDragEvent, index: number) => {
+    const coords = [e.lngLat.lng, e.lngLat.lat];
+
+    const newCoordinates = newMultiMarker.coordinates.toSpliced(
+      index,
+      1,
+      coords
+    );
+
+    setNewMultiMarker({ ...newMultiMarker, coordinates: newCoordinates });
+    //setRouteCoordinates(newCoordinates);
   };
 
   // Load the coords from the stored route into state
@@ -63,7 +80,13 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
         longitude={coordinates[0]}
         latitude={coordinates[1]}
         draggable={'route' === selectedMarkerType}
-        onDragEnd={(e: MarkerDragEvent) => handleRouteMarkerDrag(e, 0)}
+        onDragEnd={(e: MarkerDragEvent) => {
+          if (isNew) {
+            handleNewRouteMarkerDrag(e, 0);
+          } else if (isNew === false) {
+            handleDBRouteMarkerDrag(e, 0);
+          }
+        }}
       >
         {startingImageSRC ? (
           <Image
@@ -107,14 +130,17 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
       }
     }, [post.routeCategory]);
 
-    console.log('fISRC', finishImageSRC, post.coordinates)
     return (
       <Marker
         longitude={coordinates[0]}
         latitude={coordinates[1]}
         draggable={'route' === selectedMarkerType}
         onDragEnd={(e: MarkerDragEvent) => {
-          handleRouteMarkerDrag(e, routeCoordinates.length - 1);
+          if (isNew) {
+            handleNewRouteMarkerDrag(e, newMultiMarker.coordinates.length - 1); // routeCoordinates.length - 1);
+          } else if (isNew === false) {
+            handleDBRouteMarkerDrag(e, newMultiMarker.coordinates.length - 1); //routeCoordinates.length - 1);
+          }
         }}
       >
         {finishImageSRC ? (
@@ -155,8 +181,12 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
         longitude={coordinates[0]}
         latitude={coordinates[1]}
         draggable={'route' === selectedMarkerType}
-        onDragEnd={(e) => {
-          handleRouteMarkerDrag(e, index + 1); // b/c we are slicing off the start
+        onDragEnd={(e: MarkerDragEvent) => {
+          if (isNew) {
+            handleNewRouteMarkerDrag(e, index + 1);
+          } else if (isNew === false) {
+            handleDBRouteMarkerDrag(e, index + 1);
+          }
         }}
       >
         <div
@@ -174,51 +204,60 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
   const PathLine: React.FC<{}> = () => {
     return (
       <>
-        {routeCoordinates.map((curCoords, index, array) => {
-          // if we are at or before second to last coordinate pair in the array
-          if (index < array.length - 1) {
-            const coords = [array[index], array[index + 1]];
+        {routeCoordinates.map(
+          (curCoords: Position, index: number, array: Position[]) => {
+            // if we are at or before second to last coordinate pair in the array
+            if (index < array.length - 1) {
+              const coords = [array[index], array[index + 1]];
 
-            return (
-              <Source
-                key={`key-route-${post.id}-line-${index + 1}-source`}
-                id={`route-${post.id}-line-${index + 1}-source`}
-                type='geojson'
-                data={{
-                  type: 'FeatureCollection',
-                  features: [
-                    {
-                      type: 'Feature',
-                      geometry: {
-                        type: 'LineString',
-                        coordinates: coords as Position[],
+              return (
+                <Source
+                  key={`key-route-${post.id}-line-${index + 1}-source`}
+                  id={`route-${post.id}-line-${index + 1}-source`}
+                  type='geojson'
+                  data={{
+                    type: 'FeatureCollection',
+                    features: [
+                      {
+                        type: 'Feature',
+                        geometry: {
+                          type: 'LineString',
+                          coordinates: coords as Position[],
+                        },
+                        properties: {},
                       },
-                      properties: {},
-                    },
-                  ],
-                }}
-              >
-                <Layer
-                  type={'line'}
-                  paint={{
-                    'line-color': post.color,
-                    'line-width': 'route' === selectedMarkerType ? 6 : 4,
-                    'line-opacity': 'route' === selectedMarkerType ? 0.7 : 0.5,
+                    ],
                   }}
-                  id={`route-${post.id}-line-${index + 1}-layer`}
-                />
-              </Source>
-            );
+                >
+                  <Layer
+                    type={'line'}
+                    paint={{
+                      'line-color': post.color,
+                      'line-width': 'route' === selectedMarkerType ? 6 : 4,
+                      'line-opacity':
+                        'route' === selectedMarkerType ? 0.7 : 0.5,
+                    }}
+                    id={`route-${post.id}-line-${index + 1}-layer`}
+                  />
+                </Source>
+              );
+            }
           }
-        })}
+        )}
       </>
     );
   };
 
+
+
+
+  console.log('bottom of MapRoutePath. Post:', post)
   return (
     <>
       {/* Starting point */}
-      {routeCoordinates[0] && <RouteStart coordinates={routeCoordinates[0]} />}
+      {routeCoordinates[0] && (
+        <RouteStart coordinates={routeCoordinates[0]} />
+      )}
 
       {/* Turns */}
       {routeCoordinates.length > 2 &&
@@ -237,7 +276,9 @@ const MapRouteMarker: React.FC<{ post: Partial<Contentable> }> = ({ post }) => {
       {/* Ending point */}
       {routeCoordinates.length > 1 && (
         <RouteFinish
-          coordinates={routeCoordinates[routeCoordinates.length - 1]}
+          coordinates={
+            routeCoordinates[routeCoordinates.length - 1]
+          }
         />
       )}
 

@@ -199,7 +199,7 @@ export const getAppInfoFromDb = async (appId: number) => {
     appData.pins = keyBy(appData.pins, 'id');
     appData.routes = keyBy(appData.routes, 'id');
     appData.plans = keyBy(appData.plans, 'id')
-
+      console.log('here', appData)
     return appData;
   } catch (e) {
     console.error('CREATE ACTIONS ERROR: failed to get app info from db', e);
