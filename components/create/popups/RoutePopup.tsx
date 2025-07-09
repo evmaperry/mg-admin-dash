@@ -44,7 +44,7 @@ import DatePicker from '@/components/date-picker';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { createPost, getAddressFromCoordinates } from '../createActions';
+import { calculateDistanceFromCoords, createPost, getAddressFromCoordinates } from '../createActions';
 import ColorPicker from '@/components/color-picker';
 import { ColorResult } from 'react-color';
 
@@ -285,7 +285,7 @@ const RoutePopup: React.FC<{
           <Label>Turns</Label>
           <div>{route.coordinates.length}</div>
           <Label>Distance</Label>
-          <div>TODO</div>
+          <div>{calculateDistanceFromCoords(route.coordinates).toFixed(2)} miles</div>
         </div>
 
         {/* ROUTE SELECTOR */}

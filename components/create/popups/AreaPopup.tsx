@@ -18,6 +18,10 @@ import { Input } from '@/components/ui/input';
 import TimePicker from '@/components/time-picker';
 import DatePicker from '@/components/date-picker';
 import HoursPicker, { HourInputs } from '@/components/hours-picker';
+import { calculateDistanceFromCoords } from '../createActions';
+
+
+
 
 const AreaPopup: React.FC<{
   lastClickEvent: MapMouseEvent | null;
@@ -166,8 +170,8 @@ const AreaPopup: React.FC<{
         <div className={'flex items-center w-full rounded gap-4 text-sm'}>
           <Label>Corners</Label>
           <div>{area.coordinates.length}</div>
-          <Label>Distance</Label>
-          <div>TODO</div>
+          <Label>Perimeter</Label>
+          <div>{calculateDistanceFromCoords(area.coordinates, 'feet').toFixed(0)} feet</div>
         </div>
 
         {/* COLOR SELECTOR */}

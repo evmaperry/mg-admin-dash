@@ -68,17 +68,26 @@ const MapGeometryMarker: React.FC<{
       <Marker
         longitude={coordinates[0]}
         latitude={coordinates[1]}
-        // markerType is a prop from Markers component, 
+        // markerType is a prop from Markers component,
         // selectedMarker is the marker type clicked on from toggle buttons
         draggable={markerType === selectedMarkerType}
         onDragEnd={(e: MarkerDragEvent) => {
           if (isNew) {
-            handleNewRouteMarkerDrag(e, index + 1);
+            handleNewRouteMarkerDrag(e, index);
           } else if (isNew === false) {
-            handleDBRouteMarkerDrag(e, index + 1);
+            handleDBRouteMarkerDrag(e, index);
           }
         }}
-      />
+      >
+        <div
+          style={{
+            height: markerType === selectedMarkerType ? 24 : 16,
+            width: markerType === selectedMarkerType ? 24 : 16,
+            backgroundColor: geometry.color,
+            borderRadius: '100%',
+          }}
+        />
+      </Marker>
     );
   };
 
@@ -139,12 +148,57 @@ const MapGeometryMarker: React.FC<{
     );
   };
 
-  // TODO: add geometry plane to color in the area.
+  const FillLayer: React.FC<{}> = () => {
+    return (
+      <Source
+        key={`key-${markerType}-${geometry.id}-fill-layer-source`}
+        id={`${markerType}-${geometry.id}-fill-layer-source`}
+        type='geojson'
+        data={{
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'MultiPoint',
+                coordinates: geometryCoordinates as Position[],
+              },
+              properties: {},
+            },
+          ],
+        }}
+      >
+        <Layer
+          type={'line'}
+          paint={{
+            'line-color': geometry.color,
+            'line-width': ['area', 'structure'].includes(
+              selectedMarkerType as string
+            )
+              ? 6
+              : 4,
+            'line-opacity': ['area', 'structure'].includes(
+              selectedMarkerType as string
+            )
+              ? 0.7
+              : 0.5,
+          }}
+          id={`${markerType}-${geometry.id}-line-${index + 1}-layer`}
+        />
+      </Source>
+    );
+  };
 
   return (
     <>
       {geometryCoordinates.map((coords, index) => {
-        return <GeometryCorner coordinates={coords} index={index} />;
+        return (
+          <GeometryCorner
+            coordinates={coords}
+            index={index}
+            key={`${markerType}-geometry-${index}-corner`}
+          />
+        );
       })}
 
       {geometryCoordinates.length > 1 && <PathLine />}

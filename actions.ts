@@ -12,6 +12,8 @@ import { Contentable, Post } from 'mgtypes/types/Content';
 import { HourInputs } from './components/hours-picker';
 import dayjs from 'dayjs';
 
+
+// CONTENT CREATION ACTIONS -- client side
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || '',
   credentials: {

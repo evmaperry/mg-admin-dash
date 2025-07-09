@@ -7,6 +7,11 @@ import { addPostToDb } from '@/actions';
 import { createClient } from '@/utils/supabase/client';
 import { App } from 'mgtypes/types/App';
 import { keyBy } from 'lodash';
+import { Position } from 'geojson';
+import { distance } from '@turf/distance';
+import { point, convertLength } from '@turf/helpers';
+
+//
 
 export const createPost = async (
   file: File,
@@ -89,6 +94,21 @@ export const getCoordinatesFromAddress = async (address: any) => {
       err
     );
   }
+};
+
+export const calculateDistanceFromCoords = (coords: Position[], units: 'miles' | 'feet') => {
+  let sum = 0;
+
+  for (let i = 0; i < coords.length - 1; i++) {
+    const from = point(coords[i]);
+    const to = point(coords[i+1]);
+
+    const dist = distance(from, to, { units } );
+
+    sum += dist
+  }
+
+  return sum;
 };
 
 /**
@@ -198,8 +218,8 @@ export const getAppInfoFromDb = async (appId: number) => {
     const appData: any = { ...app?.[0] };
     appData.pins = keyBy(appData.pins, 'id');
     appData.routes = keyBy(appData.routes, 'id');
-    appData.plans = keyBy(appData.plans, 'id')
-      console.log('here', appData)
+    appData.plans = keyBy(appData.plans, 'id');
+    console.log('here', appData);
     return appData;
   } catch (e) {
     console.error('CREATE ACTIONS ERROR: failed to get app info from db', e);
